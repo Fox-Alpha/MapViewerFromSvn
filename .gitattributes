@@ -24,4 +24,4 @@ icons/tractorctrl.png -text
 /modDesc.xml -text
 /readme_de.txt -text
 /readme_en.txt -text
-/test.lua -text svn_keywords=Author+Date+Id+Rev+URL
+/test.xml -text svn_keywords=Author+Date+Id+Rev+URL
