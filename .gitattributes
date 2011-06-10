@@ -20,8 +20,8 @@ icons/mpspieler.png -text
 icons/tractor.png -text
 icons/tractorctrl.png -text
 /mapviewer.lua -text svn_keywords=Author+Date+Id+Rev+URL
-/mapviewer.xml -text
-/modDesc.xml -text
+/mapviewer.xml -text svn_keywords
+/modDesc.xml -text svn_keywords
 /readme_de.txt -text
 /readme_en.txt -text
 /test.xml -text svn_keywords=Author+Date+Id+Rev+URL
