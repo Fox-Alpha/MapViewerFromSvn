@@ -1,3 +1,9 @@
+<!--
+-- Revision der letzten Änderung :     $Rev: 19 $
+-- Author der letzten Änderung   :     $Author: MapViewer $
+-- Date der letzten Änderung     :     $Date: 2011-06-10 04:00:05 +0200 (Fr, 10. Jun 2011) $
+-- $URL: https://srv21.svn-repos.de/dev489/MapViewer/branches/Integration_Courseplay/mapviewer.lua $
+-->
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <mapviewer>
 	<map mapWidth="1" mapHeight="1" mapDimensionX="2048" mapDimensionY="2048">
