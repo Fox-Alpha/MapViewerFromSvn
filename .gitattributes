@@ -16,3 +16,6 @@ icons/feldgeraet.png -text
 icons/mpspieler.png -text
 icons/tractor.png -text
 icons/tractorctrl.png -text
+/mapviewer.lua -text
+/mapviewer.xml -text
+/modDesc.xml -text

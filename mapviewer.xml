@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<mapviewer>
+	<map mapWidth="1" mapHeight="1" mapDimensionX="2048" mapDimensionY="2048">
+		<!-- Abweichende Karte verwenden, wird nmomentan nicht verwendet -->
+		<!-- <mapFile useMapFile="false" file="gfx/pda_map.dds" /> -->
+		<legende file="gfx/background.png" width="0.15" height="0.125" posX="0.0244" posY="0.15" />
+		<!--  -->
+
+		<!-- Point of Interests und Feldnummern Overlay für die Standard Karte -->
+		<!-- <poi usePoI="true" file="gfx/poi_karte_1.png" width="2048" height="2048" /> -->
+		<!-- <fieldnumbers useFNum="true" file="gfx/fn_karte_1.png" width="2048" height="2048" /> -->
+		<!--  -->
+		
+		<!-- Symbole für Spieler, Fahrzeuge und Geräte -->
+		<icons>
+			<iconPlayer  width="0.0078125" height="0.0078125" file="icons/eigenerspieler.png" />
+			<iconMPPlayer  width="0.0078125" height="0.0078125" file="icons/mpspieler.png" />
+			<iconSteerable  width="0.0078125" height="0.0078125" file="icons/tractor.png" />
+			<iconSteerableCtrl  width="0.0078125" height="0.0078125" file="icons/tractorctrl.png" />
+			<iconAttachmentFront  width="0.0078125" height="0.0078125" file="icons/feldgeraet.png" />
+			<iconAttachmentRear  width="0.0078125" height="0.0078125" file="icons/feldgeraet.png" />
+		</icons>
+		<!--  -->
+	</map>
+</mapviewer>

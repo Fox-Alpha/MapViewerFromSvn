@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="4">
+    <author>Fox-Alpha</author>
+    <version>0.4 Final</version>
+	<iconFilename>gfx/mapviewer.png</iconFilename>
+	<xmlFilename>mapviewer.xml</xmlFilename>
+	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
+	<title>
+        <en>Fullscreen PDA_Map</en>
+        <de>Vollbild Kartenansicht</de>
+    </title>
+    <description>
+		<en>
+		<![CDATA[Shows the PDA Map over the hole Screen. Press M to activate.Key N show legend!
+			Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername + Playername auf PDAMap
+			Set keybinding in option dialog]]>
+		</en>
+		<de>
+		<![CDATA[Zeigt die PDA Map als Vollbild an. 
+			Tasten :
+			- M aktiviere! 
+			- N Legende einblenden.
+			- Numpad +/- Transparenz einstellen
+			  Y Durchschalten der PoI und Feldnummern
+			  ALT+M Umschalten der Mapgroesse von 2048 auf 4096
+			Features :
+			  + Dynamisches laden der PDA Map aus der verwendendeten Karte
+			  + Umschalten der Mapgroesse von 2048 auf 4096
+			  + Durchschalten der PoI und Feldnummern
+			  + Kann PoI und Feldnummern als seperates Overlay laden
+                - Kann Feldnummern und PoI aus dem Mapzip laden
+			- HotSpots (Wenn in Map vorhanden), 
+			- Spielerposition (Alle im MP), Koordinaten des eigenen Spielers (unten links)
+			- Fahrzeugposition, Anbautenposition, Spielername in Map + Spielername auf PDAMap
+			- Tastenbelegung in den Optionen änderbar
+			--Leicht abweichende Positionen hängen von der Qualität der PDA Map ab.
+			Script: fox-alpha]]>		
+		</de>
+	</description>
+    <multiplayer supported="true"/>
+	<l10n>
+        <text name="mapviewtxt">
+            <en>Mapviewer V0.4 Copyright (C) Fox-Alpha</en>
+            <de>Mapviewer V0.4 Copyright (C) Fox-Alpha</de>
+        </text>
+		<text name="BIGMAP_Legende">
+			<en>Display Maplegend</en>
+			<de>Legende einblenden</de>	
+		</text>
+		<text name="BIGMAP_SwitchOverlay">
+			<en>Switch the Overlay</en>
+			<de>Overlay wechseln</de>	
+		</text>
+		<text name="BIGMAP_Activate">
+			<en>View Map</en>
+			<de>Große Kartenansicht</de>	
+		</text>
+		<text name="BIGMAP_TransPlus">
+			<en>Increase Transparence</en>
+			<de>Transparenz erhöhen</de>	
+		</text>
+		<text name="BIGMAP_TransMinus">
+			<en>decrease Transparence</en>
+			<de>Transparenz verringern</de>	
+		</text>
+    </l10n>
+    <extraSourceFiles>
+        <sourceFile filename="mapviewer.lua" />
+    </extraSourceFiles>
+	<inputBindings>
+       <input name="BIGMAP_Activate" category="ONFOOT VEHICLE" key1="KEY_m" key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Legende" category="ONFOOT VEHICLE" key1="KEY_n" key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_SwitchOverlay" category="ONFOOT VEHICLE" key1="KEY_y" key2="KEY_z" button="" device="0" mouse="" />
+       <input name="BIGMAP_TransPlus" category="ONFOOT VEHICLE" key1="KEY_KP_plus" key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_TransMinus" category="ONFOOT VEHICLE" key1="KEY_KP_minus" key2="" button="" device="0" mouse="" />
+    </inputBindings>
+</modDesc>
