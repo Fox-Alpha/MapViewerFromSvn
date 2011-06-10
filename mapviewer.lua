@@ -1,8 +1,8 @@
--- mein Mapviewer, anzeigen der PDA Map auf dem Bildschirm
 ----
--- $Rev$:     Revision der letzten Änderung
--- $Author$:  Author der letzten Änderung
--- $Date$:    Date der letzten Änderung
+-- Revision der letzten Änderung :     $Rev$
+-- Author der letzten Änderung   :     $Author$
+-- Date der letzten Änderung     :     $Date$
+-- $URL$
 ----
 -- Mein Mapviewer, anzeigen der PDA Map auf dem Bildschirm
 ----
