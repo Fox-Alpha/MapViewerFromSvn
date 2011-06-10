@@ -19,7 +19,7 @@ icons/isBroken.png -text svneol=unset#image/png
 icons/mpspieler.png -text
 icons/tractor.png -text
 icons/tractorctrl.png -text
-/mapviewer.lua -text
+/mapviewer.lua svneol=CRLF#text/plain svn_keywords eol=crlf
 /mapviewer.xml -text
 /modDesc.xml -text
 /readme_de.txt -text
