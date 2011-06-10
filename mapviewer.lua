@@ -5,6 +5,7 @@
 -- $URL$
 ----
 -- Mein Mapviewer, anzeigen der PDA Map auf dem Bildschirm
+-- (c) Fox-Alpha 2011
 ----
 
 mapviewer={};
