@@ -4,6 +4,8 @@
 -- Date der letzten Änderung     :     $Date$
 -- $URL: $
 ----
+-- Neuer Test
+----
 -- Mein Mapviewer, anzeigen der PDA Map auf dem Bildschirm
 -- (c) Fox-Alpha 2011
 ----
