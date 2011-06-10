@@ -1,4 +1,11 @@
 -- mein Mapviewer, anzeigen der PDA Map auf dem Bildschirm
+----
+-- $Rev$:     Revision der letzten Änderung
+-- $Author$:  Author der letzten Änderung
+-- $Date$:    Date der letzten Änderung
+----
+-- Mein Mapviewer, anzeigen der PDA Map auf dem Bildschirm
+----
 
 mapviewer={};
 mapviewer.moddir=g_currentModDirectory;
