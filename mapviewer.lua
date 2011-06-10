@@ -2,7 +2,6 @@
 
 mapviewer={};
 mapviewer.moddir=g_currentModDirectory;
-mapviewer.dataPath = getUserProfileAppPath() .. "mods/MapViewerData/"
 
 function mapviewer:loadMap(name)
 	print("mapviewer:loadmap() :" .. string.format("|| %s ||", g_i18n:getText("mapviewtxt")));
@@ -11,8 +10,6 @@ function mapviewer:loadMap(name)
 	----
 	-- Datei mit Mapdaten
 	----
-	local mapFile = Utils.getFilename("mapData.xml", self.dataPath);
-	self.xmlDataFile = loadXMLFile("xmlDataFile", mapFile);
 
 	self.mapvieweractive=false;
 	self.maplegende = false;
@@ -20,10 +17,14 @@ function mapviewer:loadMap(name)
 	self.mvInit = false;
 	self.showFNum = false;
 	self.showPoi = false;
+    self.showCP = false;
 	self.numOverlay = 0;
 	self.mapPath = 0;
 	
 	self.useDefaultMap = false;
+    
+    self.courseplay = true;
+
 
 	self.x=0;
 	self.y=0;
@@ -99,7 +100,7 @@ function mapviewer:InitMapViewer()
 		print(string.format("self.bigmap.OverlayId.ovid: %d", self.bigmap.OverlayId.ovid));
 		print("LoadMap()");
 		print(string.format("Map Pfad : %s", self.mapPath));
-		print(string.format("MapFile  : %s", self.bigmap.file));
+
 		print(string.format("Overlay  : %d", self.bigmap.OverlayId.ovid));
 	end;
 	
@@ -125,13 +126,13 @@ function mapviewer:InitMapViewer()
     if self.useDefaultMap then
         self.bigmap.PoI.file = Utils.getFilename("PoI_Karte_1.png", self.moddir .. "gfx/");
     else
-         self.bigmap.PoI.file = Utils.getFilename("MV_PoI.png", self.mapPath); -- Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.poi#file"), "gfx/PoI.png"), self.moddir);
+         self.bigmap.PoI.file = Utils.getFilename("MV_PoI.png", self.mapPath);
     end
     self.bigmap.PoI.OverlayId = createImageOverlay(self.bigmap.PoI.file);
     if self.bigmap.PoI.OverlayId == nil or self.bigmap.PoI.OverlayId == 0 then
         self.usePoi = false;
-        print(g_i18n:getText("mapviewtxt") .. " : Kann 'PoI Overlay' nicht erzeugen, PoI ist deaktiviert, bitte Pfad und Dateinamen in der mapviewer.xml prüfen");
-        print(g_i18n:getText("mapviewtxt") .. " : Could not Create PoI Overlay, PoI is disabled. Check path and filename in mapviewer.xml");
+        print(g_i18n:getText("mapviewtxt") .. " : Kann 'PoI Overlay' nicht erzeugen, PoI ist deaktiviert, PoI nicht in dieser Map unterstützt");
+        print(g_i18n:getText("mapviewtxt") .. " : Could not Create PoI Overlay, PoI is disabled. PoI not supported in this Map");
     end;
     self.bigmap.PoI.poiPosX = 0.5-(self.bigmap.PoI.width/2);
     self.bigmap.PoI.poiPosY = 0.5-(self.bigmap.PoI.height/2);
@@ -140,28 +141,26 @@ function mapviewer:InitMapViewer()
 	----
 	-- Fieldnumbers verwenden
 	----
-	self.useFNum = true; -- getXMLBool(self.xmlFile, "mapviewer.map.fieldnumbers#useFNum");
+	self.useFNum = true;
 	if self.useFNum then
 		self.bigmap.FNum.OverlayId = nil
-        print("Datei FNum laden");
 		if self.useDefaultMap then
 			self.bigmap.FNum.file = Utils.getFilename("fn_Karte_1.png", self.moddir .. "gfx/");
 		else
-            self.bigmap.FNum.file = Utils.getFilename("MV_Feldnummern.png", self.mapPath); -- Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.fieldnumbers#file"), "gfx/Felfnummern.png"), self.moddir);
+            self.bigmap.FNum.file = Utils.getFilename("MV_Feldnummern.png", self.mapPath);
         end;
-        print(string.format("|| %s || MapViewer:Init() -- Feldnummern erstellen ||", self.bigmap.FNum.file));
         
 		self.bigmap.FNum.OverlayId = createImageOverlay(self.bigmap.FNum.file);
 		if self.bigmap.FNum.OverlayId == nil or self.bigmap.FNum.OverlayId == 0 then
 			self.useFNum = false;
-			print(g_i18n:getText("mapviewtxt") .. " : Kann 'Feldnummern Overlay' nicht erzeugen, FNum ist deaktiviert, bitte Pfad und Dateinamen in der mapviewer.xml prüfen");
-			print(g_i18n:getText("mapviewtxt") .. " : Could not Create Fieldnumber Overlay, FNum is disabled. Check path and filename in mapviewer.xml");
+			print(g_i18n:getText("mapviewtxt") .. " : Kann 'Feldnummern Overlay' nicht erzeugen, FNum ist deaktiviert, PoI nicht in dieser Map unterstützt");
+			print(g_i18n:getText("mapviewtxt") .. " : Could not Create Fieldnumber Overlay, PoI is disabled. PoI not supported in this Map");
 		end;
 		self.bigmap.FNum.FNumPosX = 0.5-(self.bigmap.FNum.width/2);
 		self.bigmap.FNum.FNumPosY = 0.5-(self.bigmap.FNum.height/2);
 	end;
 	----
-print(string.format("|| %s || MapViewer:Init() -- Icons erstellen ||", g_i18n:getText("mapviewtxt")));	
+
 	----
 	-- Array für Fahrzeugicons
 	----
@@ -173,7 +172,8 @@ print(string.format("|| %s || MapViewer:Init() -- Icons erstellen ||", g_i18n:ge
 	self.bigmap.IconSteerable.mpOverlayId = createImageOverlay(self.bigmap.IconSteerable.filemp);
 	self.bigmap.IconSteerable.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconSteerable#width"), 0.0078125);
 	self.bigmap.IconSteerable.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconSteerable#height"), 0.0078125);
-	
+	----
+    
 	--Array für Geräteicons
 	self.bigmap.IconAttachments = {};
 	self.bigmap.IconAttachments.Icon = {front = {file = "", OverlayId = nil},rear={file = "", OverlayId = nil}};
@@ -183,7 +183,26 @@ print(string.format("|| %s || MapViewer:Init() -- Icons erstellen ||", g_i18n:ge
 	self.bigmap.IconAttachments.Icon.rear.OverlayId = createImageOverlay(self.bigmap.IconAttachments.Icon.rear.file);
 	self.bigmap.IconAttachments.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachment#width"), 0.0078125);
 	self.bigmap.IconAttachments.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachment#height"), 0.0078125);
-	
+	----
+
+	--Array für CourseplayIcon
+	self.bigmap.IconCourseplay = {};
+	self.bigmap.IconCourseplay.Icon = {};
+    self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.png"), self.moddir);
+	self.bigmap.IconCourseplay.Icon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.Icon.file);
+	self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
+	self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
+	----
+
+	--Array für isBrokenIcon
+	self.bigmap.iconIsBroken = {};
+	self.bigmap.iconIsBroken.Icon = {};
+    self.bigmap.iconIsBroken.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconIsBroken#file"), "icons/iconIsBroken.png"), self.moddir);
+	self.bigmap.iconIsBroken.Icon.OverlayId = createImageOverlay(self.bigmap.iconIsBroken.Icon.file);
+	self.bigmap.iconIsBroken.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconIsBroken#width"), 0.0078125);
+	self.bigmap.iconIsBroken.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconIsBroken#height"), 0.0078125);
+	----
+    
 	--Array für Spielerinfos
 	self.bigmap.player = {}; --
 	self.bigmap.player.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconPlayer#file"), "icons/eigenerspieler.png"), self.moddir);
@@ -240,8 +259,112 @@ function mapviewer:tablecopy(tab, parent)
 		end;
     end;
     return ret
+end;
+
+function mapviewer:tprint (t, indent, done)
+    if t == 0 or t == nil then
+        print("tprint() : keine Daten");
+        return;
+    end;
+    done = done or {}
+    indent = indent or 0
+    if type (t) == "table" then
+        for key, value in pairs (t) do
+            txt = string.format("%s",string.rep ("\t", indent));
+            if type (value) == "table" and not done [value] then
+                done [value] = true
+                print (string.format("%s[%s]:", string.rep("\t", indent), tostring (key)));
+                tprint (value, indent + 1, done)
+            else
+                print(string.format("%s%s=%s", txt, tostring(key), tostring(value)));
+            end;
+        end;
+    elseif type (t) == "string" then
+        print("Angegebene Tabelle ist keine Tabelle : -> " .. t);
+    else
+        print("Angegebene Tabelle ist keine Tabelle : -> " .. type(t));
+    end;
+end;
+
+function table.show(t, name, indent)
+   local cart     -- a container
+   local autoref  -- for self references
+
+   --[[ counts the number of elements in a table
+   local function tablecount(t)
+      local n = 0
+      for _, _ in pairs(t) do n = n+1 end
+      return n
+   end
+   ]]
+   -- (RiciLake) returns true if the table is empty
+   local function isemptytable(t) return next(t) == nil end
+
+   local function basicSerialize (o)
+      local so = tostring(o)
+      if type(o) == "function" then
+         local info = debug.getinfo(o, "S")
+         -- info.name is nil because o is not a calling level
+         if info.what == "C" then
+            return string.format("%q", so .. ", C function")
+         else 
+            -- the information is defined through lines
+            return string.format("%q", so .. ", defined in (" ..
+                info.linedefined .. "-" .. info.lastlinedefined ..
+                ")" .. info.source)
+         end
+      elseif type(o) == "number" then
+         return so
+      else
+         return string.format("%q", so)
+      end
+   end
+   local function addtocart (value, name, indent, saved, field)
+      indent = indent or ""
+      saved = saved or {}
+      field = field or name
+
+      cart = cart .. indent .. field
+
+      if type(value) ~= "table" then
+         cart = cart .. " = " .. basicSerialize(value) .. ";\n"
+      else
+         if saved[value] then
+            cart = cart .. " = {}; -- " .. saved[value] 
+                        .. " (self reference)\n"
+            autoref = autoref ..  name .. " = " .. saved[value] .. ";\n"
+         else
+            saved[value] = name
+            --if tablecount(value) == 0 then
+            if isemptytable(value) then
+               cart = cart .. " = {};\n"
+            else
+               cart = cart .. " = {\n"
+               for k, v in pairs(value) do
+                  k = basicSerialize(k)
+                  local fname = string.format("%s[%s]", name, k)
+                  field = string.format("[%s]", k)
+                  -- three spaces between levels
+                  addtocart(v, fname, indent .. "   ", saved, field)
+               end
+               cart = cart .. indent .. "};\n"
+            end
+         end
+      end
+   end
+
+   name = name or "__unnamed__"
+   if type(t) ~= "table" then
+      return name .. " = " .. basicSerialize(t)
+   end
+   cart, autoref = "", ""
+   addtocart(t, name, indent)
+   return cart .. autoref
 end
 
+function eval(str)
+   return assert(loadstring(str))()
+end   
 function mapviewer:deleteMap()
 end;
 
@@ -327,11 +450,17 @@ function mapviewer:update(dt)
 		elseif self.numOverlay == 3 then	--Poi und Nummern
 			self.showPoi = true;
 			self.showFNum = true;
+		elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
+			self.showCP = true;
+			self.showPoi = false;
+			self.showFNum = false;
 		else
 			self.numOverlay = 0;		--Alles aus
 			self.showPoi = false;
 			self.showFNum = false;
+            self.showCP = false;
 		end;
+        print(string.format("showCP:%s||showFNum:%s||showPoi:%s",tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi)));
 		if self.Debug then
 			print("Debug Key BIGMAP_SwitchOverlay: ");
 			print(string.format("useFNum:%s||usePoi:%s",tostring(self.useFNum),tostring(self.usePoi)));
@@ -509,11 +638,37 @@ function mapviewer:draw()
 		-- Fahrzeuge auf grosse Karte
 		----
 		for i=1, table.getn(g_currentMission.steerables) do
+            local Courseplayname = "";
 			if not g_currentMission.steerables[i].isBroken then
 				self.currentVehicle = g_currentMission.steerables[i];
 				self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
 				self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
 				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+                
+                ----
+                -- Auslesen der Kurse wenn CourcePlay vorhanden ist
+                ----
+                if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
+                    if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+                        if self.currentVehicle.current_course_name ~=nil then
+                            Courseplayname = self.currentVehicle.current_course_name;
+                        end;
+                        for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
+                            local wx = g_currentMission.steerables[i].Waypoints[w].cx;
+                            local wz = g_currentMission.steerables[i].Waypoints[w].cz;
+                            wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+                            wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+
+                            renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+                                        wx-self.bigmap.IconCourseplay.width/2, 
+                                        wz-self.bigmap.IconCourseplay.height/2,
+                                        self.bigmap.IconCourseplay.width,
+                                        self.bigmap.IconCourseplay.height);
+                        end;
+                        setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+                    end;
+                end;
+                ----
 				
 				setTextColor(0, 1, 0, 1);
 				if self.currentVehicle.isControlled and self.currentVehicle.controllerName == self.plyname.name then
@@ -527,6 +682,11 @@ function mapviewer:draw()
 					end;
 					
 					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.plyname.name));
+                    -- Kursnamen am Fahrzeug anzeigen
+                    if Courseplayname ~= "" then
+                        renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.020, 0.015, string.format("CoursePlay : %s", Courseplayname));
+                    end;
+                    --
 					renderText(0.020, 0.020, 0.015, string.format("Koordinaten : x=%.1f / y=%.1f",self.buttonX * 1000,self.buttonZ * 1000));
 				elseif self.currentVehicle.isControlled then
 					if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
@@ -538,6 +698,12 @@ function mapviewer:draw()
 						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
 					end;
 					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.currentVehicle.controllerName));
+                    
+                    -- Kursnamen am Fahrzeug anzeigen
+                    if Courseplayname ~= "" then
+                        renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.020, 0.015, string.format("CoursePlay : %s", Courseplayname));
+                    end;
+                    --
 				else
 					if self.bigmap.IconSteerable.OverlayId ~= nil and self.bigmap.IconSteerable.OverlayId ~= 0 then
 						renderOverlay(self.bigmap.IconSteerable.OverlayId,
@@ -546,13 +712,29 @@ function mapviewer:draw()
 									self.bigmap.IconSteerable.width,
 									self.bigmap.IconSteerable.height);
 						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
+                        -- Kursnamen am Fahrzeug anzeigen
+                        if Courseplayname ~= "" then
+                            renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("CoursePlay : %s", Courseplayname));
+                        end;
+                        --
 					end;
 				end;
 				setTextColor(1, 1, 1,0);
 			elseif g_currentMission.steerables[i].isBroken then
 			-- TODO:
 			-- unbrauchbare Fahrzeuge mit weiterem Icon anzeigen
-			-- 
+			--
+				self.posX, self.posY, self.posZ = getWorldTranslation(g_currentMission.steerables[i].rootNode);
+				self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+                if self.bigmap.iconIsBroken.Icon.OverlayId ~= nil and self.bigmap.iconIsBroken.Icon.OverlayId ~= 0 then
+                    renderOverlay(self.bigmap.iconIsBroken.Icon.OverlayId,
+                                self.buttonX-self.bigmap.iconIsBroken.width/2, 
+                                self.buttonZ-self.bigmap.iconIsBroken.height/2,
+                                self.bigmap.iconIsBroken.width,
+                                self.bigmap.iconIsBroken.height);
+                    setOverlayColor(self.bigmap.iconIsBroken.Icon.OverlayId, 1, 1, 1, 1);
+                end;
 			end;
 		end;
 		-----
