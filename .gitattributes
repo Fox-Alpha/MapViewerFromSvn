@@ -1,5 +1,6 @@
 * text=auto !eol
 / svnc_tsvn_003aprojectlanguage=0x401
+/changelog[!!-~]MapViewer[!!-~]V0.4.txt -text
 /gfx svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
 gfx/PoI_BigInParadise.png -text
 gfx/PoI_Karte_1.png -text
@@ -19,3 +20,5 @@ icons/tractorctrl.png -text
 /mapviewer.lua -text
 /mapviewer.xml -text
 /modDesc.xml -text
+/readme_de.txt -text
+/readme_en.txt -text
