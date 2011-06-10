@@ -3,6 +3,7 @@
 -- $Rev$:     Revision der letzten Änderung
 -- $Author$:  Author der letzten Änderung
 -- $Date$:    Date der letzten Änderung
+-- $URL$
 ----
 -- Mein Mapviewer, anzeigen der PDA Map auf dem Bildschirm
 ----
