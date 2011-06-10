@@ -10,3 +10,9 @@ gfx/maplegende.png -text
 gfx/mapviewer.png -text
 gfx/mapviewer_.png -text
 gfx/pda_map.dds -text
+/icons svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
+icons/eigenerspieler.png -text
+icons/feldgeraet.png -text
+icons/mpspieler.png -text
+icons/tractor.png -text
+icons/tractorctrl.png -text
