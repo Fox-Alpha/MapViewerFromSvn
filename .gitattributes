@@ -19,8 +19,8 @@ icons/isBroken.png -text svneol=unset#image/png
 icons/mpspieler.png -text
 icons/tractor.png -text
 icons/tractorctrl.png -text
-/mapviewer.lua svneol=CRLF#text/plain svn_keywords eol=crlf
 /mapviewer.xml -text
 /modDesc.xml -text
 /readme_de.txt -text
 /readme_en.txt -text
+/test.lua -text svn_keywords=Author+Date+Id+Rev+URL
