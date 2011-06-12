@@ -25,6 +25,7 @@
 			<iconSteerableCtrl  width="0.0078125" height="0.0078125" file="icons/tractorctrl.png" />
 			<iconAttachmentFront  width="0.0078125" height="0.0078125" file="icons/feldgeraet.png" />
 			<iconAttachmentRear  width="0.0078125" height="0.0078125" file="icons/feldgeraet.png" />
+			<iconIsBroken  width="0.0078125" height="0.0078125" file="icons/isBroken.png" />
 		</icons>
 		<!--  -->
 	</map>
