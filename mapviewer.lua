@@ -459,7 +459,22 @@ function mapviewer:update(dt)
 	--Overlay wechseln
 	if InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
 		self.numOverlay = self.numOverlay+1;
-        
+
+        ----
+        -- Überprüfen ob Feldnummern und PoI benutz werden können
+        ----
+        if not self.useFNum or not self.usePoi then
+            if self.numOverlay == 1 and not self.useFNum then
+                self.numOverlay = self.numOverlay+1;
+            end;
+            if self.numOverlay == 2 not self.usePoi then
+                self.numOverlay = self.numOverlay+1;
+            end;
+            if self.numOverlay == 3 then
+                self.numOverlay = self.numOverlay+1;
+            end;
+        end;
+        ----
         ----
         -- Alle Overlays deaktivieren
         ----
@@ -472,7 +487,7 @@ function mapviewer:update(dt)
 		if self.numOverlay == 1 then	--nur Feldnummern
 			self.showFNum = true;
 		elseif self.numOverlay == 2 then	--nur PoI
-			self.showPoi = true;
+            self.showPoi = true;
 		elseif self.numOverlay == 3 then	--Poi und Nummern
 			self.showPoi = true;
 			self.showFNum = true;
@@ -487,11 +502,11 @@ function mapviewer:update(dt)
             self.showCP = false;
             self.showBottles = false;
 		end;
-        print(string.format("Modus:%s||showCP:%s||showFNum:%s||showPoi:%s||showBottles",tostring(selfnumOPverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
+        print(string.format("Modus:%s||showFNum:%s||showPoi:%s||showCP:%s||showBottles:%s",tostring(self.numOverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
 		if self.Debug then
 			print("Debug Key BIGMAP_SwitchOverlay: ");
 			print(string.format("useFNum:%s||usePoi:%s",tostring(self.useFNum),tostring(self.usePoi)));
-			print(string.format("numOverlay:%d||showFNum:%s||showPoi:%s",self.numOverlay,tostring(self.showFNum),tostring(self.showPoi)));
+			print(string.format("Modus:%s||showFNum:%s||showPoi:%s||showCP:%s||showBottles:%s",tostring(self.numOverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
 			mapviewer:tablecopy(self.bigmap.PoI, "bigmap.Poi");
 			mapviewer:tablecopy(self.bigmap.FNum, "bigmap.FNum");
 		end;
@@ -550,6 +565,7 @@ function mapviewer:draw()
 				self.usePoi = not self.usePoi;
 			end;
 		end;
+        ----
 		
 		--Fieldnumbers
 		if self.useFNum and self.showFNum then
@@ -561,6 +577,7 @@ function mapviewer:draw()
 				self.useFNum = not self.useFNum;
 			end;
 		end;
+        ----
 
 		--Maplegende anzeigen
 		if self.maplegende then
