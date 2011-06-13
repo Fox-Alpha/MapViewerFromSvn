@@ -218,7 +218,7 @@ function mapviewer:InitMapViewer()
     self.bigmap.iconBottle.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconBottle#file"), "icons/Bottle.png"), self.moddir);
 	self.bigmap.iconBottle.Icon.OverlayId = createImageOverlay(self.bigmap.iconBottle.Icon.file);
 	self.bigmap.iconBottle.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#width"), 0.0078125);
-	self.bigmap.iconBottle.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#height"), 0.0078125);
+	self.bigmap.iconBottle.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#height"), 0.0156250);
 	----
     
 	--Array für Spielerinfos
@@ -467,7 +467,7 @@ function mapviewer:update(dt)
             if self.numOverlay == 1 and not self.useFNum then
                 self.numOverlay = self.numOverlay+1;
             end;
-            if self.numOverlay == 2 not self.usePoi then
+            if self.numOverlay == 2 and not self.usePoi then
                 self.numOverlay = self.numOverlay+1;
             end;
             if self.numOverlay == 3 then
@@ -571,6 +571,31 @@ function mapviewer:draw()
 		if self.useFNum and self.showFNum then
 			if self.bigmap.FNum.OverlayId ~= nil and self.bigmap.FNum.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.FNum.OverlayId, self.bigmap.FNum.FNumPosX, self.bigmap.FNum.FNumPosY, self.bigmap.FNum.width, self.bigmap.FNum.height);
+			else
+				print(g_i18n:getText("mapviewtxt") .. " : Kann 'FNum Overlay' nicht erzeugen");
+				print(g_i18n:getText("mapviewtxt") .. " : Could not Create FNum Overlay");
+				self.useFNum = not self.useFNum;
+			end;
+		end;
+        ----
+
+		--Bottles
+		if self.showBottles then
+			if self.bigmap.iconBottle.Icon.OverlayId ~= nil and self.bigmap.iconBottle.Icon.OverlayId ~= 0 then
+                for i=1, table.getn(g_currentMission.missionMapBottleTriggers) do
+                    local bottleFound=string.byte(g_currentMission.foundBottles, i);
+                    if bottleFound==48 then
+                        self.posX, self.posY, self.posZ=getWorldTranslation(g_currentMission.missionMapBottleTriggers[i]);
+                        self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+                        self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+                        
+                        renderOverlay(self.bigmap.iconBottle.Icon.OverlayId,
+                                    self.buttonX-self.bigmap.iconBottle.width/2, 
+                                    self.buttonZ-self.bigmap.iconBottle.height/2, 
+                                    self.bigmap.iconBottle.width, 
+                                    self.bigmap.iconBottle.height);
+                    end;
+                end;
 			else
 				print(g_i18n:getText("mapviewtxt") .. " : Kann 'FNum Overlay' nicht erzeugen");
 				print(g_i18n:getText("mapviewtxt") .. " : Could not Create FNum Overlay");
