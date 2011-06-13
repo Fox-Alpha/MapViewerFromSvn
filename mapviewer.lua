@@ -210,6 +210,15 @@ function mapviewer:InitMapViewer()
 	self.bigmap.iconIsBroken.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconIsBroken#width"), 0.0078125);
 	self.bigmap.iconIsBroken.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconIsBroken#height"), 0.0078125);
 	----
+
+	--Array für Bottle anzeige
+	self.bigmap.iconBottle = {};
+	self.bigmap.iconBottle.Icon = {};
+    self.bigmap.iconBottle.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconBottle#file"), "icons/Bottle.png"), self.moddir);
+	self.bigmap.iconBottle.Icon.OverlayId = createImageOverlay(self.bigmap.iconBottle.Icon.file);
+	self.bigmap.iconBottle.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#width"), 0.0078125);
+	self.bigmap.iconBottle.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#height"), 0.0078125);
+	----
     
 	--Array für Spielerinfos
 	self.bigmap.player = {}; --
