@@ -7,7 +7,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="4">
     <author>Fox-Alpha</author>
-    <version>0.4 Final</version>
+    <version>0.4 $Rev$</version>
 	<iconFilename>gfx/mapviewer.png</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
@@ -23,23 +23,10 @@
 		</en>
 		<de>
 		<![CDATA[Zeigt die PDA Map als Vollbild an. 
-			Tasten :
-			- M aktiviere! 
+			- M aktiviere! ALT+M Umschalten der Mapgroesse von 2048 auf 4096
 			- N Legende einblenden.
 			- Numpad +/- Transparenz einstellen
 			  Y Durchschalten der PoI und Feldnummern
-			  ALT+M Umschalten der Mapgroesse von 2048 auf 4096
-			Features :
-			  + Dynamisches laden der PDA Map aus der verwendendeten Karte
-			  + Umschalten der Mapgroesse von 2048 auf 4096
-			  + Durchschalten der PoI und Feldnummern
-			  + Kann PoI und Feldnummern als seperates Overlay laden
-                - Kann Feldnummern und PoI aus dem Mapzip laden
-			- HotSpots (Wenn in Map vorhanden), 
-			- Spielerposition (Alle im MP), Koordinaten des eigenen Spielers (unten links)
-			- Fahrzeugposition, Anbautenposition, Spielername in Map + Spielername auf PDAMap
-			- Tastenbelegung in den Optionen änderbar
-			--Leicht abweichende Positionen hängen von der Qualität der PDA Map ab.
 			Script: fox-alpha]]>		
 		</de>
 	</description>
@@ -50,24 +37,24 @@
             <de>Mapviewer V0.4 Copyright (C) Fox-Alpha</de>
         </text>
 		<text name="BIGMAP_Legende">
-			<en>Display Maplegend</en>
-			<de>Legende einblenden</de>	
+			<en>Mapviewer Display Maplegend</en>
+			<de>Mapviewer Legende einblenden</de>	
 		</text>
 		<text name="BIGMAP_SwitchOverlay">
-			<en>Switch the Overlay</en>
-			<de>Overlay wechseln</de>	
+			<en>Mapviewer Switch the Overlay</en>
+			<de>Mapviewer Overlay wechseln</de>	
 		</text>
 		<text name="BIGMAP_Activate">
-			<en>View Map</en>
-			<de>Große Kartenansicht</de>	
+			<en>Mapviewer View Map</en>
+			<de>Mapviewer Große Kartenansicht</de>	
 		</text>
 		<text name="BIGMAP_TransPlus">
-			<en>Increase Transparence</en>
-			<de>Transparenz erhöhen</de>	
+			<en>Mapviewer Increase Transparence</en>
+			<de>Mapviewer Transparenz erhöhen</de>	
 		</text>
 		<text name="BIGMAP_TransMinus">
-			<en>decrease Transparence</en>
-			<de>Transparenz verringern</de>	
+			<en>Mapviewer decrease Transparence</en>
+			<de>Mapviewer Transparenz verringern</de>	
 		</text>
     </l10n>
     <extraSourceFiles>
