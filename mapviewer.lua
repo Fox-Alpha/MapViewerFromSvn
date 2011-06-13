@@ -26,6 +26,7 @@ function mapviewer:loadMap(name)
 	self.showFNum = false;
 	self.showPoi = false;
     self.showCP = false;
+    self.showBottles = false;
 	self.numOverlay = 0;
 	self.mapPath = 0;
 	
@@ -458,26 +459,35 @@ function mapviewer:update(dt)
 	--Overlay wechseln
 	if InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
 		self.numOverlay = self.numOverlay+1;
+        
+        ----
+        -- Alle Overlays deaktivieren
+        ----
+        self.showPoi = false;
+        self.showFNum = false;
+        self.showCP = false;
+        self.showBottles = false;
+        ----
+
 		if self.numOverlay == 1 then	--nur Feldnummern
-			self.showPoi = false;
 			self.showFNum = true;
 		elseif self.numOverlay == 2 then	--nur PoI
-			self.showFNum = false;
 			self.showPoi = true;
 		elseif self.numOverlay == 3 then	--Poi und Nummern
 			self.showPoi = true;
 			self.showFNum = true;
 		elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
 			self.showCP = true;
-			self.showPoi = false;
-			self.showFNum = false;
+		elseif self.numOverlay == 5 then	--Bottlefinder anzeigen
+            self.showBottles = true;
 		else
 			self.numOverlay = 0;		--Alles aus
 			self.showPoi = false;
 			self.showFNum = false;
             self.showCP = false;
+            self.showBottles = false;
 		end;
-        print(string.format("showCP:%s||showFNum:%s||showPoi:%s",tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi)));
+        print(string.format("Modus:%s||showCP:%s||showFNum:%s||showPoi:%s||showBottles",tostring(selfnumOPverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
 		if self.Debug then
 			print("Debug Key BIGMAP_SwitchOverlay: ");
 			print(string.format("useFNum:%s||usePoi:%s",tostring(self.useFNum),tostring(self.usePoi)));
