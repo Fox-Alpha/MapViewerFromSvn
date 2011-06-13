@@ -554,6 +554,18 @@ function mapviewer:draw()
 		renderText(0.5-0.0273, 1-0.03, 0.020, string.format("Transparenz\t%d", self.bigmap.mapTransp * 100));
 		renderText(0.5-0.035, 0.03, 0.018, g_i18n:getText("mapviewtxt"));
 		setTextColor(1, 1, 1, 0);
+        ----
+        
+        ----
+        -- Anzeigen des aktuell gewählten Modus
+        ----
+        if self.numOverlay > 0 then
+            setTextColor(1, 1, 1, 1);
+            renderText(0.5-0.0273, 1-0.05, 0.020, g_i18n:getText(string.format("MV_Mode%d", self.numOverlay)));
+            renderText(0.5-0.0273, 1-0.065, 0.020, g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)));
+            setTextColor(1, 1, 1, 0);
+        end;
+        ----
 
 		--Points of Interessts
 		if self.usePoi and self.showPoi then

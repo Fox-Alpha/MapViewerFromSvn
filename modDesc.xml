@@ -64,7 +64,7 @@
 			<en>MapViewer Overlay Mode 1</en>
 			<de>MapViewer Overlay Modus 1</de>	
 		</text>
-		<text name="MV_Mode1NAme">
+		<text name="MV_Mode1Name">
 			<en>Show Filednumber Overlay</en>
 			<de>Feldnummern Overlay anzeigen</de>	
 		</text>
