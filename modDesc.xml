@@ -7,7 +7,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="4">
     <author>Fox-Alpha</author>
-    <version>0.5 $Rev$</version>
+    <version>V0.5 $Rev$</version>
 	<iconFilename>gfx/mapviewer.png</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
@@ -36,8 +36,8 @@
 	<l10n>
         <!-- Copyright Meldung -->
         <text name="mapviewtxt">
-            <en>Mapviewer V0.5 Copyright (C) Fox-Alpha</en>
-            <de>Mapviewer V0.5 Copyright (C) Fox-Alpha</de>
+            <en>Mapviewer V0.5 $Rev$ Copyright (C) Fox-Alpha</en>
+            <de>Mapviewer V0.5 $Rev$ Copyright (C) Fox-Alpha</de>
         </text>
         <!-- Tastenbeschreibungen -->
 		<text name="BIGMAP_Legende">
@@ -61,9 +61,9 @@
 			<de>Mapviewer Transparenz verringern</de>	
 		</text>
         <!-- Log Meldungen -->
-		<text name="Error">
-			<en></en>
-			<de></de>	
+		<text name="MV_InfoMapsize">
+			<en>Changing mapsize to : %d x %d</en>
+			<de>Ändere dei Mapgrösse auf : %d x %d</de>	
 		</text>
         <!-- Aktiver Overlay Modus -->
 		<text name="MV_Mode1">
@@ -107,9 +107,13 @@
 			<de>Noch offene Flaschen anzeigen</de>	
 		</text>
         <!-- Fehlermdeldungen -->
-		<text name="">
-			<en></en>
-			<de></de>	
+		<text name="MV_ErrorInitPoI">
+			<en>Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>
+			<de>Kann 'PoI Overlay' Datei nicht finden, PoI wird deaktiviert. Diese Karte unterstützt keine MapViewer PoI</de>
+		</text>
+		<text name="MV_ErrorInitFNum">
+			<en>Could not load 'Fieldnumber Overlay' file. Fieldnumbers are disabled. This Map doesn't support MapViewer Fieldnumbers</en>
+			<de>Kann 'Feldnummern Overlay' Datei nicht finden, Feldnummern wird deaktiviert. Diese Karte unterstützt keine MapViewer Feldnummern</de>	
 		</text>
     </l10n>
     <extraSourceFiles>

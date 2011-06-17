@@ -12,7 +12,7 @@ mapviewer={};
 mapviewer.moddir=g_currentModDirectory;
 
 function mapviewer:loadMap(name)
-	print("mapviewer:loadmap() :" .. string.format("|| %s ||", g_i18n:getText("mapviewtxt")));
+	print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
 	local userXMLPath = Utils.getFilename("mapviewer.xml", mapviewer.moddir);
 	self.xmlFile = loadXMLFile("xmlFile", userXMLPath);
 	----
@@ -60,7 +60,7 @@ function mapviewer:InitMapViewer()
 	-- Initialisierung beginnen
 	----
 	
-	print(string.format("|| %s || MapViewer:Init() ||", g_i18n:getText("mapviewtxt")));
+	print(string.format("|| %s || Initialising ... ||", g_i18n:getText("mapviewtxt")));
 	
 	self.bigmap.OverlayId = {};
     self.bigmap.PoI = {};
@@ -140,8 +140,7 @@ function mapviewer:InitMapViewer()
     self.bigmap.PoI.OverlayId = createImageOverlay(self.bigmap.PoI.file);
     if self.bigmap.PoI.OverlayId == nil or self.bigmap.PoI.OverlayId == 0 then
         self.usePoi = false;
-        print(g_i18n:getText("mapviewtxt") .. " : Kann 'PoI Overlay' nicht erzeugen, PoI ist deaktiviert, PoI nicht in dieser Map unterstützt");
-        print(g_i18n:getText("mapviewtxt") .. " : Could not Create PoI Overlay, PoI is disabled. PoI not supported in this Map");
+        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorInitPoI")); 
     end;
     self.bigmap.PoI.poiPosX = 0.5-(self.bigmap.PoI.width/2);
     self.bigmap.PoI.poiPosY = 0.5-(self.bigmap.PoI.height/2);
@@ -162,8 +161,7 @@ function mapviewer:InitMapViewer()
 		self.bigmap.FNum.OverlayId = createImageOverlay(self.bigmap.FNum.file);
 		if self.bigmap.FNum.OverlayId == nil or self.bigmap.FNum.OverlayId == 0 then
 			self.useFNum = false;
-			print(g_i18n:getText("mapviewtxt") .. " : Kann 'Feldnummern Overlay' nicht erzeugen, FNum ist deaktiviert, PoI nicht in dieser Map unterstützt");
-			print(g_i18n:getText("mapviewtxt") .. " : Could not Create Fieldnumber Overlay, PoI is disabled. PoI not supported in this Map");
+            print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorInitFNum"));
 		end;
 		self.bigmap.FNum.FNumPosX = 0.5-(self.bigmap.FNum.width/2);
 		self.bigmap.FNum.FNumPosY = 0.5-(self.bigmap.FNum.height/2);
@@ -190,9 +188,31 @@ function mapviewer:InitMapViewer()
 	self.bigmap.IconAttachments.Icon.rear.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachmentRear#file"), "icons/feldgeraet.png"), self.moddir);
 	self.bigmap.IconAttachments.Icon.front.OverlayId = createImageOverlay(self.bigmap.IconAttachments.Icon.front.file);
 	self.bigmap.IconAttachments.Icon.rear.OverlayId = createImageOverlay(self.bigmap.IconAttachments.Icon.rear.file);
-	self.bigmap.IconAttachments.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachment#width"), 0.0078125);
-	self.bigmap.IconAttachments.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachment#height"), 0.0078125);
+	self.bigmap.IconAttachments.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachmentFront#width"), 0.0078125);
+	self.bigmap.IconAttachments.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachmentFront#height"), 0.0078125);
 	----
+    
+    ----
+    -- Tabelle für Typen
+    ----
+    self.bigmap.vehicleTypes = {};
+    self.bigmap.vehicleTypes.names = {"tractor", "combine", "other"};
+    self.bigmap.vehicleTypes.icons = {}
+    for at=1, getn(self.bigmap.vehicleTypes.names) do
+        table.insert(self.bigmap.vehicleTypes.icons, getXMLString(self.xmlFile, "mapviewer.map.icons.iconSteerable" .. self.bigmap.vehicleTypes.names[at] .."#file"));
+    end;
+    self.bigmap.vehicleTypes.width = 0.01;
+    self.bigmap.vehicleTypes.height = 0.01;
+    
+    self.bigmap.attachmentsTypes = {};
+    self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other"};
+    self.bigmap.attachmentsTypes.icons = {}
+    for at=1, getn(self.bigmap.attachmentsTypes.names) do
+        table.insert(self.bigmap.attachmentsTypes.icons, getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"));
+    end;
+    self.bigmap.attachmentsTypes.width = 0.01;
+    self.bigmap.attachmentsTypes.height = 0.01;
+    ----
 
 	--Array für CourseplayIcon
 	self.bigmap.IconCourseplay = {};
@@ -238,7 +258,7 @@ function mapviewer:InitMapViewer()
 	
 	----
 	-- Initialisierung abgeschlossen
-	print(string.format("|| %s || MapViewer:Init() Abgeschlossen ||", g_i18n:getText("mapviewtxt")));
+	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
 	----
 	self.mvInit = true;
 end;
@@ -420,7 +440,8 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 			self.bigmap.mapDimensionX = 2048;
 			self.bigmap.mapDimensionY = 2048;
 		end;
-		print(string.format("Mapgroesse = %d x %d", self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));
+        print(g_i18n:getText("mapviewtxt") .. " : " .. string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));
+		print();
 	end;
 end;
 

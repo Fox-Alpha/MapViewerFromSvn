@@ -1,26 +1,26 @@
 * text=auto !eol
 / svnc_tsvn_003aprojectlanguage=0x401
 /gfx svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
-gfx/PoI_BigInParadise.png -text
-gfx/PoI_Karte_1.png -text
-gfx/background.png -text
-gfx/fn_BigInParadise.png -text
-gfx/fn_Karte_1.png -text
-gfx/maplegende.png -text
-gfx/mapviewer.png -text
-gfx/mapviewer_.png -text
-gfx/pda_map.dds -text
+gfx/PoI_BigInParadise.png -text svn_keywords
+gfx/PoI_Karte_1.png -text svn_keywords
+gfx/background.png -text svn_keywords
+gfx/fn_BigInParadise.png -text svn_keywords
+gfx/fn_Karte_1.png -text svn_keywords
+gfx/maplegende.png -text svn_keywords
+gfx/mapviewer.png -text svn_keywords
+gfx/mapviewer_.png -text svn_keywords
+gfx/pda_map.dds -text svn_keywords
 /icons svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
-icons/bottle.png -text svneol=unset#image/png
-icons/courseplay.png -text
-icons/eigenerspieler.png -text
-icons/feldgeraet.png -text
-icons/isBroken.png -text svneol=unset#image/png
-icons/mpspieler.png -text
-icons/tractor.png -text
-icons/tractorctrl.png -text
-/mapviewer.lua -text svn_keywords=Author+Date+Id+Rev+URL
+icons/bottle.png -text svneol=unset#image/png svn_keywords
+icons/courseplay.png -text svn_keywords
+icons/eigenerspieler.png -text svn_keywords
+icons/feldgeraet.png -text svn_keywords
+icons/isBroken.png -text svneol=unset#image/png svn_keywords
+icons/mpspieler.png -text svn_keywords
+icons/tractor.png -text svn_keywords
+icons/tractorctrl.png -text svn_keywords
+/mapviewer.lua -text svn_keywords
 /mapviewer.xml -text svn_keywords
 /modDesc.xml -text svn_keywords
-/readme_de.txt -text
-/readme_en.txt -text
+/readme_de.txt -text svn_keywords
+/readme_en.txt -text svn_keywords
