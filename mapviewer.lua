@@ -27,6 +27,9 @@ function mapviewer:loadMap(name)
 	self.showPoi = false;
     self.showCP = false;
     self.showBottles = false;
+    
+    self.useBottles = true;
+    
 	self.numOverlay = 0;
 	self.mapPath = 0;
 	
@@ -120,6 +123,10 @@ function mapviewer:InitMapViewer()
 	self.bigmap.Legende.OverlayId = nil
 	self.bigmap.Legende.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.legende#file"), "gfx/background.png"), self.moddir);
 	self.bigmap.Legende.OverlayId = createImageOverlay(self.bigmap.Legende.file);
+    if self.bigmap.PoI.OverlayId == nil or self.bigmap.PoI.OverlayId == 0 then
+        self.usePoi = false;
+        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorInitPoI")); 
+    end;
 	self.bigmap.Legende.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.legende#width"), 0.15);
 	self.bigmap.Legende.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.legende#height"), 0.125);
 	self.bigmap.Legende.legPosX = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.legende#posX"), 0.0244);
@@ -233,10 +240,16 @@ function mapviewer:InitMapViewer()
 	----
 
 	--Array für Bottle anzeige
+    self.useBottles = true;
 	self.bigmap.iconBottle = {};
 	self.bigmap.iconBottle.Icon = {};
+    self.bigmap.iconBottle.Icon.OverlayId = nil;
     self.bigmap.iconBottle.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconBottle#file"), "icons/Bottle.png"), self.moddir);
 	self.bigmap.iconBottle.Icon.OverlayId = createImageOverlay(self.bigmap.iconBottle.Icon.file);
+    if self.bigmap.iconBottle.Icon.OverlayId == nil or self.bigmap.iconBottle.Icon.OverlayId == 0 then
+        self.useBottles = false;
+        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorInitBottles"));
+    end;
 	self.bigmap.iconBottle.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#width"), 0.0078125);
 	self.bigmap.iconBottle.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#height"), 0.0156250);
 	----
@@ -465,7 +478,7 @@ function mapviewer:update(dt)
 		return;
 	end;
 
-	-- Taste für Map anzeigen
+	-- Taste für Map einblenden
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
 		self.mapvieweractive=not self.mapvieweractive;
 	end;
@@ -484,7 +497,7 @@ function mapviewer:update(dt)
         ----
         -- Überprüfen ob Feldnummern und PoI benutz werden können
         ----
-        if not self.useFNum or not self.usePoi then
+        if not self.useFNum or not self.usePoi or not self.useBottles then
             if self.numOverlay == 1 and not self.useFNum then
                 self.numOverlay = self.numOverlay+1;
             end;
@@ -492,6 +505,9 @@ function mapviewer:update(dt)
                 self.numOverlay = self.numOverlay+1;
             end;
             if self.numOverlay == 3 then
+                self.numOverlay = self.numOverlay+1;
+            end;
+            if self.numOverlay == 5 and not self.useBottles then
                 self.numOverlay = self.numOverlay+1;
             end;
         end;
@@ -523,13 +539,12 @@ function mapviewer:update(dt)
             self.showCP = false;
             self.showBottles = false;
 		end;
-        print(string.format("Modus:%s||showFNum:%s||showPoi:%s||showCP:%s||showBottles:%s",tostring(self.numOverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
+
 		if self.Debug then
 			print("Debug Key BIGMAP_SwitchOverlay: ");
-			print(string.format("useFNum:%s||usePoi:%s",tostring(self.useFNum),tostring(self.usePoi)));
-			print(string.format("Modus:%s||showFNum:%s||showPoi:%s||showCP:%s||showBottles:%s",tostring(self.numOverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
-			mapviewer:tablecopy(self.bigmap.PoI, "bigmap.Poi");
-			mapviewer:tablecopy(self.bigmap.FNum, "bigmap.FNum");
+            print(string.format("|| $s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
+			-- print(string.format("useFNum:%s||usePoi:%s",tostring(self.useFNum),tostring(self.usePoi)));
+			-- print(string.format("Modus:%s||showFNum:%s||showPoi:%s||showCP:%s||showBottles:%s",tostring(self.numOverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
 		end;
 	end;
 	
@@ -553,15 +568,14 @@ function mapviewer:draw()
 			setOverlayColor(self.bigmap.OverlayId.ovid, 1,1,1,self.bigmap.mapTransp);
 			renderOverlay(self.bigmap.OverlayId.ovid, self.bigmap.mapPosX, self.bigmap.mapPosY, self.bigmap.mapWidth, self.bigmap.mapHeight);
 		else
-			renderText(0.25, 0.5-0.03, 0.024, string.format("Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt"));
-			print(g_i18n:getText("mapviewtxt") .. " : Kann 'self.bigmap.OverlayId' nicht erzeugen");
-			print(g_i18n:getText("mapviewtxt") .. " : Could not Create Map Overlay");
-			if self.Debug then
-				print("Debug: :draw()");
+			renderText(0.25, 0.5-0.03, 0.024, string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
+			-- if self.Debug then
+				-- print("Debug: :draw()");
 				print(string.format("self.useMapFile: %s", tostring(self.useMapFile)));
 				print(string.format("self.bigmap.file: %s", self.bigmap.file));
 				print(string.format("self.bigmap.OverlayId.ovid: %d", self.bigmap.OverlayId.ovid));
-			end;
+			-- end;
+            self.mapvieweractive = false;
 		end;
 		if self.mapvieweractive and not self.maplegende then
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Legende"), InputBinding.BIGMAP_Legende);
@@ -593,8 +607,7 @@ function mapviewer:draw()
 			if self.bigmap.PoI.OverlayId ~= nil and self.bigmap.PoI.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.PoI.OverlayId, self.bigmap.PoI.poiPosX, self.bigmap.PoI.poiPosY, self.bigmap.PoI.width, self.bigmap.PoI.height);
 			else
-				print(g_i18n:getText("mapviewtxt") .. " : Kann 'PoI Overlay' nicht erzeugen");
-				print(g_i18n:getText("mapviewtxt") .. " : Could not Create PoI Overlay");
+                string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorPoICreateOverlay"))
 				self.usePoi = not self.usePoi;
 			end;
 		end;
@@ -605,8 +618,7 @@ function mapviewer:draw()
 			if self.bigmap.FNum.OverlayId ~= nil and self.bigmap.FNum.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.FNum.OverlayId, self.bigmap.FNum.FNumPosX, self.bigmap.FNum.FNumPosY, self.bigmap.FNum.width, self.bigmap.FNum.height);
 			else
-				print(g_i18n:getText("mapviewtxt") .. " : Kann 'FNum Overlay' nicht erzeugen");
-				print(g_i18n:getText("mapviewtxt") .. " : Could not Create FNum Overlay");
+                string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorFNumCreateOverlay"))
 				self.useFNum = not self.useFNum;
 			end;
 		end;
@@ -630,9 +642,8 @@ function mapviewer:draw()
                     end;
                 end;
 			else
-				print(g_i18n:getText("mapviewtxt") .. " : Kann 'FNum Overlay' nicht erzeugen");
-				print(g_i18n:getText("mapviewtxt") .. " : Could not Create FNum Overlay");
-				self.useFNum = not self.useFNum;
+                string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorBottlesCreateOverlay"))
+				self.useBottles = not self.useBottles;
 			end;
 		end;
         ----
@@ -650,7 +661,7 @@ function mapviewer:draw()
 								self.l_PosY, 
 								0.015625, 
 								0.015625);
-				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Eigener Spieler auf Karte");
+				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeLocalPlayer"));
 				--Andere Spieler Icon
 				self.l_PosY = self.l_PosY - 0.020;
 				renderOverlay(self.bigmap.player.mpArrowOverlayId,
@@ -658,7 +669,7 @@ function mapviewer:draw()
 								self.l_PosY,
 								0.015625, 
 								0.015625);
-				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Andere Spieler auf Karte");
+				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeOtherPlayer"));
 				--Spieler auf Fahrzeug
 				self.l_PosY = self.l_PosY - 0.020;
 				renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
@@ -666,7 +677,7 @@ function mapviewer:draw()
 								self.l_PosY,
 								0.015625, 
 								0.015625);
-				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Andere Spieler im Fahrzeug");
+				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeControledVehicle"));
 				--Leere Fahrzeug
 				self.l_PosY = self.l_PosY - 0.020;
 				renderOverlay(self.bigmap.IconSteerable.OverlayId,
@@ -674,7 +685,7 @@ function mapviewer:draw()
 								self.l_PosY,
 								0.015625, 
 								0.015625);
-				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Leere Fahrzeuge auf Karte");
+				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeEmptyVehicle"));
 				--Anbaugeräte, Anhänger
 				self.l_PosY = self.l_PosY - 0.020;
 				renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
@@ -682,10 +693,10 @@ function mapviewer:draw()
 								self.l_PosY,
 								0.015625, 
 								0.015625);
-				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Anbaugeräte und Anhänger");
+				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeAttachments"));
 				setTextColor(1, 1, 1, 0);
 			end;	--if legende nicht NIL
-		elseif self.bigmap.Legende.OverlayId == nil then
+		elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
 			renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Rendern der Legende Fehlgeschlagen");
 			print(g_i18n:getText("mapviewtxt") .. " : Rendern der Maplegende fehlgeschlagen");
 			print(g_i18n:getText("mapviewtxt") .. " : Error rendering map legend");
