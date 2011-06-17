@@ -11,7 +11,19 @@ gfx/mapviewer.png -text svn_keywords
 gfx/mapviewer_.png -text svn_keywords
 gfx/pda_map.dds -text svn_keywords
 /icons svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
+icons/1.png -text svneol=unset#image/png
+icons/10.png -text svneol=unset#image/png
+icons/11.png -text svneol=unset#image/png
+icons/2.png -text svneol=unset#image/png
+icons/3.png -text svneol=unset#image/png
+icons/4.png -text svneol=unset#image/png
+icons/5.png -text svneol=unset#image/png
+icons/6.png -text svneol=unset#image/png
+icons/7.png -text svneol=unset#image/png
+icons/8.png -text svneol=unset#image/png
+icons/9.png -text svneol=unset#image/png
 icons/bottle.png -text svneol=unset#image/png svn_keywords
+icons/combine.png -text svneol=unset#image/png
 icons/courseplay.png -text svn_keywords
 icons/eigenerspieler.png -text svn_keywords
 icons/feldgeraet.png -text svn_keywords
