@@ -29,6 +29,7 @@ function mapviewer:loadMap(name)
     self.showBottles = false;
     
     self.useBottles = true;
+    self.useLegend = true;
     
 	self.numOverlay = 0;
 	self.mapPath = 0;
@@ -123,9 +124,9 @@ function mapviewer:InitMapViewer()
 	self.bigmap.Legende.OverlayId = nil
 	self.bigmap.Legende.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.legende#file"), "gfx/background.png"), self.moddir);
 	self.bigmap.Legende.OverlayId = createImageOverlay(self.bigmap.Legende.file);
-    if self.bigmap.PoI.OverlayId == nil or self.bigmap.PoI.OverlayId == 0 then
-        self.usePoi = false;
-        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorInitPoI")); 
+    if self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
+        self.useLegend = false;
+        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorInitLegend")); 
     end;
 	self.bigmap.Legende.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.legende#width"), 0.15);
 	self.bigmap.Legende.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.legende#height"), 0.125);
@@ -205,17 +206,22 @@ function mapviewer:InitMapViewer()
     self.bigmap.vehicleTypes = {};
     self.bigmap.vehicleTypes.names = {"tractor", "combine", "other"};
     self.bigmap.vehicleTypes.icons = {}
-    for at=1, getn(self.bigmap.vehicleTypes.names) do
+    for at=1, table.getn(self.bigmap.vehicleTypes.names) do
         table.insert(self.bigmap.vehicleTypes.icons, getXMLString(self.xmlFile, "mapviewer.map.icons.iconSteerable" .. self.bigmap.vehicleTypes.names[at] .."#file"));
     end;
     self.bigmap.vehicleTypes.width = 0.01;
     self.bigmap.vehicleTypes.height = 0.01;
     
     self.bigmap.attachmentsTypes = {};
-    self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other"};
+    self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingMachine", "plough", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other"};
     self.bigmap.attachmentsTypes.icons = {}
-    for at=1, getn(self.bigmap.attachmentsTypes.names) do
-        table.insert(self.bigmap.attachmentsTypes.icons, getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"));
+    self.bigmap.attachmentsTypes.overlays = {}
+    
+    for at=1, table.getn(self.bigmap.attachmentsTypes.names) do
+        local tempIcon = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"), "icons/courseplay.png"), self.moddir);
+        table.insert(self.bigmap.attachmentsTypes.icons,tempIcon); 
+        --getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"));
+        self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[at]] = createImageOverlay(self.bigmap.attachmentsTypes.icons[at]);
     end;
     self.bigmap.attachmentsTypes.width = 0.01;
     self.bigmap.attachmentsTypes.height = 0.01;
@@ -484,7 +490,7 @@ function mapviewer:update(dt)
 	end;
 	--Taste für Legende einblenden
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
-		if self.mapvieweractive then
+		if self.mapvieweractive and self.useLegend then
 			--Legende einblenden
 			self.maplegende = not self.maplegende;
 		end;
@@ -649,7 +655,7 @@ function mapviewer:draw()
         ----
 
 		--Maplegende anzeigen
-		if self.maplegende then
+		if self.maplegende and self.useLegend then
 			if self.bigmap.Legende.OverlayId ~=nil then
 				renderOverlay(self.bigmap.Legende.OverlayId, self.bigmap.Legende.legPosX, self.bigmap.Legende.legPosY, self.bigmap.Legende.width, self.bigmap.Legende.height);
 				setTextColor(0, 0, 0, 1);
@@ -694,8 +700,28 @@ function mapviewer:draw()
 								0.015625, 
 								0.015625);
 				renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeAttachments"));
+                ----
+                -- Legende der Attachment Typen anzeigen
+                ----
+                --renderOverlay(self.bigmap.Legende.OverlayId, self.bigmap.Legende.legPosX, self.bigmap.Legende.legPosY+self.bigmap.Legende.height, self.bigmap.Legende.width, self.bigmap.Legende.height);
+                setTextColor(0, 1, 0, 1);
+                self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
+                for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
+                    renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
+                                    self.bigmap.Legende.legPosX + 0.007324,
+                                    self.l_PosY, 
+                                    self.bigmap.attachmentsTypes.width,
+                                    self.bigmap.attachmentsTypes.height);
+                    renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
+                    self.l_PosY = self.l_PosY - 0.020;
+                end;
+                ----
 				setTextColor(1, 1, 1, 0);
+                
 			end;	--if legende nicht NIL
+            ----
+            -- TODO Wenn legende fehlerhaft, Meldung ausgeben
+            ----
 		elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
 			renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Rendern der Legende Fehlgeschlagen");
 			print(g_i18n:getText("mapviewtxt") .. " : Rendern der Maplegende fehlgeschlagen");
@@ -834,9 +860,9 @@ function mapviewer:draw()
 				end;
 				setTextColor(1, 1, 1,0);
 			elseif g_currentMission.steerables[i].isBroken then
-			-- TODO:
+			----
 			-- unbrauchbare Fahrzeuge mit weiterem Icon anzeigen
-			--
+			----
 				self.posX, self.posY, self.posZ = getWorldTranslation(g_currentMission.steerables[i].rootNode);
 				self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
 				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
@@ -858,11 +884,26 @@ function mapviewer:draw()
 			self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
 			self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
 			self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-			renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
-							self.buttonX-self.bigmap.IconAttachments.width/2, 
-							self.buttonZ-self.bigmap.IconAttachments.height/2,
-							self.bigmap.IconAttachments.width,
-							self.bigmap.IconAttachments.height);
+            -- if self.currentVehicle.attacherVehicle ~= nil or self.currentVehicle.attacherVehicle ~= 0 then
+            --print(g_currentMission.attachables[i].attacherVehicle.rootNode);
+            if g_currentMission.attachables[i].attacherVehicle == nil or g_currentMission.attachables[i].attacherVehicle == 0 then
+                -- for k, v in pairs(self.bigmap.attachmentsTypes.names) do
+                    -- if v == g_currentMission.attachables[i].typeName then
+                    -- end;
+                -- end;
+                 
+                renderOverlay(self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName],
+                                self.buttonX-self.bigmap.attachmentsTypes.width/2, 
+                                self.buttonZ-self.bigmap.attachmentsTypes.height/2,
+                                self.bigmap.attachmentsTypes.width,
+                                self.bigmap.attachmentsTypes.height);
+            else
+                renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
+                                self.buttonX-self.bigmap.IconAttachments.width/2, 
+                                self.buttonZ-self.bigmap.IconAttachments.height/2,
+                                self.bigmap.IconAttachments.width,
+                                self.bigmap.IconAttachments.height);
+            end;
 			setOverlayColor(self.bigmap.IconAttachments.Icon.front.OverlayId, 1, 1, 1, 1);
 		end;
 		-----
