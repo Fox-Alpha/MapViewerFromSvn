@@ -127,6 +127,55 @@
 			<en>Attachments and Trailer</en>
 			<de>Anbaugeräte und Anhänger</de>	
 		</text>
+        <!-- Attachment Typen -->
+		<text name="MV_AttachTypecutter">
+			<en>Cutter</en>
+			<de>Schneidwerke</de>	
+		</text>
+		<text name="MV_AttachTypetrailer">
+			<en>Trailer</en>
+			<de>Anhänger</de>	
+		</text>
+		<text name="MV_AttachTypesowingMachine">
+			<en>Sowingmachine</en>
+			<de>Saatmaschine</de>	
+		</text>
+		<text name="MV_AttachTypeplough">
+			<en>Plough</en>
+			<de>Flug</de>	
+		</text>
+		<text name="MV_AttachTypesprayer">
+			<en>Sprayer</en>
+			<de>Feldspritze</de>	
+		</text>
+		<text name="MV_AttachTypebailer">
+			<en>Bailer</en>
+			<de>Ballensammler/Presse</de>	
+		</text>
+		<text name="MV_AttachTypecultivator">
+			<en>Cultivator</en>
+			<de>Gruber</de>	
+		</text>
+		<text name="MV_AttachTypetedder">
+			<en>Tedder</en>
+			<de>Tedder</de>	
+		</text>
+		<text name="MV_AttachTypewindrower">
+			<en>Windrower</en>
+			<de>Schwader</de>	
+		</text>
+		<text name="MV_AttachTypeshovel">
+			<en>Shovel</en>
+			<de>Schaufel</de>	
+		</text>
+		<text name="MV_AttachTypemover">
+			<en>Mover</en>
+			<de>Mäher</de>	
+		</text>
+		<text name="MV_AttachTypeother">
+			<en>other</en>
+			<de>andere</de>	
+		</text>
         <!-- Fehlermdeldungen -->
 		<text name="MV_ErrorInitPoI">
 			<en>Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>
@@ -150,6 +199,14 @@
 		</text>
 		<text name="MV_ErrorBottlesCreateOverlay">
 			<en>Could not create 'Bottlefinder Overlay'. Bottlefinder Overlay are disabled. </en>
+			<de>Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
+		</text>
+		<text name="MV_ErrorInitLegend">
+			<en>Could not load 'Legend Overlay' file. Legend are disabled. This Map doesn't support Bottles</en>
+			<de>Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
+		</text>
+		<text name="MV_ErrorLegendCreateOverlay">
+			<en>Could not create 'Legend Overlay'. Legend Overlay are disabled. </en>
 			<de>Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
 		</text>
 		<text name="MV_ErrorCreateMV">
