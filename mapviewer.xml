@@ -44,8 +44,8 @@
             <!-- "cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other" -->
             <iconAttachmentcutter  width="0.01" height="0.01" file="icons/1.png" />
             <iconAttachmenttrailer  width="0.01" height="0.01" file="icons/2.png" />
-            <iconAttachmentsowingmachine  width="0.01" height="0.01" file="icons/3.png" />
-            <iconAttachmentplought  width="0.01" height="0.01" file="icons/4.png" />
+            <iconAttachmentsowingMachine  width="0.01" height="0.01" file="icons/3.png" />
+            <iconAttachmentplough  width="0.01" height="0.01" file="icons/4.png" />
             <iconAttachmentsprayer  width="0.01" height="0.01" file="icons/5.png" />
             <iconAttachmentbailer  width="0.01" height="0.01" file="icons/6.png" />
             <iconAttachmentcultivator  width="0.01" height="0.01" file="icons/7.png" />
