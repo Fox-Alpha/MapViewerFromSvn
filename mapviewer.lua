@@ -279,8 +279,125 @@ function mapviewer:InitMapViewer()
 	-- Initialisierung abgeschlossen
 	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
 	----
+    mapviewer:LoadFromFile();
 	self.mvInit = true;
 end;
+
+-- Find the length of a file
+--   filename: file name
+-- returns
+--   len: length of file
+--   asserts on error
+function mapviewer:length_of_file(filename)
+  local fh = assert(io.open(filename, "rb"))
+  local len = assert(fh:seek("end"))
+  fh:close()
+  return len
+end
+
+-- Return true if file exists and is readable.
+function mapviewer:file_exists(path)
+  local file = io.open(path, "rb")
+  if file then file:close() end
+  return file ~= nil
+end
+
+----
+-- Speichern der Einstellungen im Savegame Ordner
+----
+function mapviewer:SaveToFile()
+    local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/";
+    local mvxml = nil; 
+    
+    if not mapviewer:file_exists(path .. "MapViewer.xml") then
+        -- XML Datei im Savegame Ordner erstellen
+        mvxml = createXMLFile("MapViewerXML", path .. "MapViewer.xml", "MapViewer");
+    else
+        mvxml = loadXMLFile("MapViewerXML", path .. "MapViewer.xml"); 
+    end;
+    
+    -- Einstellungen in XML speichern
+    if mvxml ~= nil then
+        -- int
+        setXMLInt(mvxml, "mapviewer.map.mapSize#DimX", self.bigmap.mapDimensionX);
+        setXMLInt(mvxml, "mapviewer.map.mapSize#DimY", self.bigmap.mapDimensionY);
+        
+        setXMLInt(mvxml, "mapviewer.overlay#Index", self.numOverlay);
+        -- Float
+        setXMLFloat(mvxml, "mapviewer.map#transparenz", self.bigmap.mapTransp);
+        -- string
+        -- bool
+        setXMLBool(mvxml, "mapviewer.map.default#use", self.useDefaultMap);
+        
+        setXMLBool(mvxml, "mapviewer.overlay.legende#use", self.useLegend);
+        setXMLBool(mvxml, "mapviewer.overlay.legende#show", self.maplegende);
+        
+        setXMLBool(mvxml, "mapviewer.overlay.fnum#use", self.useFNum);
+        setXMLBool(mvxml, "mapviewer.overlay.fnum#show", self.showFNum);
+
+        setXMLBool(mvxml, "mapviewer.overlay.poi#use", self.usePoi);
+        setXMLBool(mvxml, "mapviewer.overlay.poi#show", self.showPoi);
+
+        setXMLBool(mvxml, "mapviewer.overlay.bottles#use", self.useBottles);
+        setXMLBool(mvxml, "mapviewer.overlay.bottles#show", self.showBottles);
+
+        -- self.courseplay = true;
+        setXMLBool(mvxml, "mapviewer.overlay.courseplay#show", self.showCP);
+
+        setXMLBool(mvxml, "mapviewer.debug#use", self.Debug);
+        
+        saveXMLFile(mvxml);
+   else
+        print("Kann Einstellungen nicht in XML Datei speichern");
+    end;
+    
+end;
+----
+
+----
+-- Laden der gespeicherten Einstellungen
+----
+function mapviewer:LoadFromFile()
+    local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/";
+    local mvxml = nil; 
+
+    mvxml = loadXMLFile("MapViewerXML", path .. "MapViewer.xml"); 
+    
+    if mvxml ~= nil then
+        -- int
+        self.bigmap.mapDimensionX = getXMLInt(mvxml, "mapviewer.map.mapSize#DimX");
+        self.bigmap.mapDimensionY = getXMLInt(mvxml, "mapviewer.map.mapSize#DimY");
+        
+        self.numOverlay = getXMLInt(mvxml, "mapviewer.overlay#Index");
+        -- Float
+        self.bigmap.mapTransp = getXMLFloat(mvxml, "mapviewer.map#transparenz");
+        -- string
+        -- bool
+        self.useDefaultMap = getXMLBool(mvxml, "mapviewer.map.default#use");
+        
+        self.useLegend = getXMLBool(mvxml, "mapviewer.overlay.legende#use");
+        self.maplegende = getXMLBool(mvxml, "mapviewer.overlay.legende#show");
+        
+        self.useFNum = getXMLBool(mvxml, "mapviewer.overlay.fnum#use");
+        self.showFNum = getXMLBool(mvxml, "mapviewer.overlay.fnum#show");
+
+        self.usePoi = getXMLBool(mvxml, "mapviewer.overlay.poi#use");
+        self.showPoi = getXMLBool(mvxml, "mapviewer.overlay.poi#show");
+
+        self.useBottles = getXMLBool(mvxml, "mapviewer.overlay.bottles#use");
+        self.showBottles = getXMLBool(mvxml, "mapviewer.overlay.bottles#show");
+
+        -- self.courseplay = true;
+        self.showCP = getXMLBool(mvxml, "mapviewer.overlay.courseplay#show");
+
+        self.Debug = getXMLBool(mvxml, "mapviewer.debug#use");
+        
+        saveXMLFile(mvxml);
+    else
+        print("Kann Einstellungen Laden");
+    end;
+end;
+----
 
 --
 -- Funkmtion zum  kopieren einer Tabelle in eine neue Tabelle, 
@@ -461,6 +578,7 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 		end;
         print(g_i18n:getText("mapviewtxt") .. " : " .. string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));
 		print();
+        mapviewer:SaveToFile();
 	end;
 end;
 
@@ -493,6 +611,7 @@ function mapviewer:update(dt)
 		if self.mapvieweractive and self.useLegend then
 			--Legende einblenden
 			self.maplegende = not self.maplegende;
+            mapviewer:SaveToFile();
 		end;
 	end;
 
@@ -552,6 +671,7 @@ function mapviewer:update(dt)
 			-- print(string.format("useFNum:%s||usePoi:%s",tostring(self.useFNum),tostring(self.usePoi)));
 			-- print(string.format("Modus:%s||showFNum:%s||showPoi:%s||showCP:%s||showBottles:%s",tostring(self.numOverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
 		end;
+        mapviewer:SaveToFile();
 	end;
 	
 	--BigMap Transparenz erhöhen und verringern
@@ -559,11 +679,13 @@ function mapviewer:update(dt)
 		if self.bigmap.mapTransp < 1 then
 			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
 		end;
+        mapviewer:SaveToFile();
 	end;
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
 		if self.bigmap.mapTransp > 0.1 then
 			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
 		end;
+        mapviewer:SaveToFile();
 	end;
 	-- ende Trasnparenz umschalten
 end;
