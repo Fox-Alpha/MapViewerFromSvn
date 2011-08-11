@@ -17,18 +17,18 @@
     </title>
     <description>
 		<en>
-		<![CDATA[Shows the PDA Map over the hole Screen. Press M to activate. Key N show legend!
+		<![CDATA[Shows the PDA Map over the hole Screen. Press insert to activate. Key Delete show legend!
 			Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername + Playername auf PDAMap
-            Transparens with KP + and KP -, Switch Overlay with Y
+            Transparens with KP + and KP -, Switch Overlay with Key End
             Kompatible with CoursePlay 2.11
 			Set keybinding in option dialog]]>
 		</en>
 		<de>
 		<![CDATA[Zeigt die PDA Map als Vollbild an. 
-			- M aktiviere! ALT+M Umschalten der Mapgroesse von 2048 auf 4096
-			- N Legende einblenden.
-			- Numpad +/- Transparenz einstellen
-			  Y Durchschalten der PoI und Feldnummern, Inkl. CoursePlay Kurse
+			- Einfügen = aktiviere! ALT+M Umschalten der Mapgroesse von 2048 auf 4096
+			- Entfernen = Legende einblenden.
+			- Numpad +/- = Transparenz einstellen
+			- Ende = Durchschalten der PoI und Feldnummern, Inkl. CoursePlay Kurse
 			Script: fox-alpha]]>		
 		</de>
 	</description>
