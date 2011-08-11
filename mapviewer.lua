@@ -279,7 +279,20 @@ function mapviewer:InitMapViewer()
 	-- Initialisierung abgeschlossen
 	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
 	----
-    mapviewer:LoadFromFile();
+    
+    ----
+    -- Einstellungen nur laden wenn Datei bereits vorhanden ist
+    ----
+    print("MapViewer LoadOptions()");
+    local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/mapviewer.xml";
+    print(path);
+    if mapviewer:file_exists(path) then
+        mapviewer:LoadFromFile();
+    end;
+    print("MapViewer LoadOptions() beendet");
+    
+    ----
+    
 	self.mvInit = true;
 end;
 
