@@ -12,7 +12,7 @@ mapviewer={};
 mapviewer.moddir=g_currentModDirectory;
 
 function mapviewer:loadMap(name)
-	print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
+	-- print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
 	local userXMLPath = Utils.getFilename("mapviewer.xml", mapviewer.moddir);
 	self.xmlFile = loadXMLFile("xmlFile", userXMLPath);
 	----
@@ -60,6 +60,8 @@ function mapviewer:loadMap(name)
 end;
 
 function mapviewer:InitMapViewer()
+    print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
+    
 	----
 	-- Initialisierung beginnen
 	----
@@ -275,11 +277,6 @@ function mapviewer:InitMapViewer()
 	self.bigmap.player.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconPlayer#height"), 0.0078125);
 	----
 	
-	----
-	-- Initialisierung abgeschlossen
-	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
-	----
-    
     ----
     -- Einstellungen nur laden wenn Datei bereits vorhanden ist
     ----
@@ -288,11 +285,17 @@ function mapviewer:InitMapViewer()
     print(path);
     if mapviewer:file_exists(path) then
         mapviewer:LoadFromFile();
+    else
+        mapviewer:SaveToFile();
     end;
     print("MapViewer LoadOptions() beendet");
-    
     ----
     
+	----
+	-- Initialisierung abgeschlossen
+	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
+	----
+
 	self.mvInit = true;
 end;
 
@@ -361,7 +364,7 @@ function mapviewer:SaveToFile()
         
         saveXMLFile(mvxml);
    else
-        print("Kann Einstellungen nicht in XML Datei speichern");
+        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorSaveOptions"));
     end;
     
 end;
@@ -407,7 +410,7 @@ function mapviewer:LoadFromFile()
         
         saveXMLFile(mvxml);
     else
-        print("Kann Einstellungen Laden");
+        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorLoadOptions"));
     end;
 end;
 ----
@@ -573,12 +576,15 @@ end;
 -- Auf Tastendruck reagieren
 --
 function mapviewer:keyEvent(unicode, sym, modifier, isDown)
+    ----
 	-- Tatse um den Debugmodus zu aktivieren
 	-- ALT+d
-	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0 then
-		self.Debug=not self.Debug;
-		print("Debug = "..tostring(self.Debug));
-	end;
+    ----
+	-- if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0 then
+	-- 	self.Debug=not self.Debug;
+	-- 	print("Debug = "..tostring(self.Debug));
+	-- end;
+    ----
 	
 	-- Umschalten der Mapgrösse für 2048 (Standard) und 4096
 	if isDown and sym == Input.KEY_m and bitAND(modifier, Input.MOD_ALT) > 0 then
@@ -681,8 +687,6 @@ function mapviewer:update(dt)
 		if self.Debug then
 			print("Debug Key BIGMAP_SwitchOverlay: ");
             print(string.format("|| $s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
-			-- print(string.format("useFNum:%s||usePoi:%s",tostring(self.useFNum),tostring(self.usePoi)));
-			-- print(string.format("Modus:%s||showFNum:%s||showPoi:%s||showCP:%s||showBottles:%s",tostring(self.numOverlay),tostring(self.showCP),tostring(self.showFNum),tostring(self.showPoi),tostring(self.showBottles)));
 		end;
         mapviewer:SaveToFile();
 	end;
@@ -710,12 +714,14 @@ function mapviewer:draw()
 			renderOverlay(self.bigmap.OverlayId.ovid, self.bigmap.mapPosX, self.bigmap.mapPosY, self.bigmap.mapWidth, self.bigmap.mapHeight);
 		else
 			renderText(0.25, 0.5-0.03, 0.024, string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
-			-- if self.Debug then
-				-- print("Debug: :draw()");
+			if self.Debug then
+                print("----");
+				print("Debug: :draw()");
 				print(string.format("self.useMapFile: %s", tostring(self.useMapFile)));
 				print(string.format("self.bigmap.file: %s", self.bigmap.file));
 				print(string.format("self.bigmap.OverlayId.ovid: %d", self.bigmap.OverlayId.ovid));
-			-- end;
+                print("----");
+			end;
             self.mapvieweractive = false;
 		end;
 		if self.mapvieweractive and not self.maplegende then
@@ -766,7 +772,7 @@ function mapviewer:draw()
         ----
 
 		--Bottles
-		if self.showBottles then
+		if self.showBottles and self.useBottles then
 			if self.bigmap.iconBottle.Icon.OverlayId ~= nil and self.bigmap.iconBottle.Icon.OverlayId ~= 0 then
                 for i=1, table.getn(g_currentMission.missionMapBottleTriggers) do
                     local bottleFound=string.byte(g_currentMission.foundBottles, i);
@@ -838,7 +844,6 @@ function mapviewer:draw()
                 ----
                 -- Legende der Attachment Typen anzeigen
                 ----
-                --renderOverlay(self.bigmap.Legende.OverlayId, self.bigmap.Legende.legPosX, self.bigmap.Legende.legPosY+self.bigmap.Legende.height, self.bigmap.Legende.width, self.bigmap.Legende.height);
                 setTextColor(0, 1, 0, 1);
                 self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
                 for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
@@ -855,7 +860,7 @@ function mapviewer:draw()
                 
 			end;	--if legende nicht NIL
             ----
-            -- TODO Wenn legende fehlerhaft, Meldung ausgeben
+            -- DONE Wenn legende fehlerhaft, Meldung ausgeben
             ----
 		elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
 			renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Rendern der Legende Fehlgeschlagen");
@@ -920,7 +925,7 @@ function mapviewer:draw()
 				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
                 
                 ----
-                -- Auslesen der Kurse wenn CourcePlay vorhanden ist
+                -- Auslesen der Kurse wenn CoursePlay vorhanden ist
                 ----
                 if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
                     if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
@@ -1019,19 +1024,16 @@ function mapviewer:draw()
 			self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
 			self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
 			self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-            -- if self.currentVehicle.attacherVehicle ~= nil or self.currentVehicle.attacherVehicle ~= 0 then
-            --print(g_currentMission.attachables[i].attacherVehicle.rootNode);
+
             if g_currentMission.attachables[i].attacherVehicle == nil or g_currentMission.attachables[i].attacherVehicle == 0 then
-                -- for k, v in pairs(self.bigmap.attachmentsTypes.names) do
-                    -- if v == g_currentMission.attachables[i].typeName then
-                    -- end;
-                -- end;
-                 
                 renderOverlay(self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName],
                                 self.buttonX-self.bigmap.attachmentsTypes.width/2, 
                                 self.buttonZ-self.bigmap.attachmentsTypes.height/2,
                                 self.bigmap.attachmentsTypes.width,
                                 self.bigmap.attachmentsTypes.height);
+                ----
+                -- TODO: Füllstand wenn möglich anzeigen
+                ----
             else
                 renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
                                 self.buttonX-self.bigmap.IconAttachments.width/2, 
@@ -1046,6 +1048,9 @@ function mapviewer:draw()
 	----
 	--Namen auf PDA anzeigen
 	----
+    ----
+    -- TODO: Alle Spieler auf PDA anzeiegn
+    ----
 		self.plyname.name = g_currentMission.player.controllerName;
 		self.plyname.yPos = g_currentMission.missionPDA.pdaPlayerMapArrow.y - 0.003;
 		self.plyname.xPos = g_currentMission.missionPDA.pdaPlayerMapArrow.x;
