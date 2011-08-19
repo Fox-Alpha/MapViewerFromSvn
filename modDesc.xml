@@ -63,7 +63,7 @@
         <!-- Log Meldungen -->
 		<text name="MV_InfoMapsize">
 			<en>Changing mapsize to : %d x %d</en>
-			<de>Ändere dei Mapgrösse auf : %d x %d</de>	
+			<de>Ändere die Mapgrösse auf : %d x %d</de>	
 		</text>
         <!-- Aktiver Overlay Modus -->
 		<text name="MV_Mode1">
@@ -178,40 +178,48 @@
 		</text>
         <!-- Fehlermdeldungen -->
 		<text name="MV_ErrorInitPoI">
-			<en>Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>
-			<de>Kann 'PoI Overlay' Datei nicht finden, PoI wird deaktiviert. Diese Karte unterstützt keine MapViewer PoI</de>
+			<en>Warning: Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>
+			<de>Warnung: Kann 'PoI Overlay' Datei nicht finden, PoI wird deaktiviert. Diese Karte unterstützt keine MapViewer PoI</de>
 		</text>
 		<text name="MV_ErrorPoICreateOverlay">
-			<en>Could not create 'PoI Overlay'. PoI are disabled. </en>
-			<de>Kann 'PoI Overlay' nicht erzeugen. PoI wird deaktiviert.</de>
+			<en>Error: Could not create 'PoI Overlay'. PoI are disabled. </en>
+			<de>Fehler: Kann 'PoI Overlay' nicht erzeugen. PoI wird deaktiviert.</de>
 		</text>
 		<text name="MV_ErrorInitFNum">
-			<en>Could not load 'Fieldnumber Overlay' file. Fieldnumbers are disabled. This Map doesn't support MapViewer Fieldnumbers</en>
-			<de>Kann 'Feldnummern Overlay' Datei nicht finden, Feldnummern wird deaktiviert. Diese Karte unterstützt keine MapViewer Feldnummern</de>	
+			<en>Warning: Could not load 'Fieldnumber Overlay' file. Fieldnumbers are disabled. This Map doesn't support MapViewer Fieldnumbers</en>
+			<de>Warnung: Kann 'Feldnummern Overlay' Datei nicht finden, Feldnummern wird deaktiviert. Diese Karte unterstützt keine MapViewer Feldnummern</de>	
 		</text>
 		<text name="MV_ErrorFNumCreateOverlay">
-			<en>Could not create 'Fieldnumber Overlay'. Fieldnumber Overlay are disabled. </en>
-			<de>Kann 'Feldnummern Overlay' nicht erzeugen. Feldnummern Overlay wird deaktiviert.</de>
+			<en>Error: Could not create 'Fieldnumber Overlay'. Fieldnumber Overlay are disabled. </en>
+			<de>Fehler: Kann 'Feldnummern Overlay' nicht erzeugen. Feldnummern Overlay wird deaktiviert.</de>
 		</text>
 		<text name="MV_ErrorInitBottles">
-			<en>Could not load 'Bottlefinder Overlay' file. Bottlefinder are disabled. This Map doesn't support Bottles</en>
-			<de>Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
+			<en>Warning: Could not load 'Bottlefinder Overlay' file. Bottlefinder are disabled. This Map doesn't support Bottles</en>
+			<de>Warnung: Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
 		</text>
 		<text name="MV_ErrorBottlesCreateOverlay">
-			<en>Could not create 'Bottlefinder Overlay'. Bottlefinder Overlay are disabled. </en>
-			<de>Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
+			<en>Error: Could not create 'Bottlefinder Overlay'. Bottlefinder Overlay are disabled. </en>
+			<de>Fehler: Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
 		</text>
 		<text name="MV_ErrorInitLegend">
 			<en>Could not load 'Legend Overlay' file. Legend are disabled. This Map doesn't support Bottles</en>
 			<de>Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
 		</text>
 		<text name="MV_ErrorLegendCreateOverlay">
-			<en>Could not create 'Legend Overlay'. Legend Overlay are disabled. </en>
-			<de>Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
+			<en>Warning: Could not create 'Legend Overlay'. Legend Overlay are disabled. </en>
+			<de>Warnung: Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
 		</text>
 		<text name="MV_ErrorCreateMV">
-			<en>Creation of MapViewer failed, please see in log.txt for more information</en>
-			<de>Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
+			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
+		</text>
+		<text name="MV_ErrorLoadOptions">
+			<en>Error: Cant load Options from file</en>
+			<de>Fehler: Kann die Einstellungen nicht aus der Datei laden</de>	
+		</text>
+		<text name="MV_ErrorSaveOptions">
+			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
 		</text>
     </l10n>
     <extraSourceFiles>
