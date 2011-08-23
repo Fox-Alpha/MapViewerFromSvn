@@ -15,9 +15,6 @@ function mapviewer:loadMap(name)
 	-- print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
 	local userXMLPath = Utils.getFilename("mapviewer.xml", mapviewer.moddir);
 	self.xmlFile = loadXMLFile("xmlFile", userXMLPath);
-	----
-	-- Datei mit Mapdaten
-	----
 
 	self.mapvieweractive=false;
 	self.maplegende = false;
@@ -45,7 +42,7 @@ function mapviewer:loadMap(name)
 	self.length=0;
 	self.dX=0;
 	self.dZ=0;
-	self.l_PosY = 0;	--Legende Y Position
+	self.l_PosY = 0;
 	self.TEntfernung=0;
 	self.TRichtung=0;
 	self.playerRotY=0;
@@ -177,7 +174,7 @@ function mapviewer:InitMapViewer()
 		self.bigmap.FNum.FNumPosY = 0.5-(self.bigmap.FNum.height/2);
 	end;
 	----
-
+    
 	----
 	-- Array für Fahrzeugicons
 	----
@@ -704,7 +701,7 @@ function mapviewer:update(dt)
 		end;
         mapviewer:SaveToFile();
 	end;
-	-- ende Trasnparenz umschalten
+	-- ende Transparenz umschalten
 end;
 
 function mapviewer:draw()
@@ -1031,9 +1028,6 @@ function mapviewer:draw()
                                 self.buttonZ-self.bigmap.attachmentsTypes.height/2,
                                 self.bigmap.attachmentsTypes.width,
                                 self.bigmap.attachmentsTypes.height);
-                ----
-                -- TODO: Füllstand wenn möglich anzeigen
-                ----
             else
                 renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
                                 self.buttonX-self.bigmap.IconAttachments.width/2, 

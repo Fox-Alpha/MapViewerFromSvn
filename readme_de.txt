@@ -1,4 +1,4 @@
-mapViewer 0.4 für Landwirtschafts Simulator 2011
+mapViewer 0.5 für Landwirtschafts Simulator 2011
 =================================================
 Zeigt die komplette Map auf dem gesamten Bildschirm an. 
 Wer kennt es nicht, man ruft die PDA Map auf und hat keinen Überblick über die gesamte Fläche...
@@ -7,11 +7,9 @@ Zeigt die Fahrzeuge, Anbaugeräte und Spieler auf der Karte an.
 Besonders im Multiplayer ist es nützlich zu wissen wer sich gerade wo auf der Karte befindet.
 
 Voll Multiplayer fähig, es werden alle Spieler angezeigt
-Informationen darüber wie über die Point of Interest (PoI) angezeigt werden befinden sich in der PDF im Docs Ordner
 
-Auch welche Parameter in der XML eingestellt werden können ist dort beschrieben.
-Besonders die unabhängigkeit zu den Maps war ein Feature was ich schon lange versucht habe umzusetzen. Nun endlich ist es mir gelunden.
-Es muss nicht mehr für jede Map eine eigene Mapviewer zip angelegt werden.
+Kompatible mit nahezu allen Maps. Egal ob diese eine Größe von 2048 oder 4096 haben. Die Größe kann per Taste angepasst werden.
+Zusätzliche Anzeigen wie Feldnummern und PoI müssen von der Map unterstützt werden. Es ist nicht mehr nötig für jede Map eine eigene MapViewer Version zu haben.
 
 Taste(n) :
 ----------
@@ -55,7 +53,7 @@ Aktuelle Version
                 - Aktivieren = Einfügen
                 - Legende = Entfernen
                 - Overlay durchschalten = Ende
-        - Speichern der letzten Einstellungen mit dem Spielstand
+        - Speichern und laden der letzten Einstellungen mit dem Spielstand
             - Transparenz
             - Aktiver Overlay
 
