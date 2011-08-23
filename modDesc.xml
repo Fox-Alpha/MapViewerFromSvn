@@ -1,7 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+﻿<!--
+-- Revision der letzten Änderung :     $Rev$
+-- Author der letzten Änderung   :     $Author$
+-- Date der letzten Änderung     :     $Date$
+-- $URL$
+-->
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="4">
     <author>Fox-Alpha</author>
-    <version>0.4 Final</version>
+    <version>V0.5 $Rev$</version>
 	<iconFilename>gfx/mapviewer.png</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
@@ -11,66 +17,218 @@
     </title>
     <description>
 		<en>
-		<![CDATA[Shows the PDA Map over the hole Screen. Press M to activate.Key N show legend!
+		<![CDATA[Shows the PDA Map over the hole Screen. Press insert to activate. Key Delete show legend!
 			Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername + Playername auf PDAMap
+            Transparens with KP + and KP -, Switch Overlay with Key End
+            Kompatible with CoursePlay 2.11
 			Set keybinding in option dialog]]>
 		</en>
 		<de>
 		<![CDATA[Zeigt die PDA Map als Vollbild an. 
-			Tasten :
-			- M aktiviere! 
-			- N Legende einblenden.
-			- Numpad +/- Transparenz einstellen
-			  Y Durchschalten der PoI und Feldnummern
-			  ALT+M Umschalten der Mapgroesse von 2048 auf 4096
-			Features :
-			  + Dynamisches laden der PDA Map aus der verwendendeten Karte
-			  + Umschalten der Mapgroesse von 2048 auf 4096
-			  + Durchschalten der PoI und Feldnummern
-			  + Kann PoI und Feldnummern als seperates Overlay laden
-                - Kann Feldnummern und PoI aus dem Mapzip laden
-			- HotSpots (Wenn in Map vorhanden), 
-			- Spielerposition (Alle im MP), Koordinaten des eigenen Spielers (unten links)
-			- Fahrzeugposition, Anbautenposition, Spielername in Map + Spielername auf PDAMap
-			- Tastenbelegung in den Optionen änderbar
-			--Leicht abweichende Positionen hängen von der Qualität der PDA Map ab.
+			- Einfügen = aktiviere! ALT+M Umschalten der Mapgroesse von 2048 auf 4096
+			- Entfernen = Legende einblenden.
+			- Numpad +/- = Transparenz einstellen
+			- Ende = Durchschalten der PoI und Feldnummern, Inkl. CoursePlay Kurse
 			Script: fox-alpha]]>		
 		</de>
 	</description>
     <multiplayer supported="true"/>
 	<l10n>
+        <!-- Copyright Meldung -->
         <text name="mapviewtxt">
-            <en>Mapviewer V0.4 Copyright (C) Fox-Alpha</en>
-            <de>Mapviewer V0.4 Copyright (C) Fox-Alpha</de>
+            <en>Mapviewer V0.5 $Rev$ Copyright (C) Fox-Alpha</en>
+            <de>Mapviewer V0.5 $Rev$ Copyright (C) Fox-Alpha</de>
         </text>
+        <!-- Tastenbeschreibungen -->
 		<text name="BIGMAP_Legende">
-			<en>Display Maplegend</en>
-			<de>Legende einblenden</de>	
+			<en>Mapviewer Display Maplegend</en>
+			<de>Mapviewer Legende einblenden</de>	
 		</text>
 		<text name="BIGMAP_SwitchOverlay">
-			<en>Switch the Overlay</en>
-			<de>Overlay wechseln</de>	
+			<en>Mapviewer Switch the Overlay</en>
+			<de>Mapviewer Overlay wechseln</de>	
 		</text>
 		<text name="BIGMAP_Activate">
-			<en>View Map</en>
-			<de>Große Kartenansicht</de>	
+			<en>Mapviewer View Map</en>
+			<de>Mapviewer Große Kartenansicht</de>	
 		</text>
 		<text name="BIGMAP_TransPlus">
-			<en>Increase Transparence</en>
-			<de>Transparenz erhöhen</de>	
+			<en>Mapviewer Increase Transparence</en>
+			<de>Mapviewer Transparenz erhöhen</de>	
 		</text>
 		<text name="BIGMAP_TransMinus">
-			<en>decrease Transparence</en>
-			<de>Transparenz verringern</de>	
+			<en>Mapviewer decrease Transparence</en>
+			<de>Mapviewer Transparenz verringern</de>	
+		</text>
+        <!-- Log Meldungen -->
+		<text name="MV_InfoMapsize">
+			<en>Changing mapsize to : %d x %d</en>
+			<de>Ändere die Mapgrösse auf : %d x %d</de>	
+		</text>
+        <!-- Aktiver Overlay Modus -->
+		<text name="MV_Mode1">
+			<en>MapViewer Overlay Mode 1</en>
+			<de>MapViewer Overlay Modus 1</de>	
+		</text>
+		<text name="MV_Mode1Name">
+			<en>Show Filednumber Overlay</en>
+			<de>Feldnummern Overlay anzeigen</de>	
+		</text>
+		<text name="MV_Mode2">
+			<en>MapViewer Overlay Mode 2</en>
+			<de>MapViewer Overlay Modus 2</de>	
+		</text>
+		<text name="MV_Mode2Name">
+			<en>Show Points of interests</en>
+			<de>PoI Overlay anzeigen</de>	
+		</text>
+		<text name="MV_Mode3">
+			<en>MapViewer Overlay Mode 3</en>
+			<de>MapViewer Overlay Modus 3</de>	
+		</text>
+		<text name="MV_Mode3Name">
+			<en>Fieldnumber and PoI Overlay</en>
+			<de>Feldnummern und PoI anzeigen</de>	
+		</text>
+		<text name="MV_Mode4">
+			<en>MapViewer Overlay Mode 4</en>
+			<de>MapViewer Overlay Modus 4</de>	
+		</text>
+		<text name="MV_Mode4Name">
+			<en>Show active Courseplay Tracks</en>
+			<de>Aktive CoursePlay Kurse anzeigen</de>	
+		</text>
+		<text name="MV_Mode5">
+			<en>MapViewer Overlay Mode 5</en>
+			<de>MapViewer Overlay Modus 5</de>	
+		</text>
+		<text name="MV_Mode5Name">
+			<en>Show Bottles on Map</en>
+			<de>Noch offene Flaschen anzeigen</de>	
+		</text>
+        <!-- Maplegende Bezeichnung -->
+		<text name="MV_LegendeLocalPlayer">
+			<en>Local Player Position</en>
+			<de>Eigener Spieler auf Karte</de>	
+		</text>
+		<text name="MV_LegendeOtherPlayer">
+			<en>Other Player Positions</en>
+			<de>Andere Spieler auf Karte</de>	
+		</text>
+		<text name="MV_LegendeControledVehicle">
+			<en>Other Player in Vehicle</en>
+			<de>Andere Spieler im Fahrzeug</de>	
+		</text>
+		<text name="MV_LegendeEmptyVehicle">
+			<en>EmptyVehicle Position</en>
+			<de>Leere Fahrzeuge auf Karte</de>	
+		</text>
+		<text name="MV_LegendeAttachments">
+			<en>Attachments and Trailer</en>
+			<de>Anbaugeräte und Anhänger</de>	
+		</text>
+        <!-- Attachment Typen -->
+		<text name="MV_AttachTypecutter">
+			<en>Cutter</en>
+			<de>Schneidwerke</de>	
+		</text>
+		<text name="MV_AttachTypetrailer">
+			<en>Trailer</en>
+			<de>Anhänger</de>	
+		</text>
+		<text name="MV_AttachTypesowingMachine">
+			<en>Sowingmachine</en>
+			<de>Saatmaschine</de>	
+		</text>
+		<text name="MV_AttachTypeplough">
+			<en>Plough</en>
+			<de>Flug</de>	
+		</text>
+		<text name="MV_AttachTypesprayer">
+			<en>Sprayer</en>
+			<de>Feldspritze</de>	
+		</text>
+		<text name="MV_AttachTypebailer">
+			<en>Bailer</en>
+			<de>Ballensammler/Presse</de>	
+		</text>
+		<text name="MV_AttachTypecultivator">
+			<en>Cultivator</en>
+			<de>Gruber</de>	
+		</text>
+		<text name="MV_AttachTypetedder">
+			<en>Tedder</en>
+			<de>Tedder</de>	
+		</text>
+		<text name="MV_AttachTypewindrower">
+			<en>Windrower</en>
+			<de>Schwader</de>	
+		</text>
+		<text name="MV_AttachTypeshovel">
+			<en>Shovel</en>
+			<de>Schaufel</de>	
+		</text>
+		<text name="MV_AttachTypemover">
+			<en>Mover</en>
+			<de>Mäher</de>	
+		</text>
+		<text name="MV_AttachTypeother">
+			<en>other</en>
+			<de>andere</de>	
+		</text>
+        <!-- Fehlermdeldungen -->
+		<text name="MV_ErrorInitPoI">
+			<en>Warning: Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>
+			<de>Warnung: Kann 'PoI Overlay' Datei nicht finden, PoI wird deaktiviert. Diese Karte unterstützt keine MapViewer PoI</de>
+		</text>
+		<text name="MV_ErrorPoICreateOverlay">
+			<en>Error: Could not create 'PoI Overlay'. PoI are disabled. </en>
+			<de>Fehler: Kann 'PoI Overlay' nicht erzeugen. PoI wird deaktiviert.</de>
+		</text>
+		<text name="MV_ErrorInitFNum">
+			<en>Warning: Could not load 'Fieldnumber Overlay' file. Fieldnumbers are disabled. This Map doesn't support MapViewer Fieldnumbers</en>
+			<de>Warnung: Kann 'Feldnummern Overlay' Datei nicht finden, Feldnummern wird deaktiviert. Diese Karte unterstützt keine MapViewer Feldnummern</de>	
+		</text>
+		<text name="MV_ErrorFNumCreateOverlay">
+			<en>Error: Could not create 'Fieldnumber Overlay'. Fieldnumber Overlay are disabled. </en>
+			<de>Fehler: Kann 'Feldnummern Overlay' nicht erzeugen. Feldnummern Overlay wird deaktiviert.</de>
+		</text>
+		<text name="MV_ErrorInitBottles">
+			<en>Warning: Could not load 'Bottlefinder Overlay' file. Bottlefinder are disabled. This Map doesn't support Bottles</en>
+			<de>Warnung: Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
+		</text>
+		<text name="MV_ErrorBottlesCreateOverlay">
+			<en>Error: Could not create 'Bottlefinder Overlay'. Bottlefinder Overlay are disabled. </en>
+			<de>Fehler: Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
+		</text>
+		<text name="MV_ErrorInitLegend">
+			<en>Could not load 'Legend Overlay' file. Legend are disabled. This Map doesn't support Bottles</en>
+			<de>Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
+		</text>
+		<text name="MV_ErrorLegendCreateOverlay">
+			<en>Warning: Could not create 'Legend Overlay'. Legend Overlay are disabled. </en>
+			<de>Warnung: Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
+		</text>
+		<text name="MV_ErrorCreateMV">
+			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
+		</text>
+		<text name="MV_ErrorLoadOptions">
+			<en>Error: Cant load Options from file</en>
+			<de>Fehler: Kann die Einstellungen nicht aus der Datei laden</de>	
+		</text>
+		<text name="MV_ErrorSaveOptions">
+			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
 		</text>
     </l10n>
     <extraSourceFiles>
         <sourceFile filename="mapviewer.lua" />
     </extraSourceFiles>
 	<inputBindings>
-       <input name="BIGMAP_Activate" category="ONFOOT VEHICLE" key1="KEY_m" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Legende" category="ONFOOT VEHICLE" key1="KEY_n" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_SwitchOverlay" category="ONFOOT VEHICLE" key1="KEY_y" key2="KEY_z" button="" device="0" mouse="" />
+       <input name="BIGMAP_Activate" category="ONFOOT VEHICLE" key1="KEY_insert" key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Legende" category="ONFOOT VEHICLE" key1="KEY_delete" key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_SwitchOverlay" category="ONFOOT VEHICLE" key1="KEY_end" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_TransPlus" category="ONFOOT VEHICLE" key1="KEY_KP_plus" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_TransMinus" category="ONFOOT VEHICLE" key1="KEY_KP_minus" key2="" button="" device="0" mouse="" />
     </inputBindings>

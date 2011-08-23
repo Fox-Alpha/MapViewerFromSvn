@@ -1,4 +1,4 @@
-mapViewer 0.4 für Landwirtschafts Simulator 2011
+mapViewer 0.5 für Landwirtschafts Simulator 2011
 =================================================
 Zeigt die komplette Map auf dem gesamten Bildschirm an. 
 Wer kennt es nicht, man ruft die PDA Map auf und hat keinen Überblick über die gesamte Fläche...
@@ -7,20 +7,18 @@ Zeigt die Fahrzeuge, Anbaugeräte und Spieler auf der Karte an.
 Besonders im Multiplayer ist es nützlich zu wissen wer sich gerade wo auf der Karte befindet.
 
 Voll Multiplayer fähig, es werden alle Spieler angezeigt
-Informationen darüber wie über die Point of Interest (PoI) angezeigt werden befinden sich in der PDF im Docs Ordner
 
-Auch welche Parameter in der XML eingestellt werden können ist dort beschrieben.
-Besonders die unabhängigkeit zu den Maps war ein Feature was ich schon lange versucht habe umzusetzen. Nun endlich ist es mir gelunden.
-Es muss nicht mehr für jede Map eine eigene Mapviewer zip angelegt werden.
+Kompatible mit nahezu allen Maps. Egal ob diese eine Größe von 2048 oder 4096 haben. Die Größe kann per Taste angepasst werden.
+Zusätzliche Anzeigen wie Feldnummern und PoI müssen von der Map unterstützt werden. Es ist nicht mehr nötig für jede Map eine eigene MapViewer Version zu haben.
 
 Taste(n) :
 ----------
 Die Tasten lassen sich über die Optionen anpassen
-m	 		=	Anzeigen/Ausblenden
-N			=	Legende Ein/Ausblenden
-NP +/-		=	Transparenz +/-
-y           =   Zusätzliche Overlay umschalet Feldnummern und PoI
-Alt * M     = Mapgrösse wechseln 2048 oder 4096
+Einfügen	 	=	Anzeigen/Ausblenden
+Entfernen		=	Legende Ein/Ausblenden
+NP +/-		    =	Transparenz +/-
+Ende            =   Zusätzliche Overlay umschalet Feldnummern und PoI
+Alt * M         = Mapgrösse wechseln 2048 oder 4096
 
 Anzeige :
 ---------
@@ -32,15 +30,36 @@ Autor: Fox-Alpha
 Kontakt: fox-alpha@tarnhoerner.de
 Exclusiv Mod www.MODHOSTER.de
 
-RoadMap
-=======
-0.5		- Infofenster zu einzelnen Fahrzeugen ähnlich dem Inspector
-			- Durchschaltbar und permanent anzeige
+Aktuelle Version
+================
+0.5
+        - Unterstützung des CoursePlay (CP 2.11) 
+            - Einblenden der aktiven Kurse aller Fahrzeuge
+        - Anzeige von unbrauchbaren Fahrzeugen (z.B. wenn diese zu tief im Wasser stehen) als eigenes Symbol
+        - Bottlefinder 
+            - Anzeige der Bottlepositionen auf der Map (Single- und Multiplay)
+        - Tastenbezeichnungen so angepasst das diese in den Optionen eindeutig erkannt werden können 
+            - Diese beginnen nun mit "MapViewer" in den Spieloptionen
+        - Anzeigen des aktiven Modus bei aktiver Karte
+        - Fehlermeldungen und andere Logausgaben mehr Aussagekräftig und Mehrsprachig und in XML auslagern 
+        - Bessere Unterscheidung der Geräte Typen
+            - Jeder Gerätettyp hat sein Symbol mit eigener Farbe
+            - Legende um neue Symbolbeschreibungen erweitert
+        - Übersetzungen 
+            - Viele Textteile in Englisch und Deutsch vorhanden
+            - Fehlermeldungen und Bezeichnungen
+        - Tastaturbelegung
+            - Standardtasten umbelegt
+                - Aktivieren = Einfügen
+                - Legende = Entfernen
+                - Overlay durchschalten = Ende
+        - Speichern und laden der letzten Einstellungen mit dem Spielstand
+            - Transparenz
+            - Aktiver Overlay
 
 Changelog
 =========
 V0.4
-
       + Dynamisches laden der PDA Map aus der verwendendeten Karte
         - /map01/pda_map.png/.dds
         - Kein manuelles bearbeiten der ZIP Datei mehr notwendig

@@ -1,3 +1,9 @@
+<!--
+-- Revision der letzten Änderung :     $Rev$
+-- Author der letzten Änderung   :     $Author$
+-- Date der letzten Änderung     :     $Date$
+-- $URL$
+-->
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <mapviewer>
 	<map mapWidth="1" mapHeight="1" mapDimensionX="2048" mapDimensionY="2048">
@@ -13,12 +19,41 @@
 		
 		<!-- Symbole für Spieler, Fahrzeuge und Geräte -->
 		<icons>
-			<iconPlayer  width="0.0078125" height="0.0078125" file="icons/eigenerspieler.png" />
+<!-- 			<iconPlayer  width="0.0078125" height="0.0078125" file="icons/eigenerspieler.png" />
 			<iconMPPlayer  width="0.0078125" height="0.0078125" file="icons/mpspieler.png" />
 			<iconSteerable  width="0.0078125" height="0.0078125" file="icons/tractor.png" />
 			<iconSteerableCtrl  width="0.0078125" height="0.0078125" file="icons/tractorctrl.png" />
 			<iconAttachmentFront  width="0.0078125" height="0.0078125" file="icons/feldgeraet.png" />
 			<iconAttachmentRear  width="0.0078125" height="0.0078125" file="icons/feldgeraet.png" />
+			<iconIsBroken  width="0.0078125" height="0.0078125" file="icons/isBroken.png" />
+			<iconBottle  width="0.0078125" height="0.0156250" file="icons/Bottle.png" />
+ -->
+            <iconPlayer  width="0.01" height="0.01" file="icons/eigenerspieler.png" />
+			<iconMPPlayer  width="0.01" height="001" file="icons/mpspieler.png" />
+			<iconSteerable  width="0.01" height="0.01" file="icons/tractor.png" />
+			<iconSteerableCtrl  width="0.01" height="0.01" file="icons/tractorctrl.png" />
+			<iconAttachmentFront  width="0.01" height="0.01" file="icons/feldgeraet.png" />
+			<iconAttachmentRear  width="0.01" height="0.01" file="icons/feldgeraet.png" />
+			<iconIsBroken  width="0.01" height="0.01" file="icons/isBroken.png" />
+			<iconBottle  width="0.01" height="0.02" file="icons/Bottle.png" />
+            
+            <iconSteerabletractor  width="0.01" height="0.01" file="icons/tractor.png" />
+            <iconSteerablecombine  width="0.01" height="0.01" file="icons/combine.png" />
+            <iconSteerableother  width="0.01" height="0.01" file="icons/tractor.png" />
+            
+            <!-- "cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other" -->
+            <iconAttachmentcutter  width="0.01" height="0.01" file="icons/1.png" />
+            <iconAttachmenttrailer  width="0.01" height="0.01" file="icons/2.png" />
+            <iconAttachmentsowingMachine  width="0.01" height="0.01" file="icons/3.png" />
+            <iconAttachmentplough  width="0.01" height="0.01" file="icons/4.png" />
+            <iconAttachmentsprayer  width="0.01" height="0.01" file="icons/5.png" />
+            <iconAttachmentbailer  width="0.01" height="0.01" file="icons/6.png" />
+            <iconAttachmentcultivator  width="0.01" height="0.01" file="icons/7.png" />
+            <iconAttachmenttedder  width="0.01" height="0.01" file="icons/8.png" />
+            <iconAttachmentwindrower  width="0.01" height="0.01" file="icons/9.png" />
+            <iconAttachmentshovel  width="0.01" height="0.01" file="icons/10.png" />
+            <iconAttachmentmover  width="0.01" height="0.01" file="icons/11.png" />
+            <iconAttachmentother  width="0.01" height="0.01" file="icons/feldgeraet.png" />
 		</icons>
 		<!--  -->
 	</map>
