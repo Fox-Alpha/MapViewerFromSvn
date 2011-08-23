@@ -1,10 +1,8 @@
 * text=auto !eol
 / svnc_tsvn_003aprojectlanguage=0x401
 /gfx svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
-gfx/PoI_BigInParadise.png -text svn_keywords
 gfx/PoI_Karte_1.png -text svn_keywords
 gfx/background.png -text svn_keywords
-gfx/fn_BigInParadise.png -text svn_keywords
 gfx/fn_Karte_1.png -text svn_keywords
 gfx/maplegende.png -text svn_keywords
 gfx/mapviewer.png -text svn_keywords
