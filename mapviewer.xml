@@ -5,16 +5,16 @@
 -- $URL$
 -->
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<mapviewer>
+<mapviewer ver="v0.60">
 	<map mapWidth="1" mapHeight="1" mapDimensionX="2048" mapDimensionY="2048">
 		<!-- Abweichende Karte verwenden, wird nmomentan nicht verwendet -->
 		<!-- <mapFile useMapFile="false" file="gfx/pda_map.dds" /> -->
 		<legende file="gfx/background.png" width="0.15" height="0.125" posX="0.0244" posY="0.15" />
 		<Infopanel file="Panel/Info_Panel.png" width="0.15" height="0.15" >
-			<Buttons>
-				<ButtonSwitch width="0.01" height="0.01" file="Panel/Bt_Switch.png"/>
-				<ButtonClose width="0.01" height="0.01" file="Panel/Bt_Close.png"/>
-			</Buttons>
+			<!-- <Buttons> -->
+				<!-- <ButtonSwitch width="0.01" height="0.01" file="Panel/Bt_Switch.png"/> -->
+				<!-- <ButtonClose width="0.01" height="0.01" file="Panel/Bt_Close.png"/> -->
+			<!-- </Buttons> -->
 		</Infopanel>
 		<!--  -->
 
@@ -53,7 +53,7 @@
             <iconAttachmentsowingMachine  width="0.01" height="0.01" file="icons/3.png" />
             <iconAttachmentplough  width="0.01" height="0.01" file="icons/4.png" />
             <iconAttachmentsprayer  width="0.01" height="0.01" file="icons/5.png" />
-            <iconAttachmentbailer  width="0.01" height="0.01" file="icons/6.png" />
+            <iconAttachmentbaler  width="0.01" height="0.01" file="icons/6.png" />
             <iconAttachmentcultivator  width="0.01" height="0.01" file="icons/7.png" />
             <iconAttachmenttedder  width="0.01" height="0.01" file="icons/8.png" />
             <iconAttachmentwindrower  width="0.01" height="0.01" file="icons/9.png" />

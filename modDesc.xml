@@ -65,6 +65,7 @@
 			<en>Changing mapsize to : %d x %d</en>
 			<de>Ändere die Mapgrösse auf : %d x %d</de>	
 		</text>
+		
         <!-- Aktiver Overlay Modus -->
 		<text name="MV_Mode1">
 			<en>MapViewer Overlay Mode 1</en>
@@ -106,6 +107,7 @@
 			<en>Show Bottles on Map</en>
 			<de>Noch offene Flaschen anzeigen</de>	
 		</text>
+		
         <!-- Maplegende Bezeichnung -->
 		<text name="MV_LegendeLocalPlayer">
 			<en>Local Player Position</en>
@@ -127,6 +129,7 @@
 			<en>Attachments and Trailer</en>
 			<de>Anbaugeräte und Anhänger</de>	
 		</text>
+		
         <!-- Attachment Typen -->
 		<text name="MV_AttachTypecutter">
 			<en>Cutter</en>
@@ -148,8 +151,8 @@
 			<en>Sprayer</en>
 			<de>Feldspritze</de>	
 		</text>
-		<text name="MV_AttachTypebailer">
-			<en>Bailer</en>
+		<text name="MV_AttachTypebaler">
+			<en>Baler</en>
 			<de>Ballensammler/Presse</de>	
 		</text>
 		<text name="MV_AttachTypecultivator">
@@ -184,6 +187,7 @@
 			<en>Unknown</en>
 			<de>Unbekannt</de>	
 		</text>
+		
         <!-- Fehlermdeldungen -->
 		<text name="MV_ErrorInitPoI">
 			<en>Warning: Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>
@@ -224,6 +228,10 @@
 		<text name="MV_ErrorLoadOptions">
 			<en>Error: Cant load Options from file</en>
 			<de>Fehler: Kann die Einstellungen nicht aus der Datei laden</de>	
+		</text>
+		<text name="MV_ErrorLoadOptionsOldXML">
+			<en>Warning: Config file of old MapViewer Version found, will be overwritten to update</en>
+			<de>Warnung: Alte MapViewer XML Datei gefunden, diese wird aktualisiert</de>	
 		</text>
 		<text name="MV_ErrorSaveOptions">
 			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
