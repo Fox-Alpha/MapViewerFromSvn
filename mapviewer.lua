@@ -37,8 +37,9 @@ function mapviewer:loadMap(name)
 	self.useDefaultMap = false;
     
     self.courseplay = true;
-
-
+	
+	self.printInfo = false;
+	
 	self.x=0;
 	self.y=0;
 	self.z=0;
@@ -355,7 +356,8 @@ function mapviewer:InitMapViewer()
 		----
 		local _lx, _ly, _tx, _ty;
 		_tx = self.bigmap.Legende.legPosX + 0.029297;
-		_lx = _tx + 0.007324;
+		-- _lx = _tx + 0.007324;
+		_lx = self.bigmap.Legende.legPosX + 0.007324;
 		_ly = 1-0.02441 - 0.007324 - 0.015625;
 		_ty = _ly;
 		--self.bigmap.Legende.Content, {l_PosX, l_PosY, OverlayID, l_Txt, Txt, TxtSize}
@@ -676,6 +678,7 @@ end
 function eval(str)
    return assert(loadstring(str))()
 end   
+
 function mapviewer:deleteMap()
 end;
 
@@ -771,7 +774,7 @@ function mapviewer:GetVehicleInfo(vehicle)
 		----
 		-- Alle Fillable 
 		----
-		if SpecializationUtil.hasSpecialization(Fillable, vehicle.specializations) or SpecializationUtil.hasSpecialization(Steerable, vehicle.specializations) then
+		if (SpecializationUtil.hasSpecialization(Fillable, vehicle.specializations) or SpecializationUtil.hasSpecialization(Steerable, vehicle.specializations)) and not SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
 			local f, c, p;
 
 			----
@@ -783,8 +786,40 @@ function mapviewer:GetVehicleInfo(vehicle)
 				if f ~= nil and c ~= nil then
 					p = f / c * 100;
 					vehicleInfo.Tank = string.format("%d / %d | %.2f%%", f, c, p);
-					-- print(string.format("Füllstand / Kapazität : %.2f / %.2f | Name : %s | TankInfo : %s", f, c, tostring(vehicle.name), vehicleInfo.Tank));
+					-- print(string.format("Fill+Steer - Füllstand / Kapazität : %.2f / %.2f | Name : %s | TankInfo : %s", f, c, tostring(vehicle.name), vehicleInfo.Tank));
 				end;
+				
+				----
+				-- TODO: Attachments durchgehen und Filltype ermitteln
+				----
+				-- local nIndex,oImplement;
+				-- for nIndex,oImplement in pairs(vehicle.attachedImplements) do
+					-- if oImplement ~= nil and oImplement.object ~= nil then
+						-- print("AttachName: " .. string.sub(oImplement.object.name, 0, 50));
+					-- end;
+				-- end;
+				
+				-- if SpecializationUtil.hasSpecialization(Steerable, vehicle.specializations) then
+					-- for n=1, table.getn(vehicle.attachedImplements) do
+						-- print("AttachName: " .. string.sub(oImplement.object.name, 0, 50));
+					-- end;
+					-- for nIndex,oImplement in pairs(vehicle.attachedImplements) do
+						-- if oImplement ~= nil and oImplement.object ~= nil then
+							-- if SpecializationUtil.hasSpecialization(Fillable, oImplement.object.specializations) then
+								-- print("AttachName: " .. string.sub(oImplement.object.name, 0, 50));
+								-- if oImplement.object.currentFillType ~= Fillable.FILLTYPE_UNKNOWN then
+									-- if g_i18n:hasText (Fillable.fillTypeIntToName[oImplement.object.currentFillType]) then
+										-- vehicleInfo.Fruit = tostring(Utils.getNoNil(g_i18n:getText(Fillable.fillTypeIntToName[oImplement.object.currentFillType]), g_i18n:getText("MV_Unknown")));
+									-- else
+										-- vehicleInfo.Fruit = "Attach: " .. tostring(Utils.getNoNil(Fillable.fillTypeIntToName[oImplement.object.currentFillType], g_i18n:getText("MV_Unknown")));
+									-- end;
+								-- else 
+									-- vehicleInfo.Fruit = "Attach: " .. g_i18n:getText("MV_Unknown");
+								-- end;
+							-- end;
+						-- end;					
+					-- end;
+				-- end;
 			end;
 			----
 			-- Ladungsname (Fruchtname)
@@ -795,12 +830,15 @@ function mapviewer:GetVehicleInfo(vehicle)
 				else
 					vehicleInfo.Fruit = tostring(Utils.getNoNil(Fillable.fillTypeIntToName[vehicle.currentFillType], g_i18n:getText("MV_Unknown")));
 				end;
+			else 
+				vehicleInfo.Fruit = g_i18n:getText("MV_Unknown");
 			end;
 			----
 		----
 		-- Alle Combine's
 		----
 		elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
+		--elseif vehicle.GrainTankCapacity ~= nil and vehicle.grainTankFillLevel ~= nil then
 			local fruitType, f, useGrainTank, c, p;
 			
 			if vehicle:getFruitTypeAndFillLevelToUnload() then
@@ -810,6 +848,7 @@ function mapviewer:GetVehicleInfo(vehicle)
 					c = vehicle.grainTankCapacity;
 					p = f / c * 100;
 					vehicleInfo.Tank = string.format("%d / %d | %.2f%%", f, c, p);
+					--print(string.format("Combine - Füllstand / Kapazität : %.2f / %.2f | Name : %s | TankInfo : %s", f, c, tostring(vehicle.name), vehicleInfo.Tank));
 				end;
 			end;
 			if fruitType ~= nil and fruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
@@ -1087,6 +1126,7 @@ function mapviewer:update(dt)
 		if self.mapvieweractive and self.useLegend then
 			--Legende einblenden
 			self.maplegende = not self.maplegende;
+			self.printInfo = self.maplegende;
             mapviewer:SaveToFile();
 		end;
 	end;
@@ -1359,15 +1399,19 @@ function mapviewer:draw()
 				for i=1, table.getn(c) do
 					if c[i].OverlayID ~= nil and c[i].OverlayID ~= 0 then
 						renderOverlay(c[i].OverlayID,
-										c[i].l_PosX, -- + 0.007324,
+										c[i].l_PosX, -- 0.007324,
 										c[i].l_PosY, 
 										0.015625, 
 										0.015625);
 						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, c[i].Txt);
+						if self.printInfo then
+							print(table.show(c[i], string.format("Content %d : ", i)));
+						end;
 					else
 						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, "Legenden Icon nicht vorhanden");
 					end;
 				end;
+				self.printInfo = false;
 
                 self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
                 for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
