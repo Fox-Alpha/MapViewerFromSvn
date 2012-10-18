@@ -1299,18 +1299,18 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 	--       Globale Kartengröße verwenden !
 	----
 
-	if isDown and sym == Input.KEY_m and bitAND(modifier, Input.MOD_ALT) > 0 then
-		if self.bigmap.mapDimensionX == 2048 then
-			self.bigmap.mapDimensionX = 4096;
-			self.bigmap.mapDimensionY = 4096;
-		else
-			self.bigmap.mapDimensionX = 2048;
-			self.bigmap.mapDimensionY = 2048;
-		end;
-        print(g_i18n:getText("mapviewtxt") .. " : " .. string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));
-		print();
-        mapviewer:SaveToFile();
-	end;
+	-- if isDown and sym == Input.KEY_m and bitAND(modifier, Input.MOD_ALT) > 0 then
+		-- if self.bigmap.mapDimensionX == 2048 then
+			-- self.bigmap.mapDimensionX = 4096;
+			-- self.bigmap.mapDimensionY = 4096;
+		-- else
+			-- self.bigmap.mapDimensionX = 2048;
+			-- self.bigmap.mapDimensionY = 2048;
+		-- end;
+        -- print(g_i18n:getText("mapviewtxt") .. " : " .. string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));
+		-- print();
+        -- mapviewer:SaveToFile();
+	-- end;
 	----
 
     ----
@@ -1383,7 +1383,9 @@ function mapviewer:update(dt)
 			--Legende einblenden
 			self.maplegende = not self.maplegende;
 			self.printInfo = self.maplegende;
-            mapviewer:SaveToFile();
+			if g_currentMission:getIsServer() then
+				mapviewer:SaveToFile();
+			end;
 		end;
 	end;
 
@@ -1441,7 +1443,9 @@ function mapviewer:update(dt)
 			print("Debug Key BIGMAP_SwitchOverlay: ");
             print(string.format("|| $s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
 		end;
-        mapviewer:SaveToFile();
+		if g_currentMission:getIsServer() then
+			mapviewer:SaveToFile();
+		end;
 	end;
 	
 	----
@@ -1471,13 +1475,17 @@ function mapviewer:update(dt)
 		if self.bigmap.mapTransp < 1 then
 			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
 		end;
-        mapviewer:SaveToFile();
+		if g_currentMission:getIsServer() then
+			mapviewer:SaveToFile();
+		end;
 	end;
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
 		if self.bigmap.mapTransp > 0.1 then
 			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
 		end;
-        mapviewer:SaveToFile();
+		if g_currentMission:getIsServer() then
+			mapviewer:SaveToFile();
+		end;
 	end;
 	-- ende Transparenz umschalten
 end;
