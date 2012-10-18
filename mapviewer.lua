@@ -777,8 +777,15 @@ function getVehicleAttachmentsFruitTypes(object)
 					else
 						o = Utils.getNoNil(Fillable.fillTypeIntToName[oImplements[a].currentFillType], g_i18n:getText("MV_Unknown"));
 					end;
+					--name, fillLevel, fillType, capacity, fillName
 					table.insert(Attaches, {Name=oImplements[a].name, fillLevel=oImplements[a].fillLevel, capacity=oImplements[a].capacity, FillType=oImplements[a].currentFillType, fillName=o});
 				end;
+			else
+			----
+			-- Alle nicht befüllbaren Implements
+			----
+			table.insert(Attaches, {Name=oImplements[a].name, fillLevel=nil, capacity=nil, FillType=nil, fillName=nil});
+			----
 			end;
 		end;
 		
@@ -796,6 +803,9 @@ function getVehicleAttachmentsFruitTypes(object)
 			end;
 		end;
 		Fruitnames = table.concat(fruits, " | ");
+		-- print("----");
+		-- print(table.show(Attaches, "Attaches : getVehicleAttachmentsFruitTypes()"));
+		-- print("----");
 		return Fruitnames, Attaches;
 	end;
 	return nil;
@@ -815,7 +825,6 @@ end;
 -- Ermitteln der Vehicle Informationen
 ----
 function mapviewer:GetVehicleInfo(vehicle)
-	-- local currV = g_currentMission.steerables[vehicle];
 	local vehicleInfo = {}; --{Type = "", Ply= "", Tank = 0, Fruit = ""};
 	local percent = 0;
 	local fruitNames;
@@ -840,81 +849,74 @@ function mapviewer:GetVehicleInfo(vehicle)
 				
 		----
 		-- Füllstand, Ladungsname
-		----
 		-- Alle Fillable 
 		----
-		if (SpecializationUtil.hasSpecialization(Fillable, vehicle.specializations) or SpecializationUtil.hasSpecialization(Steerable, vehicle.specializations)) and not SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
+		if (SpecializationUtil.hasSpecialization(Fillable, vehicle.specializations) or SpecializationUtil.hasSpecialization(Steerable, vehicle.specializations)) or SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
 			local f, c, p;
 			local nIndex,oImplement, attFruits, temp;
 
 			----
 			-- Füllstand ermitteln neu
 			----
-			if vehicle:getAttachedTrailersFillLevelAndCapacity() then
-				----
-				-- Gesamt Füllstand
-				----
-				f, c = vehicle:getAttachedTrailersFillLevelAndCapacity();
-				if f ~= nil and c ~= nil then
-					p = f / c * 100;
-					table.insert(vehicleInfo, string.format("%d / %d | %.2f%%", f, c, p));
-				end;
-				----
-				
-				--attachList = {name, fillLevel, fillType, capacity, fillName}
-				fruitNames, attachList = getVehicleAttachmentsFruitTypes(vehicle);
-				
-				----
-				-- Attachment Infos. Name und Füllstand und Ladungsname
-				----
-				if attachList ~= nil then 
-					table.insert(vehicleInfo, "Attachments : ");
-					for a=1, table.getn(attachList) do
-						if attachList[a].fillLevel > 0 then
-							p = attachList[a].fillLevel / attachList[a].capacity * 100;
-							table.insert(vehicleInfo, string.format("   %d : %s", a, attachList[a].Name));
-							table.insert(vehicleInfo, string.format("    - %d%% %s", p, attachList[a].fillName));
-						else
-							table.insert(vehicleInfo, string.format("   %d : %s", a, attachList[a].Name));
-							table.insert(vehicleInfo, string.format("    - 0%% - %s -", g_i18n:getText("MV_EmptyTank")));
-						end;
+			if not SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
+				if vehicle:getAttachedTrailersFillLevelAndCapacity() then
+					----
+					-- Gesamt Füllstand
+					----
+					f, c = vehicle:getAttachedTrailersFillLevelAndCapacity();
+					if f ~= nil and c ~= nil then
+						p = f / c * 100;
+						table.insert(vehicleInfo, string.format("%d / %d | %.2f%%", f, c, p));
 					end;
 				end;
 				----
 			else 
-				table.insert(vehicleInfo, g_i18n:getText("MV_Unknown"));
-			end;
-			----
-		----
-		-- Alle Combine's
-		-- Informationen für Mähdrescher
-		----
-		elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
-			local fruitType, f, useGrainTank, c, p;
-			
-			----
-			-- Gesamt Füllstand
-			----
-			if vehicle:getFruitTypeAndFillLevelToUnload() then
-				fruitType, f, useGrainTank = vehicle:getFruitTypeAndFillLevelToUnload();
-				-- print(string.format("Fruittype %s, FillLevel % s, useGrainTank %s",tostring(fruitType), tostring(f), tostring(useGrainTank)));
-				if useGrainTank and f ~= nil then
-					c = vehicle.grainTankCapacity;
-					p = f / c * 100;
-					table.insert(vehicleInfo, string.format("%d / %d | %.2f%%", f, c, p));
-					--print(string.format("Combine - Füllstand / Kapazität : %.2f / %.2f | Name : %s | TankInfo : %s", f, c, tostring(vehicle.name), vehicleInfo.Tank));
+				if vehicle:getFruitTypeAndFillLevelToUnload() then
+					fruitType, f, useGrainTank = vehicle:getFruitTypeAndFillLevelToUnload();
+					-- print(string.format("Fruittype %s, FillLevel % s, useGrainTank %s",tostring(fruitType), tostring(f), tostring(useGrainTank)));
+					if useGrainTank and f ~= nil then
+						c = vehicle.grainTankCapacity;
+						p = f / c * 100;
+						table.insert(vehicleInfo, string.format("%d / %d | %.2f%%", f, c, p));
+						--print(string.format("Combine - Füllstand / Kapazität : %.2f / %.2f | Name : %s | TankInfo : %s", f, c, tostring(vehicle.name), vehicleInfo.Tank));
+					end;
+					if fruitType ~= nil and fruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+						table.insert(vehicleInfo, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fruitType].name)), g_i18n:getText("MV_Unknown")));
+					else 
+						table.insert(vehicleInfo, g_i18n:getText("MV_EmptyTank"));
+					end;
 				end;
 			end;
-			----
-			if fruitType ~= nil and fruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
-				table.insert(vehicleInfo, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fruitType].name)), g_i18n:getText("MV_Unknown")));
-			else 
-				table.insert(vehicleInfo, g_i18n:getText("MV_EmptyTank"));
-			end;
-		else 
-			table.insert(vehicleInfo, g_i18n:getText("MV_Unknown"));
 		end;
-		--
+		--attachList = {name, fillLevel, fillType, capacity, fillName}
+		fruitNames, attachList = getVehicleAttachmentsFruitTypes(vehicle);
+		
+		----
+		-- Attachment Infos. Name und Füllstand und Ladungsname
+		----
+		if attachList ~= nil then 
+			table.insert(vehicleInfo, "Attachments : ");
+			for a=1, table.getn(attachList) do
+				if attachList[a].fillLevel~=nil and attachList[a].capacity~=nil and attachList[a].FillType~=nil and attachList[a].fillName~=nil then
+					if attachList[a].fillLevel > 0 then
+						p = attachList[a].fillLevel / attachList[a].capacity * 100;
+						table.insert(vehicleInfo, string.format("   %d : %s", a, attachList[a].Name));
+						table.insert(vehicleInfo, string.format("    - %d%% %s", p, attachList[a].fillName));
+					else
+						table.insert(vehicleInfo, string.format("   %d : %s", a, attachList[a].Name));
+						table.insert(vehicleInfo, string.format("    - 0%% - %s -", g_i18n:getText("MV_EmptyTank")));
+					end;
+				else
+					table.insert(vehicleInfo, string.format("   %d : %s", a, attachList[a].Name));
+				end;
+			end;
+		end;
+		----
+		-- print("----");
+		-- print(table.show(attachList, "attachList : GetVehicleInfo()"));
+		-- print("----");
+		-- print(table.show(vehicleInfo, "vehicleInfo : GetVehicleInfo()"));
+		-- print("----");
 	end;
 	---- Ende Füllstand ermitteln neu ----		
 	return vehicleInfo;
@@ -992,12 +994,15 @@ function mapviewer:ShowPanelonMap()
 		renderText(tLeft, tTop, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[1], g_i18n:getText("MV_Unknown"))));
 		renderText(tLeft, tTop-0.015, 0.012, string.format("%s", Utils.getNoNil(tostring(self.bigmap.InfoPanel.Info[2]), g_i18n:getText("MV_Unknown"))));
 		if self.bigmap.InfoPanel.lastVehicle ~= nil then
+			if self.bigmap.InfoPanel.Info[3] ~= nil then
 				renderText(tLeft, tTop-0.030, 0.012, string.format("Füllstand : %s", Utils.getNoNil(self.bigmap.InfoPanel.Info[3], g_i18n:getText("MV_Unknown"))));
 				tTop = tTop - 0.030;
-				for r=4, table.getn(self.bigmap.InfoPanel.Info) do
-					renderText(tLeft, tTop-r*0.015+0.045, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
-				end;
-			-- end;
+			else
+				tTop = tTop - 0.015;
+			end;
+			for r=4, table.getn(self.bigmap.InfoPanel.Info) do
+				renderText(tLeft, tTop-r*0.015+0.045, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
+			end;
 		end;
 		setTextColor(1, 1, 1, 0);
 		setTextBold(false);
@@ -1428,14 +1433,10 @@ function mapviewer:draw()
 		
 		--Maplegende anzeigen
 		if self.maplegende and self.useLegend then
-				----
-				-- TODO : Liste der Legende durch Schleife jagen
-				----
 			if self.bigmap.Legende.OverlayId ~=nil then
 				-- renderOverlay(self.bigmap.Legende.OverlayId, self.bigmap.Legende.legPosX, self.bigmap.Legende.legPosY, self.bigmap.Legende.width, self.bigmap.Legende.height);
 				-- setTextColor(0, 0, 0, 1);
 				setTextColor(0, 1, 0, 1);
-
                 ----
                 -- Legende der Fahrzeuge Typen anzeigen
                 ----
@@ -1459,14 +1460,25 @@ function mapviewer:draw()
 				self.printInfo = false;
 
                 self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
+				-- print("----");
+				-- print(string.format("attachmentsTypes.names %d", table.getn(self.bigmap.attachmentsTypes.names)));
+				-- print(string.format(table.show(self.bigmap.attachmentsTypes.names, "attachmentsTypes.names")));
+				-- print(string.format("attachmentsTypes.overlays %d", table.getn(self.bigmap.attachmentsTypes.overlays)));
+				-- print(string.format(table.show(self.bigmap.attachmentsTypes.overlays, "attachmentsTypes.overlays")));
+				-- print("----");
+				
                 for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
-                    renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
+					if self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]] ~= nil then 
+						renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
                                     self.bigmap.Legende.legPosX + 0.007324,
                                     self.l_PosY, 
                                     self.bigmap.attachmentsTypes.width,
                                     self.bigmap.attachmentsTypes.height);
-                    renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
-                    self.l_PosY = self.l_PosY - 0.020;
+						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
+					else
+						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
+					end;
+					self.l_PosY = self.l_PosY - 0.020;
                 end;
                 ----
 				setTextColor(1, 1, 1, 0);
