@@ -7,7 +7,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="4">
     <author>Fox-Alpha</author>
-    <version>V0.5 $Rev$</version>
+    <version>V0.6 $Rev$</version>
 	<iconFilename>gfx/mapviewer.png</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
@@ -19,16 +19,16 @@
 		<en>
 		<![CDATA[Shows the PDA Map over the hole Screen. Press insert to activate. Key Delete show legend!
 			Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername + Playername auf PDAMap
-            Transparens with KP + and KP -, Switch Overlay with Key End
-            Kompatible with CoursePlay 2.11
-			Set keybinding in option dialog]]>
+            New in this version, an Infopanel. Open it with mouseclick on an vehicle.
+			You can see the name an Filllevel. Panel still apears when map is deaktivated.
+			Datas are live updated. Also new, automatic detect the mapsize. No more switching needed]]>
 		</en>
 		<de>
 		<![CDATA[Zeigt die PDA Map als Vollbild an. 
-			- Einfügen = aktiviere! ALT+M Umschalten der Mapgroesse von 2048 auf 4096
-			- Entfernen = Legende einblenden.
-			- Numpad +/- = Transparenz einstellen
-			- Ende = Durchschalten der PoI und Feldnummern, Inkl. CoursePlay Kurse
+			Zeigt die Karte auf dem gesamten Bildschirm an. Mit aktuellen Positionen aller Fahrzeuge und Anbaugeräte.
+			Neu: - Infopanel. Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.
+					Das Panel zeigt die Ladung und den Ladestand an.
+				 - Automatisches ermitteln der Kartengroesse. Kein Umschalten mehr bei doppeltgrossen Maps notwendig.
 			Script: fox-alpha]]>		
 		</de>
 	</description>
@@ -36,8 +36,8 @@
 	<l10n>
         <!-- Copyright Meldung -->
         <text name="mapviewtxt">
-            <en>Mapviewer V0.5 $Rev$ Copyright (C) Fox-Alpha</en>
-            <de>Mapviewer V0.5 $Rev$ Copyright (C) Fox-Alpha</de>
+            <en>Mapviewer V0.6 $Rev$ Copyright (C) Fox-Alpha</en>
+            <de>Mapviewer V0.6 $Rev$ Copyright (C) Fox-Alpha</de>
         </text>
         <!-- Tastenbeschreibungen -->
 		<text name="BIGMAP_Legende">
@@ -175,6 +175,14 @@
 		<text name="MV_AttachTypeother">
 			<en>other</en>
 			<de>andere</de>	
+		</text>
+		<text name="MV_EmptyTank">
+			<en>Empty</en>
+			<de>Leer</de>	
+		</text>
+		<text name="MV_Unknown">
+			<en>Unknown</en>
+			<de>Unbekannt</de>	
 		</text>
         <!-- Fehlermdeldungen -->
 		<text name="MV_ErrorInitPoI">

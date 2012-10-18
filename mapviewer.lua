@@ -24,6 +24,7 @@ function mapviewer:loadMap(name)
 	self.showPoi = false;
     self.showCP = false;
     self.showBottles = false;
+    self.showInfoPanel = false;
     
     self.useBottles = true;
     self.useLegend = true;
@@ -48,6 +49,8 @@ function mapviewer:loadMap(name)
 	self.playerRotY=0;
 	self.plyname = {};
 	self.bigmap ={};
+	self.mouseX = 0;
+	self.mouseY = 0;
 	
 	----
 	-- Debug Modus
@@ -69,16 +72,20 @@ function mapviewer:InitMapViewer()
     self.bigmap.PoI = {};
     self.bigmap.FNum = {};
 
-	self.bigmap.mapDimensionX = 2048;
-	self.bigmap.mapDimensionY = 2048;
+	-- self.bigmap.mapDimensionX = 2048;
+	-- self.bigmap.mapDimensionY = 2048;
 	self.bigmap.mapWidth = 1;
 	self.bigmap.mapHeight = 1;
 	self.bigmap.mapPosX = 0.5-(self.bigmap.mapWidth/2);
 	self.bigmap.mapPosY = 0.5-(self.bigmap.mapHeight/2);
 	self.bigmap.mapTransp = 1;
 
-    self.bigmap.mapDimensionX = 2048;
-    self.bigmap.mapDimensionY = 2048;
+	----
+	-- Globale Kartengröße verwnenden
+	-----
+    self.bigmap.mapDimensionX = g_currentMission.missionPDA.worldSizeX;
+    self.bigmap.mapDimensionY = g_currentMission.missionPDA.worldSizeZ;
+	-----
     self.bigmap.PoI.width = 1;
     self.bigmap.PoI.height = 1;
     self.bigmap.FNum.width = 1;
@@ -199,6 +206,40 @@ function mapviewer:InitMapViewer()
 	self.bigmap.IconAttachments.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachmentFront#height"), 0.0078125);
 	----
     
+	--Array für Infopanel
+	self.bigmap.InfoPanel = {};
+	self.bigmap.InfoPanel.background = {};
+	self.bigmap.InfoPanel.background = {file = "", OverlayId = nil, width = 0.15, height= 0.125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.background.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel#file"), "gfx/Info_Panel.png"), self.moddir);
+	self.bigmap.InfoPanel.background.OverlayId = createImageOverlay(self.bigmap.InfoPanel.background.file);
+	-- Informationen die angezeigt werden
+	self.bigmap.InfoPanel.Info = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+	self.bigmap.InfoPanel.vehicleIndex = 0;
+	self.bigmap.InfoPanel.isVehicle = false;
+	self.bigmap.InfoPanel.lastVehicle = {};
+	
+	-- Buttons im Panel
+	-- self.bigmap.InfoPanel.buttons =	{};
+	-- self.bigmap.InfoPanel.buttons =	{switch = {file = "", OverlayId = nil}, close = {file = "", OverlayId = nil}};
+		-- Switch Button
+		-- self.bigmap.InfoPanel.buttons.switch.file =	Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonSwitch#file"), ".png"), self.moddir);
+		-- self.bigmap.InfoPanel.buttons.switch.OverlayID = createImageOverlay(self.bigmap.InfoPanel.buttons.switch.file);
+		-- self.bigmap.InfoPanel.buttons.switch.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonSwitch#width"), 0.0078125);
+		-- self.bigmap.InfoPanel.buttons.switch.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonSwitch#height"), 0.0078125);
+		-- self.bigmap.InfoPanel.buttons.switch.x = 0;
+		-- self.bigmap.InfoPanel.buttons.switch.y = 0;
+		--
+		-- Close Button
+		-- self.bigmap.InfoPanel.buttons.close.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonClose#file"), ".png"), self.moddir);	
+		-- self.bigmap.InfoPanel.buttons.close.OverlayID =	createImageOverlay(self.bigmap.InfoPanel.buttons.close.file);
+		-- self.bigmap.InfoPanel.buttons.close.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonClose#width"), 0.0078125);
+		-- self.bigmap.InfoPanel.buttons.close.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonClose#height"), 0.0078125);
+		-- self.bigmap.InfoPanel.buttons.close.x = 0;
+		-- self.bigmap.InfoPanel.buttons.close.y = 0;
+		----
+	-- Ende Infopanel Buttons
+	----
+	
     ----
     -- Tabelle für Typen
     ----
@@ -277,14 +318,25 @@ function mapviewer:InitMapViewer()
     ----
     -- Einstellungen nur laden wenn Datei bereits vorhanden ist
     ----
+	-- ToDo: Nur Laden wenn nicht client im Multiplayer
+	----
     print("MapViewer LoadOptions()");
     local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/mapviewer.xml";
     print(path);
     if mapviewer:file_exists(path) then
         mapviewer:LoadFromFile();
     else
+    ----
+	-- ToDo: Nur Speichern wenn nicht client im Multiplayer
+	----
         mapviewer:SaveToFile();
     end;
+	
+	----
+	-- Mapgroesse printen
+	----
+	print(g_i18n:getText("mapviewtxt") .. " : " .. string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));	--
+	----
     print("MapViewer LoadOptions() beendet");
     ----
     
@@ -566,8 +618,218 @@ function mapviewer:readStream(streamId, connection)
 end;
 
 function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
+	--Infopanel an Mousepos anzeigen
+	local vehicle;
+	local panelX, panelY, panelZ;
+	if self.mapvieweractive then
+		if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_LEFT) and not Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) then
+			self.mouseX = posX;
+			self.mouseY = posY;
+			self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
+			--print(self:vehicleInMouseRange());
+			if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
+				-- self.bigmap.InfoPanel.vehicleIndex = vehicle;
+				print(string.format("vehicleInMouseRange() - Fahrzeug in der Nähe : %d", self.bigmap.InfoPanel.vehicleIndex));
+				self.showInfoPanel = true;
+				-- panelX, panelY, panelZ = getWorldTranslation(g_currentMission.attachables[vehicle].rootNode);
+				panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
+				self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
+				self.bigmap.InfoPanel.background.Pos.y = posY;
+				-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || Node : %d ", panelX, panelY, panelZ, g_currentMission.steerables[vehicle].rootNode));
+				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
+				-- print(table.show(self.bigmap.InfoPanel.Info, "vehicleInfo."));
+			else
+				self.showInfoPanel = false;
+			end;
+		end;
+		if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) and not Input.isMouseButtonPressed(Input.MOUSE_BUTTON_LEFT) then
+			self.showInfoPanel = false;
+		end;
+	end;
+	----
 end;
---
+----
+
+----
+-- Ermitteln der Vehicle Informationen
+----
+function mapviewer:GetVehicleInfo(vehicle)
+	-- local currV = g_currentMission.steerables[vehicle];
+	local vehicleInfo = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+	local percent = 0;
+	
+	if vehicle ~= nil and type(vehicle) == "table" then
+		vehicleInfo.Type = string.sub(Utils.getNoNil(vehicle.name, g_i18n:getText("MV_Unknown")), 0, 25); 
+		
+		if self.bigmap.InfoPanel.isVehicle then
+			vehicleInfo.Ply = "SPIELER : " .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_EmptyTank")), 0, 20); 
+			if vehicle.isHired then 
+				vehicleInfo.Ply = vehicleInfo.Ply .. " [H]"
+			end;
+		-- TODO --
+		-- Wenn Tractor, dann auf Anhänger usw. prüfen um den Füllstand zu ermitteln
+		----
+		else
+			vehicleInfo.Ply = "Typ : " .. g_i18n:getText("MV_AttachType"..vehicle.typeName); --"Attachable";
+		end;
+				
+		-- Füllstand ermitteln
+		if vehicle.grainTankFillLevel ~= nil then 
+			percent = vehicle.grainTankFillLevel / vehicle.grainTankCapacity * 100;
+			vehicleInfo.Tank = string.format("%d / %d | %.2f%%", vehicle.grainTankFillLevel, vehicle.grainTankCapacity, percent);
+			if vehicle.grainTankFillLevel > 0 then
+				-- vehicleInfo.Fruit = FruitUtil.fruitIndexToDesc[vehicle.currentGrainTankFruitType].name;
+				vehicleInfo.Fruit = tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[vehicle.currentGrainTankFruitType].name));
+			else 
+				vehicleInfo.Fruit = g_i18n:getText("MV_EmptyTank");
+			end;
+		elseif vehicle.capacity ~= nil then
+			percent = vehicle.fillLevel / vehicle.capacity * 100;
+			vehicleInfo.Tank = string.format("%d / %d | %.2f%%", vehicle.fillLevel, vehicle.capacity, percent);
+			if SpecializationUtil.hasSpecialization(Fillable, vehicle.specializations) then
+				if vehicle.currentFillType ~= Fillable.FILLTYPE_UNKNOWN then
+					if g_i18n:hasText (Fillable.fillTypeIntToName[vehicle.currentFillType]) then
+						vehicleInfo.Fruit = tostring(g_i18n:getText(Fillable.fillTypeIntToName[vehicle.currentFillType]));
+					else
+						vehicleInfo.Fruit = tostring(Fillable.fillTypeIntToName[vehicle.currentFillType]);
+					end;
+				end;
+			else 
+				vehicleInfo.Fruit = g_i18n:getText("MV_Unknown");
+			end;
+		elseif vehicle:getAttachedTrailersFillLevelAndCapacity() then
+			local f, c;
+			f, c = vehicle:getAttachedTrailersFillLevelAndCapacity();
+			if f ~= nil and c ~= nil then
+				--print(string.format("Fahrzeug Füllstand und Kapazität : %.2f | %.2f", f, c));
+				percent = f / c * 100;
+				vehicleInfo.Tank = string.format("%d / %d | %.2f%%", f, c, percent);
+			end;
+		else
+			vehicleInfo.Tank = "";
+			vehicleInfo.Fruit = ""; 
+		end;
+		
+	end;
+	return vehicleInfo;
+end;
+----
+
+----
+-- Panel anzeigen
+----
+function mapviewer:ShowPanelonMap()
+	if self.showInfoPanel then
+		--local vehicleInfo = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+		local tX, tY, tLeft, tRight, tTop;
+		tX = self.bigmap.InfoPanel.background.Pos.x;
+		tY = self.bigmap.InfoPanel.background.Pos.y;
+		tTop = tY + self.bigmap.InfoPanel.background.height - 0.020;
+		tLeft = tX + 0.005; 
+		
+		--print(table.show(self.bigmap.InfoPanel.Info, "vehicleInfo."));
+		
+		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
+
+		local v = self.bigmap.InfoPanel.lastVehicle;
+		setTextBold(true);
+		--MV_Unknown
+		setTextColor(0, 0, 0, 1);
+		renderText(tLeft, tTop, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info.Type, g_i18n:getText("MV_Unknown"))));
+		renderText(tLeft, tTop-0.020, 0.012, string.format("%s", Utils.getNoNil(tostring(self.bigmap.InfoPanel.Info.Ply), g_i18n:getText("MV_Unknown"))));
+		if self.bigmap.InfoPanel.lastVehicle ~= nil then
+			if self.bigmap.InfoPanel.lastVehicle.grainTankCapacity ~= nil then -- and self.bigmap.InfoPanel.lastVehicle.grainTankCapacity > 0 then
+				renderText(tLeft, tTop-0.040, 0.012, string.format("Füllstand : "));
+				renderText(tLeft, tTop-0.060, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info.Tank, g_i18n:getText("MV_Unknown"))));
+				renderText(tLeft, tTop-0.080, 0.012, string.format("Ladung : %s", Utils.getNoNil(self.bigmap.InfoPanel.Info.Fruit, g_i18n:getText("MV_Unknown"))));
+			elseif self.bigmap.InfoPanel.lastVehicle.capacity ~= nil then -- and self.bigmap.InfoPanel.lastVehicle.capacity > 0 then
+				renderText(tLeft, tTop-0.040, 0.012, string.format("Füllstand : "));
+				renderText(tLeft, tTop-0.060, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info.Tank, g_i18n:getText("MV_Unknown"))));
+				renderText(tLeft, tTop-0.080, 0.012, string.format("Ladung : %s", Utils.getNoNil(self.bigmap.InfoPanel.Info.Fruit, g_i18n:getText("MV_Unknown"))));
+			elseif self.bigmap.InfoPanel.lastVehicle:getAttachedTrailersFillLevelAndCapacity() then
+				renderText(tLeft, tTop-0.040, 0.012, string.format("Füllstand : "));
+				renderText(tLeft, tTop-0.060, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info.Tank, g_i18n:getText("MV_Unknown"))));				
+			end;
+		end;
+		setTextColor(1, 1, 1, 0);
+		setTextBold(false);
+		
+	end;
+end;
+----
+
+----
+-- Fahrzeug in der Nähe des Mausklicks finden
+----
+function mapviewer:vehicleInMouseRange()
+
+	local oldIndex = nil;
+	local index = nil;
+	local nearestDistance = 0.005;
+	local isVehicle = true;
+	local currV = nil;
+	local tmpDistance = 0.006;
+	local distance = 0.006;
+	local sDistance = 0.006
+	local aDistance = 0.006;
+	local vDistance = 0.006;
+
+	-- print("--vehicleInMouseRange()--");
+	-- print("--Steerables--");
+	for j=1, table.getn(g_currentMission.steerables) do
+
+		local currS = g_currentMission.steerables[j];
+		local posX1, posY1, posZ1 = getWorldTranslation(currS.rootNode);
+		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
+		-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || X-Y auf Karte : %.3f, %.3f || Maus X-Y : %.3f, %.3f || Distanz: %.3f || Node: %d || Index : %d", 
+										-- posX1, posY1, posZ1, distancePosX, distancePosZ, self.mouseX, self.mouseY, tmpDistance, currS.rootNode, j));
+
+		if tmpDistance < nearestDistance then
+			sDistance = tmpDistance;
+			if sDistance < distance then 
+				distance = sDistance;
+				index = j;
+				isVehicle = true;
+				currV = currS;
+			end;
+		end;
+		-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, sDistance, distance));
+	end;
+	
+	tmpDistance = 0.006;
+	aDistance = 0.006;
+	vDistance = 0.006;
+	--Attachables
+	-- print("--Attachables--");
+	for a=1, table.getn(g_currentMission.attachables) do
+		if g_currentMission.attachables[a].attacherVehicle == nil or g_currentMission.attachables[a].attacherVehicle == 0 then
+			local currA = g_currentMission.attachables[a];
+			local posX1, posY1, posZ1 = getWorldTranslation(currA.rootNode);
+			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+			tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
+			-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || X-Y auf Karte : %.3f, %.3f || Maus X-Y : %.3f, %.3f || Distanz: %.3f || Node: %d || Index : %d", 
+											-- posX1, posY1, posZ1, distancePosX, distancePosZ, self.mouseX, self.mouseY, tmpDistance, currA.rootNode, a));
+
+			if tmpDistance < nearestDistance then
+				aDistance = tmpDistance;
+				if aDistance < distance then 
+					distance = aDistance;
+					index = a;
+					isVehicle = false;
+					currV = currA;
+				end;
+			end;
+			-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, aDistance, distance));
+		end;
+	end;
+	-- print("----");
+
+	return index, isVehicle, currV;	
+end;
+----
 
 --
 -- Auf Tastendruck reagieren
@@ -578,12 +840,26 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 	-- ALT+d
     ----
 	-- if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0 then
-	-- 	self.Debug=not self.Debug;
-	-- 	print("Debug = "..tostring(self.Debug));
+		--self.Debug=not self.Debug;
+		--print("Debug = "..tostring(self.Debug));
+		-- self:listTipTriggers();
+		-- if not connection:getIsServer() then
+			-- print("Server Aktiv");
+		-- else
+			-- print("Client Aktiv");
+		-- end;
+		
+		-- if self.isServer then print("Server Aktiv"); end;
+		-- if self.isClient then print("Server Aktiv"); end;
 	-- end;
     ----
 	
 	-- Umschalten der Mapgrösse für 2048 (Standard) und 4096
+    ----
+	-- ToDo: Kann entfernt werden wenn MP Fehler behoben
+	--       Globale Kartengröße verwenden !
+	----
+
 	if isDown and sym == Input.KEY_m and bitAND(modifier, Input.MOD_ALT) > 0 then
 		if self.bigmap.mapDimensionX == 2048 then
 			self.bigmap.mapDimensionX = 4096;
@@ -596,6 +872,8 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 		print();
         mapviewer:SaveToFile();
 	end;
+	
+	----
 end;
 
 --
@@ -621,6 +899,21 @@ function mapviewer:update(dt)
 	-- Taste für Map einblenden
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
 		self.mapvieweractive=not self.mapvieweractive;
+		if self.mapvieweractive then
+			g_mouseControlsHelp.active = false;
+			InputBinding.setShowMouseCursor(true);
+			InputBinding.wrapMousePositionEnabled = false;
+			if (g_currentMission.player.isEntered) then
+				g_currentMission.player.isFrozen = true;
+			end;
+		else
+			g_mouseControlsHelp.active = true;
+			InputBinding.setShowMouseCursor(false);
+			InputBinding.wrapMousePositionEnabled = true;
+			if (g_currentMission.player.isEntered) then
+				g_currentMission.player.isFrozen = false;
+			end;
+		end;
 	end;
 	--Taste für Legende einblenden
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
@@ -688,6 +981,28 @@ function mapviewer:update(dt)
         mapviewer:SaveToFile();
 	end;
 	
+	----
+	-- Panel Position an Fahrzeug anpassen
+	----
+	if self.mapvieweractive and self.showInfoPanel then
+		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then
+			local posX1, posY1, posZ1 = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
+			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+			
+			self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.background.Pos.y = distancePosZ;
+			
+			self.bigmap.InfoPanel.Info = {};
+			self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
+
+		else
+			selfShowInfoPanel = false;
+			print("--\nFehler in Update() - showInfoPanel\n--");
+		end;	
+	end;	
+	----
+	
 	--BigMap Transparenz erhöhen und verringern
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
 		if self.bigmap.mapTransp < 1 then
@@ -703,6 +1018,21 @@ function mapviewer:update(dt)
 	end;
 	-- ende Transparenz umschalten
 end;
+
+---- Trigger Array
+function mapviewer:listTipTriggers()
+	local z=0;
+	for k,v in pairs(g_currentMission.tipTriggers) do
+		z=z+1;
+		print("TipTrigger: " .. tostring(z));
+		print(tostring(k) .."("..type(v)..")="..tostring(v));
+		for i,j in pairs(g_currentMission.tipTriggers[k]) do
+			print(tostring(i).."("..type(j)..")="..tostring(j));
+		end;
+	end;
+	print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
+end;
+----
 
 function mapviewer:draw()
 	if self.mapvieweractive then
@@ -791,9 +1121,12 @@ function mapviewer:draw()
 			end;
 		end;
         ----
-
+		
 		--Maplegende anzeigen
 		if self.maplegende and self.useLegend then
+				----
+				-- TODO : Liste der Legende durch Schleife jagen
+				----
 			if self.bigmap.Legende.OverlayId ~=nil then
 				renderOverlay(self.bigmap.Legende.OverlayId, self.bigmap.Legende.legPosX, self.bigmap.Legende.legPosY, self.bigmap.Legende.width, self.bigmap.Legende.height);
 				setTextColor(0, 0, 0, 1);
@@ -1037,10 +1370,26 @@ function mapviewer:draw()
             end;
 			setOverlayColor(self.bigmap.IconAttachments.Icon.front.OverlayId, 1, 1, 1, 1);
 		end;
-		-----
+		----
+		
+		----
+		-- InfoPanel anzeigen
+		----
+		setTextColor(0, 0, 0, 1);
+		renderText(0.020, 0.090, 0.020, string.format("Mouse Pos : x:%.3f / y:%.3f",self.mouseX,self.mouseY));
+		setTextColor(1, 1, 1, 0);
+		if self.showInfoPanel then
+			self.bigmap.InfoPanel.Info = {};
+			self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
+			
+			self:ShowPanelonMap();
+		end;
+		----
+	else
+		g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Activate"), InputBinding.BIGMAP_Legende);
 	end;
 	----
-	--Namen auf PDA anzeigen
+	-- Namen auf PDA anzeigen
 	----
     ----
     -- TODO: Alle Spieler auf PDA anzeiegn

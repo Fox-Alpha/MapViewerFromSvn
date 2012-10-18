@@ -10,6 +10,12 @@
 		<!-- Abweichende Karte verwenden, wird nmomentan nicht verwendet -->
 		<!-- <mapFile useMapFile="false" file="gfx/pda_map.dds" /> -->
 		<legende file="gfx/background.png" width="0.15" height="0.125" posX="0.0244" posY="0.15" />
+		<Infopanel file="Panel/Info_Panel.png" width="0.15" height="0.15" >
+			<Buttons>
+				<ButtonSwitch width="0.01" height="0.01" file="Panel/Bt_Switch.png"/>
+				<ButtonClose width="0.01" height="0.01" file="Panel/Bt_Close.png"/>
+			</Buttons>
+		</Infopanel>
 		<!--  -->
 
 		<!-- Point of Interests und Feldnummern Overlay für die Standard Karte -->
