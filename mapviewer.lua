@@ -32,9 +32,10 @@ function mapviewer:loadMap(name)
     self.useLegend = true;
     
 	self.numOverlay = 0;
+
 	self.mapPath = 0;
-	
 	self.useDefaultMap = false;
+	self.mapName = "";
     
     self.courseplay = true;
 	
@@ -122,6 +123,9 @@ function mapviewer:InitMapViewer()
 	-----
     self.bigmap.mapDimensionX = g_currentMission.missionPDA.worldSizeX;
     self.bigmap.mapDimensionY = g_currentMission.missionPDA.worldSizeZ;
+	
+	print("Global: "..string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));
+
 	-----
     self.bigmap.PoI.width = 1;
     self.bigmap.PoI.height = 1;
@@ -136,12 +140,14 @@ function mapviewer:InitMapViewer()
     --
     -- Prüfen ob es sich um die Standard Karte handelt
     --
+	self.mapName = g_currentMission.missionInfo.map.title;
     if self.mapPath == "" and g_currentMission.missionInfo.map.title == "Karte 1" then
         self.mapPath = getAppBasePath() .. "data/maps/map01/";
         self.useDefaultMap = true;
     else
         self.mapPath = self.mapPath .. "map01/"
     end;
+	print(string.format(g_i18n:getText("MV_MapName"), g_currentMission.missionInfo.map.title));
     -----
     self.bigmap.file = Utils.getNoNil(Utils.getFilename("pda_map.png", self.mapPath), Utils.getFilename("pda_map.dds", self.mapPath));
     self.bigmap.OverlayId.ovid = createImageOverlay(self.bigmap.file);
@@ -382,22 +388,21 @@ function mapviewer:InitMapViewer()
 		----	
 	----
 
-	
-	----
-    -- Einstellungen nur laden wenn Datei bereits vorhanden ist
     ----
-	-- ToDo: Nur Laden wenn nicht client im Multiplayer
+	-- Nur Laden und speichern, wenn Singleplayer oder nicht client im Multiplayer
+	print("Nur Laden und speichern, wenn Singleplayer oder nicht client im Multiplayer");
 	----
-	if g_server ~= nil then
+	print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
+	print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
+	print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
+	----
+	if g_currentMission:getIsServer() then
 		print("MapViewer LoadOptions()");
 		local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/mapviewer.xml";
-		print(path);
+		-- print(path);
 		if mapviewer:file_exists(path) then
 			mapviewer:LoadFromFile();
 		else
-		----
-		-- ToDo: Nur Speichern wenn nicht client im Multiplayer
-		----
 			mapviewer:SaveToFile();
 		end;
 		print("MapViewer LoadOptions() ende");
@@ -407,8 +412,6 @@ function mapviewer:InitMapViewer()
 	----
 	print(g_i18n:getText("mapviewtxt") .. " : " .. string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));	--
 	----
-    print("MapViewer LoadOptions() beendet");
-    ----
     
 	----
 	-- Initialisierung abgeschlossen
@@ -462,6 +465,7 @@ function mapviewer:SaveToFile(mv_old)
         setXMLFloat(mvxml, "mapviewer.map#transparenz", self.bigmap.mapTransp);
         -- string
 		setXMLString(mvxml, "mapviewer#ver", "v0.60");
+		setXMLString(mvxml, "mapviewer#mapName", self.mapName);
         -- bool
         setXMLBool(mvxml, "mapviewer.map.default#use", self.useDefaultMap);
         
@@ -505,7 +509,7 @@ function mapviewer:LoadFromFile()
 		-- ToDo: Auslesen der MV Version und Vergleichen
 		-- Bei alten Versionen mit neuester ersetzen
 		----
-		if Utils.getNoNil(getXMLString(mvxml, "mapviewer#ver"), "MV_OLD") == mv_ver then
+		if Utils.getNoNil(getXMLString(mvxml, "mapviewer#ver"), "MV_OLD") == mv_ver and getXMLString(mvxml, "mapviewer#mapName") ~= nil and getXMLString(mvxml, "mapviewer#mapName") == self.mapName then
 		----
 			-- int
 			self.bigmap.mapDimensionX = getXMLInt(mvxml, "mapviewer.map.mapSize#DimX");
@@ -834,6 +838,8 @@ function mapviewer:GetVehicleInfo(vehicle)
 		table.insert(vehicleInfo, vehicle.name);
 		
 		if self.bigmap.InfoPanel.isVehicle then
+		----
+		-- Todo: Spieleranzeige 
 			if vehicle.isHired then 
 				table.insert(vehicleInfo ,"SPIELER : " .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_EmptyTank")), 0, 20) .. " [H]"); 
 			else
@@ -1291,61 +1297,6 @@ function mapviewer:listTipTriggers()
 end;
 ----
 
-----
--- Alte Funktion zum Zeichnen der Legende
-----
-function mapviewer:drawLegendOld()
-	renderOverlay(self.bigmap.Legende.OverlayId, self.bigmap.Legende.legPosX, self.bigmap.Legende.legPosY, self.bigmap.Legende.width, self.bigmap.Legende.height);
-	setTextColor(0, 0, 0, 1);
-	--Icons in Legende erstellen
-	self.l_PosY = 1-0.02441 - 0.007324 - 0.015625; -- 1-50-15-32
-	
-	--Eigener Spieler Icon
-	renderOverlay(self.bigmap.player.ArrowOverlayId,
-					self.bigmap.Legende.legPosX + 0.007324,
-					self.l_PosY, 
-					0.015625, 
-					0.015625);
-	renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeLocalPlayer"));
-	
-	--Andere Spieler Icon
-	self.l_PosY = self.l_PosY - 0.020;
-	renderOverlay(self.bigmap.player.mpArrowOverlayId,
-					self.bigmap.Legende.legPosX + 0.007324,
-					self.l_PosY,
-					0.015625, 
-					0.015625);
-	renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeOtherPlayer"));
-	
-	--Spieler auf Fahrzeug
-	self.l_PosY = self.l_PosY - 0.020;
-	renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
-					self.bigmap.Legende.legPosX + 0.007324,
-					self.l_PosY,
-					0.015625, 
-					0.015625);
-	renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeControledVehicle"));
-	
-	--Leere Fahrzeug
-	self.l_PosY = self.l_PosY - 0.020;
-	renderOverlay(self.bigmap.IconSteerable.OverlayId,
-					self.bigmap.Legende.legPosX + 0.007324,
-					self.l_PosY,
-					0.015625, 
-					0.015625);
-	renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeEmptyVehicle"));
-	
-	--Anbaugeräte, Anhänger
-	self.l_PosY = self.l_PosY - 0.020;
-	renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
-					self.bigmap.Legende.legPosX + 0.007324,
-					self.l_PosY,
-					0.015625, 
-					0.015625);
-	renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, g_i18n:getText("MV_LegendeAttachments"));
-end;
-----
-
 function mapviewer:draw()
 	if self.mapvieweractive then
 		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
@@ -1450,9 +1401,9 @@ function mapviewer:draw()
 										0.015625, 
 										0.015625);
 						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, c[i].Txt);
-						if self.printInfo then
-							print(table.show(c[i], string.format("Content %d : ", i)));
-						end;
+						-- if self.printInfo then
+							-- print(table.show(c[i], string.format("Content %d : ", i)));
+						-- end;
 					else
 						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, "Legenden Icon nicht vorhanden");
 					end;

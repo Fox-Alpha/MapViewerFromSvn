@@ -65,6 +65,10 @@
 			<en>Changing mapsize to : %d x %d</en>
 			<de>Ändere die Mapgrösse auf : %d x %d</de>	
 		</text>
+		<text name="MV_MapName">
+			<en>Name of loaded Map : %s</en>
+			<de>Name der geladenen Karte ist : %s</de>	
+		</text>
 		
         <!-- Aktiver Overlay Modus -->
 		<text name="MV_Mode1">
