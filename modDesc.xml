@@ -60,6 +60,7 @@
 			<en>Mapviewer decrease Transparence</en>
 			<de>Mapviewer Transparenz verringern</de>	
 		</text>
+
         <!-- Log Meldungen -->
 		<text name="MV_InfoMapsize">
 			<en>Changing mapsize to : %d x %d</en>
@@ -68,6 +69,26 @@
 		<text name="MV_MapName">
 			<en>Name of loaded Map : %s</en>
 			<de>Name der geladenen Karte ist : %s</de>	
+		</text>
+		<text name="MV_MapPoISuccess">
+			<en>PoI Overlay successful loaded</en>
+			<de>PoI Overlay erfolgreich geladen</de>	
+		</text>
+		<text name="MV_MapFNumSuccess">
+			<en>Fieldnumber Overlay successful loaded</en>
+			<de>Feldnummern Overlay erfolgreich geladen</de>	
+		</text>
+		<text name="MV_LoadOptions">
+			<en>Loading Options from XML File</en>
+			<de>Einstellungen aus XML laden</de>	
+		</text>
+		<text name="MV_CheckForLocaleOverlay">
+			<en>Checking for locale FNum and PoI overlay files</en>
+			<de>Prüfen auf lokale FNum und PoI  Overlay Dateien</de>	
+		</text>
+		<text name="MV_LocaleFileSuccess">
+			<en>Checking for locale FNum and PoI overlay files</en>
+			<de>%s Datei erfolgreich geladen</de>	
 		</text>
 		
         <!-- Aktiver Overlay Modus -->
