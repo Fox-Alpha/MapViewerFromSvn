@@ -1,5 +1,12 @@
 * text=auto !eol
 / svnc_tsvn_003aprojectlanguage=0x401
+/Panel svnc_tsvn_003aprojectlanguage=1025
+Panel/Bt_Close.png -text
+Panel/Bt_Switch.png -text
+Panel/Info_Panel.png -text
+Panel/button.png -text
+Panel/glow.png -text
+Panel/selectedbutton.png -text
 /gfx svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
 gfx/PoI_Karte_1.png -text svn_keywords
 gfx/background.png -text svn_keywords
