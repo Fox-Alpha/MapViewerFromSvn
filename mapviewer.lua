@@ -64,6 +64,8 @@ function mapviewer:loadMap(name)
 	self.Debug = false;
 	----
 	
+	self.mv_Error = false;
+	
 	----
 	-- Workaround um in den Steerable den Namen als .name einzubinden
 	----
@@ -296,6 +298,9 @@ function mapviewer:InitMapViewer()
 		self.bigmap.file = Utils.getNoNil(Utils.getFilename("pda_map.png", self.mapPath), Utils.getFilename("pda_map.dds", self.mapPath));
 	end;
     self.bigmap.OverlayId.ovid = createImageOverlay(self.bigmap.file);
+	if self.bigmap.OverlayId.ovid == nil or self.bigmap.OverlayId.ovid == 0 then
+		print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
+	end;
 	----
 
 	----
@@ -562,7 +567,7 @@ function mapviewer:InitMapViewer()
     self.bigmap.PoI.OverlayId = createImageOverlay(self.bigmap.PoI.file);
     if self.bigmap.PoI.OverlayId == nil or self.bigmap.PoI.OverlayId == 0 then
         self.usePoi = false;
-		print(string.format("|| %s || %s complete ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitPoI")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitPoI")));
 	else
 		self.usePoi = true;
     end;
@@ -582,7 +587,7 @@ function mapviewer:InitMapViewer()
 	self.bigmap.FNum.OverlayId = createImageOverlay(self.bigmap.FNum.file);
 	if self.bigmap.FNum.OverlayId == nil or self.bigmap.FNum.OverlayId == 0 then
 		self.useFNum = false;
-		print(string.format("|| %s || %s complete ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitFNum")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitFNum")));
 	else
 		self.useFNum = true;
 	end;
@@ -1360,21 +1365,26 @@ function mapviewer:update(dt)
 
 	-- Taste für Map einblenden
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
-		self.mapvieweractive=not self.mapvieweractive;
-		if self.mapvieweractive then
-			g_mouseControlsHelp.active = false;
-			InputBinding.setShowMouseCursor(true);
-			InputBinding.wrapMousePositionEnabled = false;
-			if (g_currentMission.player.isEntered) then
-				g_currentMission.player.isFrozen = true;
+		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
+			self.mapvieweractive=not self.mapvieweractive;
+			if self.mapvieweractive then
+				g_mouseControlsHelp.active = false;
+				InputBinding.setShowMouseCursor(true);
+				InputBinding.wrapMousePositionEnabled = false;
+				if (g_currentMission.player.isEntered) then
+					g_currentMission.player.isFrozen = true;
+				end;
+			else
+				g_mouseControlsHelp.active = true;
+				InputBinding.setShowMouseCursor(false);
+				InputBinding.wrapMousePositionEnabled = true;
+				if (g_currentMission.player.isEntered) then
+					g_currentMission.player.isFrozen = false;
+				end;
 			end;
 		else
-			g_mouseControlsHelp.active = true;
-			InputBinding.setShowMouseCursor(false);
-			InputBinding.wrapMousePositionEnabled = true;
-			if (g_currentMission.player.isEntered) then
-				g_currentMission.player.isFrozen = false;
-			end;
+			self.mv_Error = not self.mv_Error;
+			print(string.format("|| Update() - %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
 		end;
 	end;
 	--Taste für Legende einblenden
@@ -1396,20 +1406,20 @@ function mapviewer:update(dt)
         ----
         -- Überprüfen ob Feldnummern und PoI benutz werden können
         ----
-        if not self.useFNum or not self.usePoi or not self.useBottles then
-            if self.numOverlay == 1 and not self.useFNum then
-                self.numOverlay = self.numOverlay+1;
-            end;
-            if self.numOverlay == 2 and not self.usePoi then
-                self.numOverlay = self.numOverlay+1;
-            end;
-            if self.numOverlay == 3 and (not self.usePoi or not self.useFNum) then
-                self.numOverlay = self.numOverlay+1;
-            end;
+        -- if not self.useFNum or not self.usePoi or not self.useBottles then
+            -- if self.numOverlay == 1 and not self.useFNum then
+                -- self.numOverlay = self.numOverlay+1;
+            -- end;
+            -- if self.numOverlay == 2 and not self.usePoi then
+                -- self.numOverlay = self.numOverlay+1;
+            -- end;
+            -- if self.numOverlay == 3 and (not self.usePoi or not self.useFNum) then
+                -- self.numOverlay = self.numOverlay+1;
+            -- end;
             if self.numOverlay == 5 and not self.useBottles then
                 self.numOverlay = self.numOverlay+1;
             end;
-        end;
+        -- end;
         ----
         ----
         -- Alle Overlays deaktivieren
@@ -1517,18 +1527,13 @@ function mapviewer:draw()
 			setOverlayColor(self.bigmap.OverlayId.ovid, 1,1,1,self.bigmap.mapTransp);
 			renderOverlay(self.bigmap.OverlayId.ovid, self.bigmap.mapPosX, self.bigmap.mapPosY, self.bigmap.mapWidth, self.bigmap.mapHeight);
 		else
-			renderText(0.25, 0.5-0.03, 0.024, string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
-			if self.Debug then
-                print("----");
-				print("Debug: :draw()");
-				print(string.format("self.useMapFile: %s", tostring(self.useMapFile)));
-				print(string.format("self.bigmap.file: %s", self.bigmap.file));
-				print(string.format("self.bigmap.OverlayId.ovid: %d", self.bigmap.OverlayId.ovid));
-                print("----");
-			end;
             self.mapvieweractive = false;
 		end;
-
+	end;
+	if self.mv_Error then
+		g_currentMission:addWarning(g_i18n:getText("MV_ErrorCreateMV"), 0.018, 0.033);
+	end;
+	if self.mapvieweractive then
 		--Aktuelle Transparenz und Copyright
 		setTextColor(1, 1, 1, 1);
 		renderText(0.5-0.0273, 1-0.03, 0.020, string.format("Transparenz\t%d", self.bigmap.mapTransp * 100));
@@ -1548,23 +1553,26 @@ function mapviewer:draw()
         ----
 
 		--Points of Interessts
-		if self.usePoi and self.showPoi then
+		-- if self.usePoi and self.showPoi then
+		if self.showPoi then
 			if self.bigmap.PoI.OverlayId ~= nil and self.bigmap.PoI.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.PoI.OverlayId, self.bigmap.PoI.poiPosX, self.bigmap.PoI.poiPosY, self.bigmap.PoI.width, self.bigmap.PoI.height);
 			else
-                string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorPoICreateOverlay"))
-				self.usePoi = not self.usePoi;
+                g_currentMission:addWarning(g_i18n:getText("MV_ErrorPoICreateOverlay"), 0.018, 0.033);
+				self.usePoi = false; -- not self.usePoi;
 			end;
 		end;
         ----
 		
 		--Fieldnumbers
-		if self.useFNum and self.showFNum then
+		-- if self.useFNum and self.showFNum then
+		if self.showFNum then
 			if self.bigmap.FNum.OverlayId ~= nil and self.bigmap.FNum.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.FNum.OverlayId, self.bigmap.FNum.FNumPosX, self.bigmap.FNum.FNumPosY, self.bigmap.FNum.width, self.bigmap.FNum.height);
 			else
-                string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorFNumCreateOverlay"))
-				self.useFNum = not self.useFNum;
+                -- string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorFNumCreateOverlay"))
+                g_currentMission:addWarning(g_i18n:getText("MV_ErrorFNumCreateOverlay"), 0.018, 0.033);
+				self.useFNum = false; -- not self.useFNum;
 			end;
 		end;
         ----

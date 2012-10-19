@@ -170,7 +170,7 @@
 		</text>
 		<text name="MV_AttachTypeplough">
 			<en>Plough</en>
-			<de>Flug</de>	
+			<de>Pflug</de>	
 		</text>
 		<text name="MV_AttachTypesprayer">
 			<en>Sprayer</en>
@@ -186,7 +186,7 @@
 		</text>
 		<text name="MV_AttachTypecultivator">
 			<en>Cultivator</en>
-			<de>Gruber</de>	
+			<de>Grubber</de>	
 		</text>
 		<text name="MV_AttachTypetedder">
 			<en>Tedder</en>
