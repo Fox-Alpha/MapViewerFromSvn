@@ -244,24 +244,6 @@ function mapviewer:InitMapViewer()
 	self.bigmap.mapPosX = 0.5-(self.bigmap.mapWidth/2);
 	self.bigmap.mapPosY = 0.5-(self.bigmap.mapHeight/2);
 	self.bigmap.mapTransp = 1;
-
-	----
-	-- Globale Kartengröße verwnenden
-	-----
-    self.bigmap.mapDimensionX = g_currentMission.missionPDA.worldSizeX;
-    self.bigmap.mapDimensionY = g_currentMission.missionPDA.worldSizeZ;
-	
-	----
-	-- Mapgroesse printen
-	----
-	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY)));
-	----
-
-	-----
-    self.bigmap.PoI.width = 1;
-    self.bigmap.PoI.height = 1;
-    self.bigmap.FNum.width = 1;
-    self.bigmap.FNum.height = 1;
 	
 	--
 	-- Wenn keine vorgegebene Datei als Karte verwendet werden soll
@@ -280,6 +262,42 @@ function mapviewer:InitMapViewer()
         self.mapPath = self.mapPath .. "map01/"
     end;
 	----
+
+
+	----
+	-- Globale Kartengröße verwnenden
+	-----
+	-- self.testOverlay = {File= "", OverlayId=0};
+	-- package.path = package.path .. ";" ..self.moddir.. "\\?.lua";
+	-- self.ImageSize = require ("imagesize");
+	
+	-- local demSizeX, demSizeY, fileType;
+	-- self.testOverlay.File = Utils.getFilename("map01_dem.png", self.mapPath);
+	-- demSizeX, demSizeY, fileType = self.ImageSize.imgsize(Utils.getFilename("map01_dem.png", self.mapPath));	
+	-- print(string.format("demX %s || demY %s || Type %s || Pfad : %s", tostring(demSizeX), tostring(demSizeY), tostring(fileType), tostring(self.testOverlay.File)));
+	-- if demSizeX == 2049 and demSizeY == 2049 then	
+		g_currentMission.missionPDA.worldSizeX = 4096;
+		g_currentMission.missionPDA.worldSizeZ = 4096;
+		g_currentMission.missionPDA.worldCenterOffsetX = g_currentMission.missionPDA.worldSizeX*0.5;
+		g_currentMission.missionPDA.worldCenterOffsetZ = g_currentMission.missionPDA.worldSizeZ*0.5;
+	-- end;
+	
+	
+    self.bigmap.mapDimensionX = g_currentMission.missionPDA.worldSizeX;
+    self.bigmap.mapDimensionY = g_currentMission.missionPDA.worldSizeZ;
+	
+	----
+	-- Mapgroesse printen
+	----
+	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY)));
+	----
+
+	-----
+    self.bigmap.PoI.width = 1;
+    self.bigmap.PoI.height = 1;
+    self.bigmap.FNum.width = 1;
+    self.bigmap.FNum.height = 1;
+	
 	
 	----
 	-- Mapname printen
