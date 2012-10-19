@@ -12,6 +12,7 @@
 mapviewer={};
 mapviewer.moddir=g_currentModDirectory;
 mapviewer.modName = g_currentModName;
+-- source(mapviewer.moddir.."MapViewerTeleportEvent.lua");
 
 function mapviewer:loadMap(name)
 	-- print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
@@ -33,6 +34,8 @@ function mapviewer:loadMap(name)
     self.useBottles = true;
     self.useLegend = true;
 	self.useTeleport = false;
+	
+	self.setNewPlyPosition = false;
     
 	self.numOverlay = 0;
 
@@ -917,11 +920,19 @@ end;
 ----
 function mapviewer:readStream(streamId, connection)
 	if connection:getIsServer() then
+		-- local myPlayerId = streamReadFloat32(streamId);
+		-- local x = streamReadFloat32(streamId);
+		-- local y = streamReadFloat32(streamId);
+		-- local z = streamReadFloat32(streamId);
 	end;
 end;
 
 function mapviewer:writeStream(streamId, connection)
 	if not connection:getIsServer() then
+		-- local myPlayerId = streamWriteFloat32(streamId);
+		-- local x = streamWriteFloat32(streamId);
+		-- local y = streamWriteFloat32(streamId);
+		-- local z = streamWriteFloat32(streamId);
 	end;
 end;
 
@@ -931,6 +942,20 @@ end;
 
 function mapviewer:writeUpdateStream(streamId, timestamp, connection)	
 	self:writeStream(streamId, connection);
+end;
+----
+
+----
+-- Neue Position an Server/Clients senden
+----
+function mapviewer:setNewPlayerPos(setNewPlyPosition, noEventSend)
+	-- if noEventSend == nil or noEventSend == false then
+		-- if g_server ~= nil then
+			-- g_server:broadcastEvent(MapViewerTeleportEvent:new(self, setNewPlyPosition), nil, nil, self);
+		-- else
+			-- g_client:getServerConnection():sendEvent(MapViewerTeleportEvent:new(self, setNewPlyPosition));
+		-- end;
+	-- end;
 end;
 ----
 
@@ -1021,7 +1046,24 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
 				print(string.format("Alte Koordinaten X=%f/Y=%f/Z=%f", tpAltX, tpAltY, tpAltZ));
 				print(string.format("Neue Koordinaten X=%f/Y=%f/Z=%f", tpX, tpY, tpZ));
-				setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
+				--g_currentMission.player:moveToAbsolute(tpX, tpY, tpZ);
+				--g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
+				
+				if g_server ~= nil then
+					g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
+				else
+					g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
+				end;
+
+
+				--setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
+				-- g_currentMission.players[g_currentMission.player.rootNode].positionX = tpX;
+				-- g_currentMission.players[g_currentMission.player.rootNode].positionY = tpY;
+				-- g_currentMission.players[g_currentMission.player.rootNode].positionZ = tpZ;
+				-- g_currentMission.player.lastXPos = tpX;
+				-- g_currentMission.player.lastYPos = tpY;
+				-- g_currentMission.player.lastZPos = tpZ;
+				-- self:setNewPlayerPos(not self.setNewPlyPosition);
 				--print("Höhe an aktueller Position : "  .. tostring(tpY)); 
 				----
 			end;
@@ -1656,6 +1698,11 @@ function mapviewer:draw()
 						countBottlesFound = countBottlesFound+1;
                     end;
                 end;
+				----
+				-- TODO: Container Positionen anzeigen
+				----
+				-- missionMapGlassContainerTriggers
+				----
 			else
                 print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorBottlesCreateOverlay")));
 				self.useBottles = not self.useBottles;

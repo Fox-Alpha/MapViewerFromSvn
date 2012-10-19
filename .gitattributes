@@ -58,6 +58,7 @@ imagesize/format/xpm.lua -text
 imagesize/util.lua -text
 /mapviewer.lua -text svn_keywords
 /mapviewer.xml -text svn_keywords
+/mapviewerTeleportEvent.lua -text
 /modDesc.xml -text svn_keywords
 /readme_de.txt -text svn_keywords
 /readme_en.txt -text svn_keywords
