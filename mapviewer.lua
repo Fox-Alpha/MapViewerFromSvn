@@ -32,6 +32,7 @@ function mapviewer:loadMap(name)
     
     self.useBottles = true;
     self.useLegend = true;
+	self.useTeleport = false;
     
 	self.numOverlay = 0;
 
@@ -270,17 +271,19 @@ function mapviewer:InitMapViewer()
 	-- self.testOverlay = {File= "", OverlayId=0};
 	-- package.path = package.path .. ";" ..self.moddir.. "\\?.lua";
 	-- self.ImageSize = require ("imagesize");
-	
+	----
+	-- TODO: getFile() in Imagesize Funktionen testen
+	----
 	-- local demSizeX, demSizeY, fileType;
 	-- self.testOverlay.File = Utils.getFilename("map01_dem.png", self.mapPath);
 	-- demSizeX, demSizeY, fileType = self.ImageSize.imgsize(Utils.getFilename("map01_dem.png", self.mapPath));	
 	-- print(string.format("demX %s || demY %s || Type %s || Pfad : %s", tostring(demSizeX), tostring(demSizeY), tostring(fileType), tostring(self.testOverlay.File)));
-	-- if demSizeX == 2049 and demSizeY == 2049 then	
+	if g_currentMission.terrainSize ~= 2050 then	
 		g_currentMission.missionPDA.worldSizeX = 4096;
 		g_currentMission.missionPDA.worldSizeZ = 4096;
 		g_currentMission.missionPDA.worldCenterOffsetX = g_currentMission.missionPDA.worldSizeX*0.5;
 		g_currentMission.missionPDA.worldCenterOffsetZ = g_currentMission.missionPDA.worldSizeZ*0.5;
-	-- end;
+	end;
 	
 	
     self.bigmap.mapDimensionX = g_currentMission.missionPDA.worldSizeX;
@@ -932,6 +935,33 @@ end;
 ----
 
 ----
+-- Auf Tastendruck reagieren
+----
+function mapviewer:keyEvent(unicode, sym, modifier, isDown)
+    ----
+	-- Taste um den Debugmodus zu aktivieren
+	-- ALT+d
+    ----
+	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
+		print("---- MapViwer Debug aktiviert ----");
+	end;
+	----
+	
+	----
+	-- Tasten Modofizierer für Teleport
+	----
+	-- if isDown and bitAND(modifier, Input.MOD_ALT) > 0  then
+	if bitAND(modifier, Input.MOD_ALT) > 0 then 
+		print("---- ALT Taste ist gedrückt ----");
+		self.useTeleport= not self.useTeleport;
+	else
+	    self.useTeleport = false;
+	end;
+    ----
+end;
+----
+
+----
 -- Auf Mausevents reagieren
 ----
 function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
@@ -948,20 +978,52 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 			self.bigmap.InfoPanel.vehicleIndex = nil;
 			self.bigmap.InfoPanel.isVehicle = nil;
 			
-			self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
-			--print(self:vehicleInMouseRange());
-			if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
-				-- print(string.format("vehicleInMouseRange() - Fahrzeug in der Nähe : %d / isVehicle : %s", self.bigmap.InfoPanel.vehicleIndex, tostring(self.bigmap.InfoPanel.isVehicle), tostring(self.bigmap.InfoPanel.lastVehicle.name)));
-				self.showInfoPanel = true;
-				panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
-				self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
-				self.bigmap.InfoPanel.background.Pos.y = posY;
-				-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || Node : %d ", panelX, panelY, panelZ, self.bigmap.InfoPanel.lastVehicle.rootNode));
-				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
-				-- print(table.show(self.bigmap.InfoPanel.Info, "vehicleInfo."));
-				-- print(table.show(self.bigmap.InfoPanel.lastVehicle, "vehicle."));
+			if not self.useTeleport then
+				self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
+				--print(self:vehicleInMouseRange());
+				if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
+					-- print(string.format("vehicleInMouseRange() - Fahrzeug in der Nähe : %d / isVehicle : %s", self.bigmap.InfoPanel.vehicleIndex, tostring(self.bigmap.InfoPanel.isVehicle), tostring(self.bigmap.InfoPanel.lastVehicle.name)));
+					self.showInfoPanel = true;
+					panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
+					self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
+					self.bigmap.InfoPanel.background.Pos.y = posY;
+					-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || Node : %d ", panelX, panelY, panelZ, self.bigmap.InfoPanel.lastVehicle.rootNode));
+					self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
+					-- print(table.show(self.bigmap.InfoPanel.Info, "vehicleInfo."));
+					-- print(table.show(self.bigmap.InfoPanel.lastVehicle, "vehicle."));
+				else
+					self.showInfoPanel = false;
+				end;
 			else
-				self.showInfoPanel = false;
+				----
+				-- Teleportieren
+				----
+				print(string.format("Teleportieren zur Position X:%f/Y:%f", self.mouseX, self.mouseY));
+				-- function getTerrainHeightAtWorldPos(integer terrainId, float x, float y, float z)
+				-- self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+				-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+				local tpAltX, tpAltY, tpAltZ;
+				local tpX, tpY, tpZ;
+				
+				local mvX, mvY, mvZ = getWorldTranslation(g_currentMission.player.rootNode);
+				local mv2DX, mv2DY, mv2DZ;
+				mv2DX = ((((self.bigmap.mapDimensionX/2)+mvX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+				mv2DZ = ((((self.bigmap.mapDimensionY/2)-mvZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);	--2D Y Koordinate
+				print(string.format("Spieler 3D Koordinate X%f/Y%f/Z%f", mvX, mvY, mvZ));
+				print(string.format("Spieler 2D Koordinate X%f/Y%f", mv2DX, mv2DZ));
+				
+				tpAltX, tpAltY, tpAltZ = getWorldTranslation(g_currentMission.player.rootNode);
+				-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+				--tpX = self.mouseX/self.bigmap.mapWidth*self.bigmap.mapDimensionX-(self.bigmap.mapDimensionX/2);
+				tpX = self.mouseX/self.bigmap.mapWidth*self.bigmap.mapDimensionX-(self.bigmap.mapDimensionX/2);
+				--tpZ = self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
+				tpZ = -self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
+				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
+				print(string.format("Alte Koordinaten X=%f/Y=%f/Z=%f", tpAltX, tpAltY, tpAltZ));
+				print(string.format("Neue Koordinaten X=%f/Y=%f/Z=%f", tpX, tpY, tpZ));
+				setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
+				--print("Höhe an aktueller Position : "  .. tostring(tpY)); 
+				----
 			end;
 		end;
 		if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) and not Input.isMouseButtonPressed(Input.MOUSE_BUTTON_LEFT) then
@@ -1067,6 +1129,9 @@ function mapviewer:GetVehicleInfo(vehicle)
 				
 				table.insert(vehicleInfo, tmp); 
 			end;
+			----
+			-- todo: Akteuellen Treibstofftank anzeigen
+			----
 		else
 			if g_i18n:hasText("MV_AttachType"..vehicle.typeName) then
 				table.insert(vehicleInfo, "Typ : " .. string.sub(Utils.getNoNil( g_i18n:getText("MV_AttachType"..vehicle.typeName), g_i18n:getText("MV_Unknown")),0,25));
@@ -1216,11 +1281,19 @@ function mapviewer:ShowPanelonMap()
 		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
 		renderOverlay(self.bigmap.InfoPanel.bottom.OverlayId, self.bigmap.InfoPanel.bottom.Pos.x, self.bigmap.InfoPanel.bottom.Pos.y, self.bigmap.InfoPanel.bottom.width, self.bigmap.InfoPanel.bottom.height);
 
+		----
+		--
+		----
+		-- print(table.show(self.bigmap.InfoPanel.Info, "self.bigmap.InfoPanel.Info"));
+		----
+		
 		local v = self.bigmap.InfoPanel.lastVehicle;
 		setTextBold(true);
 		setTextColor(0, 0, 0, 1);
 		renderText(tLeft, tTop, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[1], g_i18n:getText("MV_Unknown"))));
-		renderText(tLeft, tTop-0.015, 0.012, string.format("%s", Utils.getNoNil(tostring(self.bigmap.InfoPanel.Info[2]), g_i18n:getText("MV_Unknown"))));
+		if self.bigmap.InfoPanel.Info[2] ~= nil then
+			renderText(tLeft, tTop-0.015, 0.012, string.format("%s", Utils.getNoNil(tostring(self.bigmap.InfoPanel.Info[2]), g_i18n:getText("MV_Unknown"))));
+		end;
 		if self.bigmap.InfoPanel.lastVehicle ~= nil then
 			if self.bigmap.InfoPanel.Info[3] ~= nil then
 				renderText(tLeft, tTop-0.030, 0.012, string.format("Füllstand : %s", Utils.getNoNil(self.bigmap.InfoPanel.Info[3], g_i18n:getText("MV_Unknown"))));
@@ -1311,55 +1384,6 @@ function mapviewer:vehicleInMouseRange()
 end;
 ----
 
-----
--- Auf Tastendruck reagieren
-----
-function mapviewer:keyEvent(unicode, sym, modifier, isDown)
-	
-	-- Umschalten der Mapgrösse für 2048 (Standard) und 4096
-    ----
-	-- ToDo: Kann entfernt werden wenn MP Fehler behoben
-	--       Globale Kartengröße verwenden !
-	----
-
-	-- if isDown and sym == Input.KEY_m and bitAND(modifier, Input.MOD_ALT) > 0 then
-		-- if self.bigmap.mapDimensionX == 2048 then
-			-- self.bigmap.mapDimensionX = 4096;
-			-- self.bigmap.mapDimensionY = 4096;
-		-- else
-			-- self.bigmap.mapDimensionX = 2048;
-			-- self.bigmap.mapDimensionY = 2048;
-		-- end;
-        -- print(g_i18n:getText("mapviewtxt") .. " : " .. string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY));
-		-- print();
-        -- mapviewer:SaveToFile();
-	-- end;
-	----
-
-    ----
-	-- Tatse um den Debugmodus zu aktivieren
-	-- ALT+d
-    ----
-	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
-		--self.Debug=not self.Debug;
-		--print("Debug = "..tostring(self.Debug));
-		-- self:listTipTriggers();
-		-- if not connection:getIsServer() then
-			-- print("Server Aktiv");
-		-- else
-			-- print("Client Aktiv");
-		-- end;
-		
-		-- if self.isServer then print("Server Aktiv"); end;
-		-- if self.isClient then print("Server Aktiv"); end;
-		--print(table.show(package.loaded['mapviewer'], "Package.Loaded. mapviewer"));
-		--for key,value in pairs(package) do print(key,value) end
-		-- self:ReloadMyScript();
-		self:LoadFromFile();
-	end;
-    ----
-end;
-----
 
 ----
 -- Update Funktion
@@ -1418,7 +1442,7 @@ function mapviewer:update(dt)
 	end;
 
 	--Overlay wechseln
-	if InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
+	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
 		self.numOverlay = self.numOverlay+1;
 
         ----
@@ -1498,17 +1522,19 @@ function mapviewer:update(dt)
 	end;	
 	----
 	
+	----
 	--BigMap Transparenz erhöhen und verringern
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
-		if self.bigmap.mapTransp < 1 then
+		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
 		end;
 		if g_currentMission:getIsServer() then
 			mapviewer:SaveToFile();
 		end;
 	end;
+	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
-		if self.bigmap.mapTransp > 0.1 then
+		if self.bigmap.mapTransp > 0.1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
 		end;
 		if g_currentMission:getIsServer() then
@@ -1516,6 +1542,7 @@ function mapviewer:update(dt)
 		end;
 	end;
 	-- ende Transparenz umschalten
+	----
 end;
 ----
 
@@ -1558,7 +1585,21 @@ function mapviewer:draw()
 		renderText(0.5-0.035, 0.03, 0.018, g_i18n:getText("mapviewtxt"));
 		setTextColor(1, 1, 1, 0);
         ----
-        
+
+		----
+		--	TODO: Sichergehen das die Maus nicht ausgeblendet wird, wenn keine Transparenz eingestellt ist
+		----
+		-- if self.bigmap.mapTransp == 1 then
+			-- g_mouseControlsHelp.active = false;
+			-- InputBinding.setShowMouseCursor(true);
+			-- InputBinding.wrapMousePositionEnabled = false;
+			-- if (g_currentMission.player.isEntered) then
+				-- g_currentMission.player.isFrozen = true;
+			-- end;
+		-- else
+		-- end;
+		----
+
         ----
         -- Anzeigen des aktuell gewählten Modus
         ----
