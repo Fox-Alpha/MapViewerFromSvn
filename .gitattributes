@@ -39,6 +39,23 @@ icons/isBroken.png -text svneol=unset#image/png svn_keywords
 icons/mpspieler.png -text svn_keywords
 icons/tractor.png -text svn_keywords
 icons/tractorctrl.png -text svn_keywords
+/imagesize svnc_tsvn_003aprojectlanguage=1025
+/imagesize.lua -text
+imagesize/format svnc_tsvn_003aprojectlanguage=1025
+imagesize/format/bmp.lua -text
+imagesize/format/gif.lua -text
+imagesize/format/jpeg.lua -text
+imagesize/format/mng.lua -text
+imagesize/format/pcd.lua -text
+imagesize/format/png.lua -text
+imagesize/format/pnm.lua -text
+imagesize/format/psd.lua -text
+imagesize/format/swf.lua -text
+imagesize/format/tiff.lua -text
+imagesize/format/xbm.lua -text
+imagesize/format/xcf.lua -text
+imagesize/format/xpm.lua -text
+imagesize/util.lua -text
 /mapviewer.lua -text svn_keywords
 /mapviewer.xml -text svn_keywords
 /modDesc.xml -text svn_keywords
