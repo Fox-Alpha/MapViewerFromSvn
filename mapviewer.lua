@@ -1023,48 +1023,17 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				----
 				-- Teleportieren
 				----
-				print(string.format("Teleportieren zur Position X:%f/Y:%f", self.mouseX, self.mouseY));
-				-- function getTerrainHeightAtWorldPos(integer terrainId, float x, float y, float z)
-				-- self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-				-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-				local tpAltX, tpAltY, tpAltZ;
 				local tpX, tpY, tpZ;
 				
-				local mvX, mvY, mvZ = getWorldTranslation(g_currentMission.player.rootNode);
-				local mv2DX, mv2DY, mv2DZ;
-				mv2DX = ((((self.bigmap.mapDimensionX/2)+mvX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-				mv2DZ = ((((self.bigmap.mapDimensionY/2)-mvZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);	--2D Y Koordinate
-				print(string.format("Spieler 3D Koordinate X%f/Y%f/Z%f", mvX, mvY, mvZ));
-				print(string.format("Spieler 2D Koordinate X%f/Y%f", mv2DX, mv2DZ));
-				
-				tpAltX, tpAltY, tpAltZ = getWorldTranslation(g_currentMission.player.rootNode);
-				-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-				--tpX = self.mouseX/self.bigmap.mapWidth*self.bigmap.mapDimensionX-(self.bigmap.mapDimensionX/2);
 				tpX = self.mouseX/self.bigmap.mapWidth*self.bigmap.mapDimensionX-(self.bigmap.mapDimensionX/2);
-				--tpZ = self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
 				tpZ = -self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
-				print(string.format("Alte Koordinaten X=%f/Y=%f/Z=%f", tpAltX, tpAltY, tpAltZ));
-				print(string.format("Neue Koordinaten X=%f/Y=%f/Z=%f", tpX, tpY, tpZ));
-				--g_currentMission.player:moveToAbsolute(tpX, tpY, tpZ);
-				--g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
 				
 				if g_server ~= nil then
 					g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
 				else
 					g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
 				end;
-
-
-				--setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
-				-- g_currentMission.players[g_currentMission.player.rootNode].positionX = tpX;
-				-- g_currentMission.players[g_currentMission.player.rootNode].positionY = tpY;
-				-- g_currentMission.players[g_currentMission.player.rootNode].positionZ = tpZ;
-				-- g_currentMission.player.lastXPos = tpX;
-				-- g_currentMission.player.lastYPos = tpY;
-				-- g_currentMission.player.lastZPos = tpZ;
-				-- self:setNewPlayerPos(not self.setNewPlyPosition);
-				--print("Höhe an aktueller Position : "  .. tostring(tpY)); 
 				----
 			end;
 		end;
