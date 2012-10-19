@@ -4,6 +4,9 @@
 Panel/Bt_Close.png -text
 Panel/Bt_Switch.png -text
 Panel/Info_Panel.png -text
+Panel/Info_Panel_bg.png -text
+Panel/Info_Panel_bt.png -text
+Panel/Info_Panel_top.png -text
 Panel/button.png -text
 Panel/glow.png -text
 Panel/selectedbutton.png -text
