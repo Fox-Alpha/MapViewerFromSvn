@@ -976,12 +976,12 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 	-- Tasten Modofizierer für Teleport
 	----
 	-- if isDown and bitAND(modifier, Input.MOD_ALT) > 0  then
-	if bitAND(modifier, Input.MOD_ALT) > 0 then 
-		print("---- ALT Taste ist gedrückt ----");
-		self.useTeleport= not self.useTeleport;
-	else
-	    self.useTeleport = false;
-	end;
+	-- if bitAND(modifier, Input.MOD_ALT) > 0 then 
+		-- print("---- ALT Taste ist gedrückt ----");
+		-- self.useTeleport= not self.useTeleport;
+	-- else
+	    -- self.useTeleport = false;
+	-- end;
     ----
 end;
 ----
@@ -1028,11 +1028,14 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				tpX = self.mouseX/self.bigmap.mapWidth*self.bigmap.mapDimensionX-(self.bigmap.mapDimensionX/2);
 				tpZ = -self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
-				
-				if g_server ~= nil then
-					g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
-				else
-					g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
+				if g_currentMission.player.isControlled then
+					if isMultiplayer and g_server ~= nil then
+						g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
+					elseif isMultiplayer and isClient ~= nil and isClient then
+						g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
+					else
+						setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
+					end;
 				end;
 				----
 			end;
@@ -1142,6 +1145,9 @@ function mapviewer:GetVehicleInfo(vehicle)
 			end;
 			----
 			-- todo: Akteuellen Treibstofftank anzeigen
+			----
+			tmp = Utils.getNoNil( g_i18n:getText("MV_VehicleFuel"..vehicle.typeName), "Fuel : ") .. tostring(g_currentMission.fuelCapacity / g_currentMission.fuelFillLevel * 100);
+			table.insert(vehicleInfo, tmp);
 			----
 		else
 			if g_i18n:hasText("MV_AttachType"..vehicle.typeName) then
@@ -1554,6 +1560,18 @@ function mapviewer:update(dt)
 	end;
 	-- ende Transparenz umschalten
 	----
+	
+	----
+	-- Tasten Modofizierer für Teleport
+	----
+	if InputBinding.isPressed(InputBinding.BIGMAP_Teleport) then
+		--print("---- ALT Taste ist gedrückt ----");
+		self.useTeleport= not self.useTeleport;
+	else
+		self.useTeleport = false;
+	end;
+    ----
+
 end;
 ----
 
