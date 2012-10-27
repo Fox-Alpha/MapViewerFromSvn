@@ -881,11 +881,11 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				tpZ = -self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
 				if g_currentMission.player.isControlled then
-					if isMultiplayer and g_currentMission:getIsServer() then
+					if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission:getIsServer() then
 						print("ServerMessage an alle Senden. Multiplayer = JA und Spieler ist Server");
 						g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
-					-- elseif isMultiplayer and isClient ~= nil and isClient then
-					elseif isMultiplayer and not g_currentMission:getIsServer() then
+					-- elseif isMultiplayer and g_currentMission.missionDynamicInfo.isClient ~= nil and g_currentMission.missionDynamicInfo.isClient then
+					elseif g_currentMission.missionDynamicInfo.isMultiplayer and not g_currentMission:getIsServer() then
 						print("ServerMessage an Server Senden. Multiplayer = JA und Spieler ist Client");	
 						g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
 					else
