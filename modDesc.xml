@@ -8,7 +8,7 @@
 <modDesc descVersion="9">
     <author>Fox-Alpha</author>
     <version>V0.6 $Rev$</version>
-	<iconFilename>gfx/mapviewer.png</iconFilename>
+	<iconFilename>gfx/mapviewer.dds</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
 	<title>

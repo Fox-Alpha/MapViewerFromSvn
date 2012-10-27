@@ -9,62 +9,63 @@
 	<map mapWidth="1" mapHeight="1" mapDimensionX="2048" mapDimensionY="2048">
 		<!-- Abweichende Karte verwenden, wird nmomentan nicht verwendet -->
 		<!-- <mapFile useMapFile="false" file="gfx/pda_map.dds" /> -->
-		<legende file="gfx/background.png" width="0.15" height="0.125" posX="0.0244" posY="0.15" />
+		<legende file="gfx/background.dds" width="0.15" height="0.125" posX="0.0244" posY="0.15" />
 		<Infopanel >
-			<InfoPanelTop file="Panel/Info_Panel_top.png" width="0.15" height="0.0078125" />
-			<InfoPanelBackground file="Panel/Info_Panel_bg.png" width="0.15" height="0.15" />
-			<InfoPanelBottom file="Panel/Info_Panel_bt.png" width="0.15" height="0.03125" />
+			<InfoPanelTop file="Panel/Info_Panel_top.dds" width="0.15" height="0.0078125" />
+			<InfoPanelBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.15" />
+			<InfoPanelBottom file="Panel/Info_Panel_bt.dds" width="0.15" height="0.03125" />
 			<!-- <Buttons> -->
-				<!-- <ButtonSwitch width="0.01" height="0.01" file="Panel/Bt_Switch.png"/> -->
-				<!-- <ButtonClose width="0.01" height="0.01" file="Panel/Bt_Close.png"/> -->
+				<!-- <ButtonSwitch width="0.01" height="0.01" file="Panel/Bt_Switch.dds"/> -->
+				<!-- <ButtonClose width="0.01" height="0.01" file="Panel/Bt_Close.dds"/> -->
 			<!-- </Buttons> -->
 		</Infopanel>
 		<!--  -->
 
 		<!-- Point of Interests und Feldnummern Overlay für die Standard Karte -->
-		<!-- <poi usePoI="true" file="gfx/poi_karte_1.png" width="2048" height="2048" /> -->
-		<!-- <fieldnumbers useFNum="true" file="gfx/fn_karte_1.png" width="2048" height="2048" /> -->
+		<!-- <poi usePoI="true" file="gfx/poi_karte_1.dds" width="2048" height="2048" /> -->
+		<!-- <fieldnumbers useFNum="true" file="gfx/fn_karte_1.dds" width="2048" height="2048" /> -->
 		<!--  -->
 		
 		<!-- Symbole für Spieler, Fahrzeuge und Geräte -->
 		<icons>
-<!-- 			<iconPlayer  width="0.0078125" height="0.0078125" file="icons/eigenerspieler.png" />
-			<iconMPPlayer  width="0.0078125" height="0.0078125" file="icons/mpspieler.png" />
-			<iconSteerable  width="0.0078125" height="0.0078125" file="icons/tractor.png" />
-			<iconSteerableCtrl  width="0.0078125" height="0.0078125" file="icons/tractorctrl.png" />
-			<iconAttachmentFront  width="0.0078125" height="0.0078125" file="icons/feldgeraet.png" />
-			<iconAttachmentRear  width="0.0078125" height="0.0078125" file="icons/feldgeraet.png" />
-			<iconIsBroken  width="0.0078125" height="0.0078125" file="icons/isBroken.png" />
-			<iconBottle  width="0.0078125" height="0.0156250" file="icons/Bottle.png" />
+<!-- 			<iconPlayer  width="0.0078125" height="0.0078125" file="icons/eigenerspieler.dds" />
+			<iconMPPlayer  width="0.0078125" height="0.0078125" file="icons/mpspieler.dds" />
+			<iconSteerable  width="0.0078125" height="0.0078125" file="icons/tractor.dds" />
+			<iconSteerableCtrl  width="0.0078125" height="0.0078125" file="icons/tractorctrl.dds" />
+			<iconAttachmentFront  width="0.0078125" height="0.0078125" file="icons/feldgeraet.dds" />
+			<iconAttachmentRear  width="0.0078125" height="0.0078125" file="icons/feldgeraet.dds" />
+			<iconIsBroken  width="0.0078125" height="0.0078125" file="icons/isBroken.dds" />
+			<iconBottle  width="0.0078125" height="0.0156250" file="icons/Bottle.dds" />
  -->
-            <iconPlayer  width="0.01" height="0.01" file="icons/eigenerspieler.png" />
-			<iconMPPlayer  width="0.01" height="001" file="icons/mpspieler.png" />
-			<iconSteerable  width="0.01" height="0.01" file="icons/tractor.png" />
-			<iconSteerableCtrl  width="0.01" height="0.01" file="icons/tractorctrl.png" />
-            <iconMilktruck  width="0.01" height="0.01" file="icons/milktruck.png" />
-			<iconAttachmentFront  width="0.01" height="0.01" file="icons/feldgeraet.png" />
-			<iconAttachmentRear  width="0.01" height="0.01" file="icons/feldgeraet.png" />
-			<iconIsBroken  width="0.01" height="0.01" file="icons/isBroken.png" />
-			<iconBottle  width="0.01" height="0.02" file="icons/Bottle.png" />
+            <iconPlayer  width="0.01" height="0.01" file="icons/eigenerspieler.dds" />
+			<iconMPPlayer  width="0.01" height="001" file="icons/mpspieler.dds" />
+			<iconSteerable  width="0.01" height="0.01" file="icons/tractor.dds" />
+			<iconSteerableCtrl  width="0.01" height="0.01" file="icons/tractorctrl.dds" />
+            <iconMilktruck  width="0.01" height="0.01" file="icons/milktruck.dds" />
+			<iconAttachmentFront  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
+			<iconAttachmentRear  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
+			<iconIsBroken  width="0.01" height="0.01" file="icons/isBroken.dds" />
+			<iconBottle  width="0.01" height="0.02" file="icons/Bottle.dds" /> 
+			
             
-            <iconSteerabletractor  width="0.01" height="0.01" file="icons/tractor.png" />
-            <iconSteerablecombine  width="0.01" height="0.01" file="icons/combine.png" />
-            <iconSteerableother  width="0.01" height="0.01" file="icons/tractor.png" />
+            <iconSteerabletractor  width="0.01" height="0.01" file="icons/tractor.dds" />
+            <iconSteerablecombine  width="0.01" height="0.01" file="icons/combine.dds" />
+            <iconSteerableother  width="0.01" height="0.01" file="icons/tractor.dds" />
             
             <!-- "cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other" -->
-            <iconAttachmentcutter  width="0.01" height="0.01" file="icons/1.png" />
-            <iconAttachmenttrailer  width="0.01" height="0.01" file="icons/2.png" />
-            <iconAttachmentsowingMachine  width="0.01" height="0.01" file="icons/3.png" />
-            <iconAttachmentplough  width="0.01" height="0.01" file="icons/4.png" />
-            <iconAttachmentsprayer  width="0.01" height="0.01" file="icons/5.png" />
-            <iconAttachmentbaler  width="0.01" height="0.01" file="icons/6.png" />
-            <iconAttachmentbaleloader  width="0.01" height="0.01" file="icons/6.png" />
-            <iconAttachmentcultivator  width="0.01" height="0.01" file="icons/7.png" />
-            <iconAttachmenttedder  width="0.01" height="0.01" file="icons/8.png" />
-            <iconAttachmentwindrower  width="0.01" height="0.01" file="icons/9.png" />
-            <iconAttachmentshovel  width="0.01" height="0.01" file="icons/10.png" />
-            <iconAttachmentmover  width="0.01" height="0.01" file="icons/11.png" />
-            <iconAttachmentother  width="0.01" height="0.01" file="icons/feldgeraet.png" />
+            <iconAttachmentcutter  width="0.01" height="0.01" file="icons/1.dds" />
+            <iconAttachmenttrailer  width="0.01" height="0.01" file="icons/2.dds" />
+            <iconAttachmentsowingMachine  width="0.01" height="0.01" file="icons/3.dds" />
+            <iconAttachmentplough  width="0.01" height="0.01" file="icons/4.dds" />
+            <iconAttachmentsprayer  width="0.01" height="0.01" file="icons/5.dds" />
+            <iconAttachmentbaler  width="0.01" height="0.01" file="icons/6.dds" />
+            <iconAttachmentbaleloader  width="0.01" height="0.01" file="icons/6.dds" />
+            <iconAttachmentcultivator  width="0.01" height="0.01" file="icons/7.dds" />
+            <iconAttachmenttedder  width="0.01" height="0.01" file="icons/8.dds" />
+            <iconAttachmentwindrower  width="0.01" height="0.01" file="icons/9.dds" />
+            <iconAttachmentshovel  width="0.01" height="0.01" file="icons/10.dds" />
+            <iconAttachmentmover  width="0.01" height="0.01" file="icons/11.dds" />
+            <iconAttachmentother  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
 		</icons>
 		<!--  -->
 	</map>

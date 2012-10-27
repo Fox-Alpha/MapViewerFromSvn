@@ -314,8 +314,8 @@ function mapviewer:InitMapViewer()
 	----
 	self.bigmap.IconSteerable = {};
 	self.bigmap.IconSteerable.file = "";
-	self.bigmap.IconSteerable.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconSteerable#file"), "icons/tractor.png"), self.moddir);
-	self.bigmap.IconSteerable.filemp = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconSteerableCtrl#file"), "icons/tractorctrl.png"), self.moddir);
+	self.bigmap.IconSteerable.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconSteerable#file"), "icons/tractor.dds"), self.moddir);
+	self.bigmap.IconSteerable.filemp = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconSteerableCtrl#file"), "icons/tractorctrl.dds"), self.moddir);
 	self.bigmap.IconSteerable.OverlayId = createImageOverlay(self.bigmap.IconSteerable.file);
 	self.bigmap.IconSteerable.mpOverlayId = createImageOverlay(self.bigmap.IconSteerable.filemp);
 	self.bigmap.IconSteerable.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconSteerable#width"), 0.0078125);
@@ -327,7 +327,7 @@ function mapviewer:InitMapViewer()
 	----
 	self.bigmap.IconMilchtruck = {}; --file, OverlayId, width, height
 	self.bigmap.IconMilchtruck.file = "";
-	self.bigmap.IconMilchtruck.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.IconMilktruck#file"), "icons/milktruck.png"), self.moddir);
+	self.bigmap.IconMilchtruck.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.IconMilktruck#file"), "icons/milktruck.dds"), self.moddir);
 	self.bigmap.IconMilchtruck.OverlayId = createImageOverlay(self.bigmap.IconMilchtruck.file);
 	self.bigmap.IconMilchtruck.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.IconMilchtruck#width"), 0.0078125);
 	self.bigmap.IconMilchtruck.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.IconMilchtruck#height"), 0.0078125);
@@ -336,8 +336,8 @@ function mapviewer:InitMapViewer()
 	--Array für Geräteicons
 	self.bigmap.IconAttachments = {};
 	self.bigmap.IconAttachments.Icon = {front = {file = "", OverlayId = nil},rear={file = "", OverlayId = nil}};
-	self.bigmap.IconAttachments.Icon.front.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachmentFront#file"), "icons/feldgeraet.png"), self.moddir);
-	self.bigmap.IconAttachments.Icon.rear.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachmentRear#file"), "icons/feldgeraet.png"), self.moddir);
+	self.bigmap.IconAttachments.Icon.front.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachmentFront#file"), "icons/feldgeraet.dds"), self.moddir);
+	self.bigmap.IconAttachments.Icon.rear.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachmentRear#file"), "icons/feldgeraet.dds"), self.moddir);
 	self.bigmap.IconAttachments.Icon.front.OverlayId = createImageOverlay(self.bigmap.IconAttachments.Icon.front.file);
 	self.bigmap.IconAttachments.Icon.rear.OverlayId = createImageOverlay(self.bigmap.IconAttachments.Icon.rear.file);
 	self.bigmap.IconAttachments.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachmentFront#width"), 0.0078125);
@@ -348,15 +348,15 @@ function mapviewer:InitMapViewer()
 	self.bigmap.InfoPanel = {};
 	self.bigmap.InfoPanel.top = {};
 	self.bigmap.InfoPanel.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
-	self.bigmap.InfoPanel.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop#file"), "panel/Info_Panel_top.png"), self.moddir);
+	self.bigmap.InfoPanel.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop#file"), "panel/Info_Panel_top.dds"), self.moddir);
 	self.bigmap.InfoPanel.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.file);
 	self.bigmap.InfoPanel.background = {};
 	self.bigmap.InfoPanel.background = {file = "", OverlayId = nil, width = 0.15, height= 0.125, Pos = {x=0, y=0}};
-	self.bigmap.InfoPanel.background.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBackground#file"), "panel/Info_Panel_bg.png"), self.moddir);
+	self.bigmap.InfoPanel.background.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBackground#file"), "panel/Info_Panel_bg.dds"), self.moddir);
 	self.bigmap.InfoPanel.background.OverlayId = createImageOverlay(self.bigmap.InfoPanel.background.file);
 	self.bigmap.InfoPanel.bottom = {};
 	self.bigmap.InfoPanel.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
-	self.bigmap.InfoPanel.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBottom#file"), "panel/Info_Panel_bt.png"), self.moddir);
+	self.bigmap.InfoPanel.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBottom#file"), "panel/Info_Panel_bt.dds"), self.moddir);
 	self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
 	-- Informationen die angezeigt werden
 	self.bigmap.InfoPanel.Info = {Type = "", Ply= "", Tank = 0, Fruit = ""};
@@ -404,7 +404,7 @@ function mapviewer:InitMapViewer()
     self.bigmap.attachmentsTypes.overlays = {}
     
     for at=1, table.getn(self.bigmap.attachmentsTypes.names) do
-        local tempIcon = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"), "icons/feldgeraet.png"), self.moddir);
+        local tempIcon = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"), "icons/feldgeraet.dds"), self.moddir);
         table.insert(self.bigmap.attachmentsTypes.icons,tempIcon); 
         --getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"));
         self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[at]] = createImageOverlay(self.bigmap.attachmentsTypes.icons[at]);
@@ -416,7 +416,7 @@ function mapviewer:InitMapViewer()
 	--Array für CourseplayIcon
 	self.bigmap.IconCourseplay = {};
 	self.bigmap.IconCourseplay.Icon = {};
-    self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.png"), self.moddir);
+    self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
 	self.bigmap.IconCourseplay.Icon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.Icon.file);
 	self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
 	self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
@@ -425,7 +425,7 @@ function mapviewer:InitMapViewer()
 	--Array für isBrokenIcon
 	self.bigmap.iconIsBroken = {};
 	self.bigmap.iconIsBroken.Icon = {};
-    self.bigmap.iconIsBroken.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconIsBroken#file"), "icons/IsBroken.png"), self.moddir);
+    self.bigmap.iconIsBroken.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconIsBroken#file"), "icons/IsBroken.dds"), self.moddir);
 	self.bigmap.iconIsBroken.Icon.OverlayId = createImageOverlay(self.bigmap.iconIsBroken.Icon.file);
 	self.bigmap.iconIsBroken.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconIsBroken#width"), 0.0078125);
 	self.bigmap.iconIsBroken.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconIsBroken#height"), 0.0078125);
@@ -436,7 +436,7 @@ function mapviewer:InitMapViewer()
 	self.bigmap.iconBottle = {};
 	self.bigmap.iconBottle.Icon = {};
     self.bigmap.iconBottle.Icon.OverlayId = nil;
-    self.bigmap.iconBottle.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconBottle#file"), "icons/Bottle.png"), self.moddir);
+    self.bigmap.iconBottle.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconBottle#file"), "icons/Bottle.dds"), self.moddir);
 	self.bigmap.iconBottle.Icon.OverlayId = createImageOverlay(self.bigmap.iconBottle.Icon.file);
     if self.bigmap.iconBottle.Icon.OverlayId == nil or self.bigmap.iconBottle.Icon.OverlayId == 0 then
         self.useBottles = false;
@@ -448,8 +448,8 @@ function mapviewer:InitMapViewer()
     
 	--Array für Spielerinfos
 	self.bigmap.player = {}; --
-	self.bigmap.player.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconPlayer#file"), "icons/eigenerspieler.png"), self.moddir);
-	self.bigmap.player.filemp = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconMPPlayer#file"), "icons/mpspieler.png"), self.moddir);
+	self.bigmap.player.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconPlayer#file"), "icons/eigenerspieler.dds"), self.moddir);
+	self.bigmap.player.filemp = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconMPPlayer#file"), "icons/mpspieler.dds"), self.moddir);
 	self.bigmap.player.ArrowOverlayId = createImageOverlay(self.bigmap.player.file);
 	self.bigmap.player.mpArrowOverlayId = createImageOverlay(self.bigmap.player.filemp);
 	self.bigmap.player.name = ""; 
@@ -466,7 +466,7 @@ function mapviewer:InitMapViewer()
 	----
 	self.bigmap.Legende = {};
 	self.bigmap.Legende.OverlayId = nil
-	self.bigmap.Legende.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.legende#file"), "gfx/background.png"), self.moddir);
+	self.bigmap.Legende.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.legende#file"), "gfx/background.dds"), self.moddir);
 	self.bigmap.Legende.OverlayId = createImageOverlay(self.bigmap.Legende.file);
     if self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
         self.useLegend = false;
@@ -611,7 +611,7 @@ function mapviewer:checkLocalPDAFile()
 	local PathToModDir;
 	local mapName;
 	
-	fileName = "MV_Pda_";
+	fileName = "mv_pda_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
 	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
@@ -644,7 +644,7 @@ function mapviewer:checkLocalFnumFile()
 	local PathToModDir;
 	local mapName;
 	
-	fileName = "MV_Fnum_";
+	fileName = "mv_fnum_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
 	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
@@ -678,7 +678,7 @@ function mapviewer:checkLocalPoIFile()
 	local PathToModDir;
 	local mapName;
 	
-	fileName = "MV_PoI_";
+	fileName = "mv_poi_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
 	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
