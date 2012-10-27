@@ -35,6 +35,7 @@ icons/combine.png -text svneol=unset#image/png
 icons/courseplay.png -text svn_keywords
 icons/eigenerspieler.png -text svn_keywords
 icons/feldgeraet.png -text svn_keywords
+icons/glasscontainer.png -text
 icons/isBroken.png -text svneol=unset#image/png svn_keywords
 icons/milktruck.png -text
 icons/mpspieler.png -text svn_keywords
