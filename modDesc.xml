@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 -- Revision der letzten Änderung :     $Rev$
 -- Author der letzten Änderung   :     $Author$
 -- Date der letzten Änderung     :     $Date$
@@ -194,7 +194,7 @@
 		</text>
 		<text name="MV_AttachTypetedder">
 			<en>Tedder</en>
-			<de>Tedder</de>	
+			<de>Z-Kreisel</de>	
 		</text>
 		<text name="MV_AttachTypewindrower">
 			<en>Windrower</en>
@@ -212,10 +212,8 @@
 			<en>other</en>
 			<de>andere</de>	
 		</text>
-		<text name="MV_EmptyTank">
-			<en>Empty</en>
-			<de>Leer</de>	
-		</text>
+		
+		<!-- InfoPanel Texte -->
 		<text name="MV_Unknown">
 			<en>Unknown</en>
 			<de>Unbekannt</de>	
@@ -223,6 +221,30 @@
 		<text name="MV_VehicleFuel">
 			<en>Fuel : </en>
 			<de>Diesel : </de>	
+		</text>
+		<text name="MV_FillLevel">
+			<en>Capacity : </en>
+			<de>Kapazität : </de>	
+		</text>
+		<text name="MV_Attachments">
+			<en>Attachments : </en>
+			<de>Anbaugeräte : </de>	
+		</text>
+		<text name="MV_Player">
+			<en>Player : </en>
+			<de>Spieler : </de>	
+		</text>
+		<text name="MV_EmptyTank">
+			<en>-- Empty --</en>
+			<de>-- Leer --</de>	
+		</text>
+		<text name="MV_EmptyPlayer">
+			<en>-- No Player --</en>
+			<de>-- Kein Spieler --</de>	
+		</text>
+		<text name="MV_HiredVehicle">
+			<en>-- Hired --</en>
+			<de>-- Helfer --</de>	
 		</text>
 		
         <!-- Fehlermdeldungen -->
@@ -284,6 +306,6 @@
        <input name="BIGMAP_SwitchOverlay" category="ONFOOT VEHICLE" key1="KEY_end" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_TransPlus" category="ONFOOT VEHICLE" key1="KEY_KP_plus" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_TransMinus" category="ONFOOT VEHICLE" key1="KEY_KP_minus" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Teleport" category="ONFOOT" key1="KEY_rcrtl" key2="KEY_rshift" button="" device="0" mouse="" />
+       <input name="BIGMAP_Teleport" category="ONFOOT" key1="KEY_rctrl" key2="KEY_rshift" button="" device="0" mouse="" />
     </inputBindings>
 </modDesc>

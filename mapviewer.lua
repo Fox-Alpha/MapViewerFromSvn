@@ -14,6 +14,23 @@ mapviewer.moddir=g_currentModDirectory;
 mapviewer.modName = g_currentModName;
 -- source(mapviewer.moddir.."MapViewerTeleportEvent.lua");
 
+
+----
+-- Globale ToDo's :
+----
+-- GetNoNil aus den Aufrufen von getText entfernen oder gegen eigene Funktion ersetzten
+-- Übersetzungen prüfen
+-- Panel position anpassen wenn am Bildschirmrand (Oben und rechts)
+----
+-- Testen:
+----
+-- Client Teleport im MP Modus
+-- Füllstand im Infopanel z.B. bei selbstfahspritze, Bei Fahrzeugen mit fillCapazität und nicht Combine
+----
+
+----
+-- Hauptfunktion zum Laden des Mods
+----
 function mapviewer:loadMap(name)
 	-- print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
 	local userXMLPath = Utils.getFilename("mapviewer.xml", mapviewer.moddir);
@@ -104,130 +121,12 @@ function mapviewer:loadMap(name)
 	end;
 	----
 end;
-
-----
--- Namen der Datei eines Mods ermitteln
--- Ermittelt aus dem Pfad den Namen ohne Dateiendung
-----
-function mapviewer:getModName(s)
-	local temp;
-	local PathToModDir;
-	
-	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
-
-	s = string.gsub(s, PathToModDir, "");
-	s = string.gsub(s, "/", "");
-	temp = s;
-	
-	return temp;
-end;
 ----
 
 ----
--- Prüfen ob lokale Dateien für PDA, Poi und Feldnummern vorhanden sind
+-- Grundwerte des Mods setzen
+-- Laden und erstellen der Overlays, usw.
 ----
-function mapviewer:checkLocalPDAFile()
-	local fileName;
-	local temp;
-	local isLocal = false;
-	local PathToModDir;
-	local mapName;
-	
-	fileName = "MV_Pda_";
-	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
-
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
-		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
-	else	-- Name der Map zip
-		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
-		-- mapName = string.gsub(mapName, "/", "");
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
-	end;
-	fileName = fileName .. temp;
-	fileName = string.lower(fileName);
-	
-	if self:file_exists(PathToModDir..fileName..".png") then
-		fileName = PathToModDir..fileName..".png";
-		isLocal = true;
-	elseif self:file_exists(PathToModDir..fileName..".dds") then
-		fileName = PathToModDir..fileName..".dds";
-		isLocal = true;
-	else
-		fileName = nil;
-	end; 
-
-	return isLocal, fileName or nil;
-end;
-----
-function mapviewer:checkLocalFnumFile()
-	local fileName;
-	local temp;
-	local isLocal = false;
-	local PathToModDir;
-	local mapName;
-	
-	fileName = "MV_Fnum_";
-	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
-
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
-		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
-	else	-- Name der Map zip
-		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
-		-- mapName = string.gsub(mapName, "/", "");
-		-- temp = mapName;
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
-	end;
-	fileName = fileName .. temp;
-	fileName = string.lower(fileName);
-	
-	if self:file_exists(PathToModDir..fileName..".png") then
-		fileName = PathToModDir..fileName..".png";
-		isLocal = true;
-	elseif self:file_exists(PathToModDir..fileName..".dds") then
-		fileName = PathToModDir..fileName..".dds";
-		isLocal = true;
-	else
-		fileName = nil;
-	end; 
-
-	return isLocal, fileName or nil;
-end;
-----
-function mapviewer:checkLocalPoIFile()
-	local fileName;
-	local temp;
-	local isLocal = false;
-	local PathToModDir;
-	local mapName;
-	
-	fileName = "MV_PoI_";
-	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
-
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
-		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
-	else	-- Name der Map zip
-		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
-		-- mapName = string.gsub(mapName, "/", "");
-		-- temp = mapName;
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
-	end;
-	fileName = fileName .. temp;
-	fileName = string.lower(fileName);
-	
-	if self:file_exists(PathToModDir..fileName..".png") then
-		fileName = PathToModDir..fileName..".png";
-		isLocal = true;
-	elseif self:file_exists(PathToModDir..fileName..".dds") then
-		fileName = PathToModDir..fileName..".dds";
-		isLocal = true;
-	else
-		fileName = nil;
-	end; 
-
-	return isLocal, fileName or nil;
-end;
-----
-
 function mapviewer:InitMapViewer()
     print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
     
@@ -559,9 +458,9 @@ function mapviewer:InitMapViewer()
 	-- Nur Laden und speichern, wenn Singleplayer oder nicht client im Multiplayer
 	-- print("Nur Laden und speichern, wenn Singleplayer oder nicht client im Multiplayer");
 	----
-	-- print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
-	-- print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
-	-- print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
+	print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
+	print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
+	print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
 	----
 	if g_currentMission:getIsServer() then
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LoadOptions")));
@@ -630,30 +529,129 @@ function mapviewer:InitMapViewer()
 
 	self.mvInit = true;
 end;
-
-----
--- Find the length of a file
---   filename: file name
--- returns
---   len: length of file
---   asserts on error
-----
-function mapviewer:length_of_file(filename)
-  local fh = assert(io.open(filename, "rb"))
-  local len = assert(fh:seek("end"))
-  fh:close()
-  return len
-end
 ----
 
 ----
--- Return true if file exists and is readable.
+-- Namen der Datei eines Mods ermitteln
+-- Ermittelt aus dem Pfad den Namen ohne Dateiendung
 ----
-function mapviewer:file_exists(path)
-  local file = io.open(path, "rb")
-  if file then file:close() end
-  return file ~= nil
-end
+function mapviewer:getModName(s)
+	local temp;
+	local PathToModDir;
+	
+	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
+
+	s = string.gsub(s, PathToModDir, "");
+	s = string.gsub(s, "/", "");
+	temp = s;
+	
+	return temp;
+end;
+----
+
+----
+-- Prüfen ob lokale Dateien für PDA, Poi und Feldnummern vorhanden sind
+----
+function mapviewer:checkLocalPDAFile()
+	local fileName;
+	local temp;
+	local isLocal = false;
+	local PathToModDir;
+	local mapName;
+	
+	fileName = "MV_Pda_";
+	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
+
+	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
+	else	-- Name der Map zip
+		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
+		-- mapName = string.gsub(mapName, "/", "");
+		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+	end;
+	fileName = fileName .. temp;
+	fileName = string.lower(fileName);
+	
+	if self:file_exists(PathToModDir..fileName..".png") then
+		fileName = PathToModDir..fileName..".png";
+		isLocal = true;
+	elseif self:file_exists(PathToModDir..fileName..".dds") then
+		fileName = PathToModDir..fileName..".dds";
+		isLocal = true;
+	else
+		fileName = nil;
+	end; 
+
+	return isLocal, fileName or nil;
+end;
+----
+function mapviewer:checkLocalFnumFile()
+	local fileName;
+	local temp;
+	local isLocal = false;
+	local PathToModDir;
+	local mapName;
+	
+	fileName = "MV_Fnum_";
+	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
+
+	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
+	else	-- Name der Map zip
+		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
+		-- mapName = string.gsub(mapName, "/", "");
+		-- temp = mapName;
+		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+	end;
+	fileName = fileName .. temp;
+	fileName = string.lower(fileName);
+	
+	if self:file_exists(PathToModDir..fileName..".png") then
+		fileName = PathToModDir..fileName..".png";
+		isLocal = true;
+	elseif self:file_exists(PathToModDir..fileName..".dds") then
+		fileName = PathToModDir..fileName..".dds";
+		isLocal = true;
+	else
+		fileName = nil;
+	end; 
+
+	return isLocal, fileName or nil;
+end;
+----
+function mapviewer:checkLocalPoIFile()
+	local fileName;
+	local temp;
+	local isLocal = false;
+	local PathToModDir;
+	local mapName;
+	
+	fileName = "MV_PoI_";
+	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
+
+	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
+	else	-- Name der Map zip
+		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
+		-- mapName = string.gsub(mapName, "/", "");
+		-- temp = mapName;
+		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+	end;
+	fileName = fileName .. temp;
+	fileName = string.lower(fileName);
+	
+	if self:file_exists(PathToModDir..fileName..".png") then
+		fileName = PathToModDir..fileName..".png";
+		isLocal = true;
+	elseif self:file_exists(PathToModDir..fileName..".dds") then
+		fileName = PathToModDir..fileName..".dds";
+		isLocal = true;
+	else
+		fileName = nil;
+	end; 
+
+	return isLocal, fileName or nil;
+end;
 ----
 
 ----
@@ -767,195 +765,9 @@ end;
 ----
 
 ----
--- Funkmtion zum  kopieren einer Tabelle in eine neue Tabelle, 
--- incl. Ausgabe der Datentypen, wenn Debug=TRUE
--- Parameter :
-----
--- tab = zu kopierende Tabelle
--- parent = Übergeordnetes Element, für Ausgabe
-----
-function mapviewer:tablecopy(tab, parent)
-    local ret = {}
-	-- Prüfen auf gültige Tabelle
-	-- Abbrechen wenn NIL
-	if tab == nil then 
-		return nil;
-	end;
-	
-    for key, value in pairs(tab) do
-		if  self.Debug then
-			if parent ~= nil and type ~= "table" then 
-				print(string.format("%s.%s=%s (%s)", parent, tostring(key), tostring(value), type(value)));
-			elseif type ~= "table" then 
-				print(string.format("%s=%s (%s)", tostring(key), tostring(value), type(value)));
-			else
-				print(string.format("%s=%s", tostring(key), type(value)));
-			end;
-		end;
-		
-        if (type(value) == "table") then 
-			ret[key] = mapviewer:tablecopy(value, key)
-        else 
-			ret[key] = value 
-		end;
-    end;
-    return ret
-end;
-
-function mapviewer:tprint (t, indent, done)
-    if t == 0 or t == nil then
-        print("tprint() : keine Daten");
-        return;
-    end;
-    done = done or {}
-    indent = indent or 0
-    if type (t) == "table" then
-        for key, value in pairs (t) do
-            txt = string.format("%s",string.rep ("\t", indent));
-            if type (value) == "table" and not done [value] then
-                done [value] = true
-                print (string.format("%s[%s]:", string.rep("\t", indent), tostring (key)));
-                tprint (value, indent + 1, done)
-            else
-                print(string.format("%s%s=%s", txt, tostring(key), tostring(value)));
-            end;
-        end;
-    elseif type (t) == "string" then
-        print("Angegebene Tabelle ist keine Tabelle : -> " .. t);
-    else
-        print("Angegebene Tabelle ist keine Tabelle : -> " .. type(t));
-    end;
-end;
-
-function table.show(t, name, indent)
-   local cart     -- a container
-   local autoref  -- for self references
-
-   --[[ counts the number of elements in a table
-   local function tablecount(t)
-      local n = 0
-      for _, _ in pairs(t) do n = n+1 end
-      return n
-   end
-   ]]
-   -- (RiciLake) returns true if the table is empty
-   local function isemptytable(t) return next(t) == nil end
-
-   local function basicSerialize (o)
-      local so = tostring(o)
-      if type(o) == "function" then
-         local info = debug.getinfo(o, "S")
-         -- info.name is nil because o is not a calling level
-         if info.what == "C" then
-            return string.format("%q", so .. ", C function")
-         else 
-            -- the information is defined through lines
-            return string.format("%q", so .. ", defined in (" ..
-                info.linedefined .. "-" .. info.lastlinedefined ..
-                ")" .. info.source)
-         end
-      elseif type(o) == "number" then
-         return so
-      else
-         return string.format("%q", so)
-      end
-   end
-   local function addtocart (value, name, indent, saved, field)
-      indent = indent or ""
-      saved = saved or {}
-      field = field or name
-
-      cart = cart .. indent .. field
-
-      if type(value) ~= "table" then
-         cart = cart .. " = " .. basicSerialize(value) .. ";\n"
-      else
-         if saved[value] then
-            cart = cart .. " = {}; -- " .. saved[value] 
-                        .. " (self reference)\n"
-            autoref = autoref ..  name .. " = " .. saved[value] .. ";\n"
-         else
-            saved[value] = name
-            --if tablecount(value) == 0 then
-            if isemptytable(value) then
-               cart = cart .. " = {};\n"
-            else
-               cart = cart .. " = {\n"
-               for k, v in pairs(value) do
-                  k = basicSerialize(k)
-                  local fname = string.format("%s[%s]", name, k)
-                  field = string.format("[%s]", k)
-                  -- three spaces between levels
-                  addtocart(v, fname, indent .. "   ", saved, field)
-               end
-               cart = cart .. indent .. "};\n"
-            end
-         end
-      end
-   end
-
-   name = name or "__unnamed__"
-   if type(t) ~= "table" then
-      return name .. " = " .. basicSerialize(t)
-   end
-   cart, autoref = "", ""
-   addtocart(t, name, indent)
-   return cart .. autoref
-end
-
-function eval(str)
-   return assert(loadstring(str))()
-end   
-----
-
-----
 --
 ----
 function mapviewer:deleteMap()
-end;
-----
-
-----
--- Funktionen für Netzwerk / Multiplayer Synchronisierung
-----
-function mapviewer:readStream(streamId, connection)
-	if connection:getIsServer() then
-		-- local myPlayerId = streamReadFloat32(streamId);
-		-- local x = streamReadFloat32(streamId);
-		-- local y = streamReadFloat32(streamId);
-		-- local z = streamReadFloat32(streamId);
-	end;
-end;
-
-function mapviewer:writeStream(streamId, connection)
-	if not connection:getIsServer() then
-		-- local myPlayerId = streamWriteFloat32(streamId);
-		-- local x = streamWriteFloat32(streamId);
-		-- local y = streamWriteFloat32(streamId);
-		-- local z = streamWriteFloat32(streamId);
-	end;
-end;
-
-function mapviewer:readUpdateStream(streamId, timestamp, connection)
-	 self:readStream(streamId, connection);
-end;
-
-function mapviewer:writeUpdateStream(streamId, timestamp, connection)	
-	self:writeStream(streamId, connection);
-end;
-----
-
-----
--- Neue Position an Server/Clients senden
-----
-function mapviewer:setNewPlayerPos(setNewPlyPosition, noEventSend)
-	-- if noEventSend == nil or noEventSend == false then
-		-- if g_server ~= nil then
-			-- g_server:broadcastEvent(MapViewerTeleportEvent:new(self, setNewPlyPosition), nil, nil, self);
-		-- else
-			-- g_client:getServerConnection():sendEvent(MapViewerTeleportEvent:new(self, setNewPlyPosition));
-		-- end;
-	-- end;
 end;
 ----
 
@@ -967,9 +779,9 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 	-- Taste um den Debugmodus zu aktivieren
 	-- ALT+d
     ----
-	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
-		print("---- MapViwer Debug aktiviert ----");
-	end;
+	-- if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
+		-- print("---- MapViwer Debug aktiviert ----");
+	-- end;
 	----
 	
 	----
@@ -1029,7 +841,7 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				tpZ = -self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
 				if g_currentMission.player.isControlled then
-					if isMultiplayer and g_server ~= nil then
+					if isMultiplayer and g_currentMission:getIsServer() then
 						g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
 					elseif isMultiplayer and isClient ~= nil and isClient then
 						g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
@@ -1045,6 +857,79 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 		end;
 	end;
 	----
+end;
+----
+
+----
+-- Fahrzeug in der Nähe des Mausklicks finden
+----
+function mapviewer:vehicleInMouseRange()
+
+	local oldIndex = nil;
+	local index = nil;
+	local nearestDistance = 0.005;
+	local isVehicle = true;
+	local currV = nil;
+	local tmpDistance = 0.006;
+	local distance = 0.006;
+	local sDistance = 0.006
+	local aDistance = 0.006;
+	local vDistance = 0.006;
+
+	-- print("--vehicleInMouseRange()--");
+	-- print("--Steerables--");
+	for j=1, table.getn(g_currentMission.steerables) do
+
+		local currS = g_currentMission.steerables[j];
+		local posX1, posY1, posZ1 = getWorldTranslation(currS.rootNode);
+		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
+		-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || X-Y auf Karte : %.3f, %.3f || Maus X-Y : %.3f, %.3f || Distanz: %.3f || Node: %d || Index : %d", 
+										-- posX1, posY1, posZ1, distancePosX, distancePosZ, self.mouseX, self.mouseY, tmpDistance, currS.rootNode, j));
+
+		if tmpDistance < nearestDistance then
+			sDistance = tmpDistance;
+			if sDistance < distance then 
+				distance = sDistance;
+				index = j;
+				isVehicle = true;
+				currV = currS;
+			end;
+		end;
+		-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, sDistance, distance));
+	end;
+	
+	tmpDistance = 0.006;
+	aDistance = 0.006;
+	vDistance = 0.006;
+	--Attachables
+	-- print("--Attachables--");
+	for a=1, table.getn(g_currentMission.attachables) do
+		if g_currentMission.attachables[a].attacherVehicle == nil or g_currentMission.attachables[a].attacherVehicle == 0 then
+			local currA = g_currentMission.attachables[a];
+			local posX1, posY1, posZ1 = getWorldTranslation(currA.rootNode);
+			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+			tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
+			-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || X-Y auf Karte : %.3f, %.3f || Maus X-Y : %.3f, %.3f || Distanz: %.3f || Node: %d || Index : %d", 
+											-- posX1, posY1, posZ1, distancePosX, distancePosZ, self.mouseX, self.mouseY, tmpDistance, currA.rootNode, a));
+
+			if tmpDistance < nearestDistance then
+				aDistance = tmpDistance;
+				if aDistance < distance then 
+					distance = aDistance;
+					index = a;
+					isVehicle = false;
+					currV = currA;
+				end;
+			end;
+			-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, aDistance, distance));
+		end;
+	end;
+	-- print("----");
+
+	return index, isVehicle, currV;	
 end;
 ----
 
@@ -1123,33 +1008,49 @@ end;
 -- Ermitteln der Vehicle Informationen
 ----
 function mapviewer:GetVehicleInfo(vehicle)
+	----
+	-- TODO's
+	----
+	-- getNoNil aufrufe entfernen
+	-- getText aufrufe durch eigene Funktion ersetzen
+	----
 	local vehicleInfo = {}; --{Type = "", Ply= "", Tank = 0, Fruit = ""};
 	local percent = 0;
 	local fruitNames;
 	local attachList = {};	--name, fillLevel, fillType, capacity, fillName
 	
 	if vehicle ~= nil and type(vehicle) == "table" then
+		-- Zeile [1] = VehicleName
 		table.insert(vehicleInfo, vehicle.name);
 		
+		----
+		-- Zeile [2] Spieler oder Gerätetyp
+		----
 		if self.bigmap.InfoPanel.isVehicle then
+			----
+			-- Text für Spieler erstellen
+			----
 			if vehicle.isControlled then
 				local tmp;
-				
-				tmp = "SPIELER : " .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_EmptyTank")), 0, 20);
-				
+				tmp = g_i18n:getText("MV_Player") .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_EmptyPlayer")), 0, 20);
 				if vehicle.isHired then 
 					tmp = tmp .. " [H]"; 
 				end;
-				
 				table.insert(vehicleInfo, tmp); 
-			end;
+			elseif not vehicle.isControlled and vehicle.isHired then 
+				tmp = g_i18n:getText("MV_Player") .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_HiredVehicle")), 0, 20);
+				table.insert(vehicleInfo, tmp); 
+			end;			
 			----
-			-- todo: Akteuellen Treibstofftank anzeigen
+			
 			----
-			tmp = Utils.getNoNil( g_i18n:getText("MV_VehicleFuel"..vehicle.typeName), "Fuel : ") .. tostring(g_currentMission.fuelCapacity / g_currentMission.fuelFillLevel * 100);
+			-- Zeile [3] : Akteuellen Treibstofftank anzeigen
+			----
+			-- Eventl. mit Ist und Kann Anzeige erweitern
+			tmp = string.format("%s %.2f %%", g_i18n:getText("MV_VehicleFuel"), (vehicle.fuelFillLevel / vehicle.fuelCapacity * 100));
 			table.insert(vehicleInfo, tmp);
 			----
-		else
+		else -- Zeile [2] : Wenn kein Fahrzeug, Typ statt Spieler anzeigen
 			if g_i18n:hasText("MV_AttachType"..vehicle.typeName) then
 				table.insert(vehicleInfo, "Typ : " .. string.sub(Utils.getNoNil( g_i18n:getText("MV_AttachType"..vehicle.typeName), g_i18n:getText("MV_Unknown")),0,25));
 			else
@@ -1161,6 +1062,8 @@ function mapviewer:GetVehicleInfo(vehicle)
 		-- Füllstand, Ladungsname
 		-- Alle Fillable 
 		----
+		-- Wenn Befüllbar ODER Steuerbar ODER Combine
+		----
 		if (SpecializationUtil.hasSpecialization(Fillable, vehicle.specializations) or SpecializationUtil.hasSpecialization(Steerable, vehicle.specializations)) or SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
 			local f, c, p;
 			local nIndex,oImplement, attFruits, temp;
@@ -1169,6 +1072,9 @@ function mapviewer:GetVehicleInfo(vehicle)
 			-- Füllstand ermitteln neu
 			----
 			if not SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
+				----
+				-- Füllstände aller Teile ermitteln, bei Fahrzeugen ohne Combine
+				----
 				if vehicle:getAttachedTrailersFillLevelAndCapacity() then
 					----
 					-- Gesamt Füllstand
@@ -1176,27 +1082,37 @@ function mapviewer:GetVehicleInfo(vehicle)
 					f, c = vehicle:getAttachedTrailersFillLevelAndCapacity();
 					if f ~= nil and c ~= nil then
 						p = f / c * 100;
-						table.insert(vehicleInfo, string.format("%d / %d | %.2f%%", f, c, p));
+						table.insert(vehicleInfo, string.format("%s %d / %d | %.2f%%", g_i18n:getText("MV_FillLevel"), f, c, p));	--Gesamt Füllstand
 					end;
+					----
 				end;
 				----
 			else 
+				----
+				-- Füllstand bei Combine ermitteln
+				----
 				if vehicle:getFruitTypeAndFillLevelToUnload() then
 					fruitType, f, useGrainTank = vehicle:getFruitTypeAndFillLevelToUnload();
 					-- print(string.format("Fruittype %s, FillLevel % s, useGrainTank %s",tostring(fruitType), tostring(f), tostring(useGrainTank)));
 					if useGrainTank and f ~= nil then
 						c = vehicle.grainTankCapacity;
 						p = f / c * 100;
-						table.insert(vehicleInfo, string.format("%d / %d | %.2f%%", f, c, p));
+						table.insert(vehicleInfo, string.format("%s %d / %d | %.2f%%", g_i18n:getText("MV_FillLevel"), f, c, p));
 						--print(string.format("Combine - Füllstand / Kapazität : %.2f / %.2f | Name : %s | TankInfo : %s", f, c, tostring(vehicle.name), vehicleInfo.Tank));
 					end;
+					----
+					-- Fruchtbezeichnung ermitteln
+					----
 					if fruitType ~= nil and fruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 						table.insert(vehicleInfo, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fruitType].name)), g_i18n:getText("MV_Unknown")));
 					else 
-						table.insert(vehicleInfo, g_i18n:getText("MV_EmptyTank"));
+						table.insert(vehicleInfo, g_i18n:getText("MV_EmptyTank"));	-- Empty --
 					end;
+					----
 				end;
+				----
 			end;
+			----
 		end;
 		--attachList = {name, fillLevel, fillType, capacity, fillName}
 		fruitNames, attachList = getVehicleAttachmentsFruitTypes(vehicle);
@@ -1205,7 +1121,7 @@ function mapviewer:GetVehicleInfo(vehicle)
 		-- Attachment Infos. Name und Füllstand und Ladungsname
 		----
 		if attachList ~= nil then 
-			table.insert(vehicleInfo, "Attachments : ");
+			table.insert(vehicleInfo, g_i18n:getText("MV_Attachments"));
 			for a=1, table.getn(attachList) do
 				if attachList[a].fillLevel~=nil and attachList[a].capacity~=nil and attachList[a].FillType~=nil and attachList[a].fillName~=nil then
 					if attachList[a].fillLevel > 0 then
@@ -1231,47 +1147,6 @@ function mapviewer:GetVehicleInfo(vehicle)
 	---- Ende Füllstand ermitteln neu ----		
 	return vehicleInfo;
 end;
-
-function mapviewer:getFillLevelOld(vehicle)
-	local vehicleInfo = {Type = "", Ply= "", Tank = 0, Fruit = ""};
-	local percent = 0;
-	if vehicle.grainTankFillLevel ~= nil then 
-		percent = vehicle.grainTankFillLevel / vehicle.grainTankCapacity * 100;
-		vehicleInfo.Tank = string.format("%d / %d | %.2f%%", vehicle.grainTankFillLevel, vehicle.grainTankCapacity, percent);
-		if vehicle.grainTankFillLevel > 0 then
-			-- vehicleInfo.Fruit = FruitUtil.fruitIndexToDesc[vehicle.currentGrainTankFruitType].name;
-			vehicleInfo.Fruit = tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[vehicle.currentGrainTankFruitType].name));
-		else 
-			vehicleInfo.Fruit = g_i18n:getText("MV_EmptyTank");
-		end;
-	elseif vehicle.capacity ~= nil then
-		percent = vehicle.fillLevel / vehicle.capacity * 100;
-		vehicleInfo.Tank = string.format("%d / %d | %.2f%%", vehicle.fillLevel, vehicle.capacity, percent);
-		if SpecializationUtil.hasSpecialization(Fillable, vehicle.specializations) then
-			if vehicle.currentFillType ~= Fillable.FILLTYPE_UNKNOWN then
-				if g_i18n:hasText (Fillable.fillTypeIntToName[vehicle.currentFillType]) then
-					vehicleInfo.Fruit = tostring(g_i18n:getText(Fillable.fillTypeIntToName[vehicle.currentFillType]));
-				else
-					vehicleInfo.Fruit = tostring(Fillable.fillTypeIntToName[vehicle.currentFillType]);
-				end;
-			end;
-		else 
-			vehicleInfo.Fruit = g_i18n:getText("MV_Unknown");
-		end;
-	elseif vehicle:getAttachedTrailersFillLevelAndCapacity() then
-		local f, c;
-		f, c = vehicle:getAttachedTrailersFillLevelAndCapacity();
-		if f ~= nil and c ~= nil then
-			--print(string.format("Fahrzeug Füllstand und Kapazität : %.2f | %.2f", f, c));
-			percent = f / c * 100;
-			vehicleInfo.Tank = string.format("%d / %d | %.2f%%", f, c, percent);
-		end;
-	else
-		vehicleInfo.Tank = "";
-		vehicleInfo.Fruit = ""; 
-	end;
-	return vehicleInfo;
-end;
 ----
 
 ----
@@ -1279,7 +1154,6 @@ end;
 ----
 function mapviewer:ShowPanelonMap()
 	if self.showInfoPanel then
-		--local vehicleInfo = {Type = "", Ply= "", Tank = 0, Fruit = ""};
 		local tX, tY, tLeft, tRight, tTop;
 		
 		----
@@ -1289,14 +1163,19 @@ function mapviewer:ShowPanelonMap()
 		self.bigmap.InfoPanel.background.height = zeile * 0.015;
 		----
 		
+		----
+		-- ToDo : Position anpassen wenn Panel zuweit oben oder zu weit rechts ist.
+		----		
 		tX = self.bigmap.InfoPanel.background.Pos.x;
 		tY = self.bigmap.InfoPanel.background.Pos.y;
-		tTop = tY + self.bigmap.InfoPanel.background.height - 0.020;
+		--tTop = tY + self.bigmap.InfoPanel.background.height - 0.020;
+		tTop = tY + self.bigmap.InfoPanel.background.height; -- - 0.035;
 		tLeft = tX + 0.005; 
 		
 		renderOverlay(self.bigmap.InfoPanel.top.OverlayId, self.bigmap.InfoPanel.top.Pos.x, self.bigmap.InfoPanel.top.Pos.y, self.bigmap.InfoPanel.top.width, self.bigmap.InfoPanel.top.height);
 		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
 		renderOverlay(self.bigmap.InfoPanel.bottom.OverlayId, self.bigmap.InfoPanel.bottom.Pos.x, self.bigmap.InfoPanel.bottom.Pos.y, self.bigmap.InfoPanel.bottom.width, self.bigmap.InfoPanel.bottom.height);
+		----
 
 		----
 		--
@@ -1304,22 +1183,15 @@ function mapviewer:ShowPanelonMap()
 		-- print(table.show(self.bigmap.InfoPanel.Info, "self.bigmap.InfoPanel.Info"));
 		----
 		
-		local v = self.bigmap.InfoPanel.lastVehicle;
+		----
+		-- Ausgabe des InfoPanel Text
+		----
 		setTextBold(true);
 		setTextColor(0, 0, 0, 1);
-		renderText(tLeft, tTop, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[1], g_i18n:getText("MV_Unknown"))));
-		if self.bigmap.InfoPanel.Info[2] ~= nil then
-			renderText(tLeft, tTop-0.015, 0.012, string.format("%s", Utils.getNoNil(tostring(self.bigmap.InfoPanel.Info[2]), g_i18n:getText("MV_Unknown"))));
-		end;
 		if self.bigmap.InfoPanel.lastVehicle ~= nil then
-			if self.bigmap.InfoPanel.Info[3] ~= nil then
-				renderText(tLeft, tTop-0.030, 0.012, string.format("Füllstand : %s", Utils.getNoNil(self.bigmap.InfoPanel.Info[3], g_i18n:getText("MV_Unknown"))));
-				tTop = tTop - 0.030;
-			else
-				tTop = tTop - 0.015;
-			end;
-			for r=4, table.getn(self.bigmap.InfoPanel.Info) do
-				renderText(tLeft, tTop-r*0.015+0.045, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
+			for r=1, table.getn(self.bigmap.InfoPanel.Info) do
+				--renderText(tLeft, tTop-r*0.015+0.015, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
+				renderText(tLeft, tTop-r*0.015, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
 			end;
 		end;
 		setTextColor(1, 1, 1, 0);
@@ -1329,271 +1201,7 @@ end;
 ----
 
 ----
--- Fahrzeug in der Nähe des Mausklicks finden
-----
-function mapviewer:vehicleInMouseRange()
-
-	local oldIndex = nil;
-	local index = nil;
-	local nearestDistance = 0.005;
-	local isVehicle = true;
-	local currV = nil;
-	local tmpDistance = 0.006;
-	local distance = 0.006;
-	local sDistance = 0.006
-	local aDistance = 0.006;
-	local vDistance = 0.006;
-
-	-- print("--vehicleInMouseRange()--");
-	-- print("--Steerables--");
-	for j=1, table.getn(g_currentMission.steerables) do
-
-		local currS = g_currentMission.steerables[j];
-		local posX1, posY1, posZ1 = getWorldTranslation(currS.rootNode);
-		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
-		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
-		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
-		-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || X-Y auf Karte : %.3f, %.3f || Maus X-Y : %.3f, %.3f || Distanz: %.3f || Node: %d || Index : %d", 
-										-- posX1, posY1, posZ1, distancePosX, distancePosZ, self.mouseX, self.mouseY, tmpDistance, currS.rootNode, j));
-
-		if tmpDistance < nearestDistance then
-			sDistance = tmpDistance;
-			if sDistance < distance then 
-				distance = sDistance;
-				index = j;
-				isVehicle = true;
-				currV = currS;
-			end;
-		end;
-		-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, sDistance, distance));
-	end;
-	
-	tmpDistance = 0.006;
-	aDistance = 0.006;
-	vDistance = 0.006;
-	--Attachables
-	-- print("--Attachables--");
-	for a=1, table.getn(g_currentMission.attachables) do
-		if g_currentMission.attachables[a].attacherVehicle == nil or g_currentMission.attachables[a].attacherVehicle == 0 then
-			local currA = g_currentMission.attachables[a];
-			local posX1, posY1, posZ1 = getWorldTranslation(currA.rootNode);
-			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
-			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
-			tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
-			-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || X-Y auf Karte : %.3f, %.3f || Maus X-Y : %.3f, %.3f || Distanz: %.3f || Node: %d || Index : %d", 
-											-- posX1, posY1, posZ1, distancePosX, distancePosZ, self.mouseX, self.mouseY, tmpDistance, currA.rootNode, a));
-
-			if tmpDistance < nearestDistance then
-				aDistance = tmpDistance;
-				if aDistance < distance then 
-					distance = aDistance;
-					index = a;
-					isVehicle = false;
-					currV = currA;
-				end;
-			end;
-			-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, aDistance, distance));
-		end;
-	end;
-	-- print("----");
-
-	return index, isVehicle, currV;	
-end;
-----
-
-
-----
--- Update Funktion
-----
-function mapviewer:update(dt)
-	-- Ist der Spieler bereits geladen ?
-	if self.activePlayerNode == nil or self.activePlayerNode == 0 then
-		-- Wenn ja
-		if g_currentMission.player ~= nil then
-			-- Eigene Player.ID merken
-			self.activePlayerNode=g_currentMission.player.rootNode;
-			-- Variablen initialisieren
-			mapviewer:InitMapViewer();
-		end;
-	end;
-	
-	-- Nur wenn Variablen initialisiert sind, auf Tasten eingaben reagieren
-	if not self.mvInit then 
-		return;
-	end;
-
-	-- Taste für Map einblenden
-	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
-		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
-			self.mapvieweractive=not self.mapvieweractive;
-			if self.mapvieweractive then
-				g_mouseControlsHelp.active = false;
-				InputBinding.setShowMouseCursor(true);
-				InputBinding.wrapMousePositionEnabled = false;
-				if (g_currentMission.player.isEntered) then
-					g_currentMission.player.isFrozen = true;
-				end;
-			else
-				g_mouseControlsHelp.active = true;
-				InputBinding.setShowMouseCursor(false);
-				InputBinding.wrapMousePositionEnabled = true;
-				if (g_currentMission.player.isEntered) then
-					g_currentMission.player.isFrozen = false;
-				end;
-			end;
-		else
-			self.mv_Error = not self.mv_Error;
-			print(string.format("|| Update() - %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
-		end;
-	end;
-	--Taste für Legende einblenden
-	if InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
-		if self.mapvieweractive and self.useLegend then
-			--Legende einblenden
-			self.maplegende = not self.maplegende;
-			self.printInfo = self.maplegende;
-			if g_currentMission:getIsServer() then
-				mapviewer:SaveToFile();
-			end;
-		end;
-	end;
-
-	--Overlay wechseln
-	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
-		self.numOverlay = self.numOverlay+1;
-
-        ----
-        -- Überprüfen ob Feldnummern und PoI benutz werden können
-        ----
-        -- if not self.useFNum or not self.usePoi or not self.useBottles then
-            -- if self.numOverlay == 1 and not self.useFNum then
-                -- self.numOverlay = self.numOverlay+1;
-            -- end;
-            -- if self.numOverlay == 2 and not self.usePoi then
-                -- self.numOverlay = self.numOverlay+1;
-            -- end;
-            -- if self.numOverlay == 3 and (not self.usePoi or not self.useFNum) then
-                -- self.numOverlay = self.numOverlay+1;
-            -- end;
-            if self.numOverlay == 5 and not self.useBottles then
-                self.numOverlay = self.numOverlay+1;
-            end;
-        -- end;
-        ----
-        ----
-        -- Alle Overlays deaktivieren
-        ----
-        self.showPoi = false;
-        self.showFNum = false;
-        self.showCP = false;
-        self.showBottles = false;
-        ----
-
-		if self.numOverlay == 1 then	--nur Feldnummern
-			self.showFNum = true;
-		elseif self.numOverlay == 2 then	--nur PoI
-            self.showPoi = true;
-		elseif self.numOverlay == 3 then	--Poi und Nummern
-			self.showPoi = true;
-			self.showFNum = true;
-		elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
-			self.showCP = true;
-		elseif self.numOverlay == 5 then	--Bottlefinder anzeigen
-            self.showBottles = true;
-		else
-			self.numOverlay = 0;		--Alles aus
-			self.showPoi = false;
-			self.showFNum = false;
-            self.showCP = false;
-            self.showBottles = false;
-		end;
-
-		if self.Debug then
-			print("Debug Key BIGMAP_SwitchOverlay: ");
-            print(string.format("|| $s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
-		end;
-		if g_currentMission:getIsServer() then
-			mapviewer:SaveToFile();
-		end;
-	end;
-	
-	----
-	-- Panel Position an Fahrzeug anpassen
-	----
-	if self.mapvieweractive and self.showInfoPanel then
-		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then
-			local posX1, posY1, posZ1 = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
-			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
-			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
-			
-			self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
-			self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
-			self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
-		else
-			selfShowInfoPanel = false;
-			print("--\nFehler in Update() - showInfoPanel\n--");
-		end;	
-	end;	
-	----
-	
-	----
-	--BigMap Transparenz erhöhen und verringern
-	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
-		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
-			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
-		end;
-		if g_currentMission:getIsServer() then
-			mapviewer:SaveToFile();
-		end;
-	end;
-	----
-	if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
-		if self.bigmap.mapTransp > 0.1 and self.mapvieweractive then
-			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
-		end;
-		if g_currentMission:getIsServer() then
-			mapviewer:SaveToFile();
-		end;
-	end;
-	-- ende Transparenz umschalten
-	----
-	
-	----
-	-- Tasten Modofizierer für Teleport
-	----
-	if InputBinding.isPressed(InputBinding.BIGMAP_Teleport) then
-		--print("---- ALT Taste ist gedrückt ----");
-		self.useTeleport= not self.useTeleport;
-	else
-		self.useTeleport = false;
-	end;
-    ----
-
-end;
-----
-
-----
--- Trigger Array
-----
-function mapviewer:listTipTriggers()
-	local z=0;
-	for k,v in pairs(g_currentMission.tipTriggers) do
-		z=z+1;
-		print("TipTrigger: " .. tostring(z));
-		print(tostring(k) .."("..type(v)..")="..tostring(v));
-		for i,j in pairs(g_currentMission.tipTriggers[k]) do
-			print(tostring(i).."("..type(j)..")="..tostring(j));
-		end;
-	end;
-	print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
-end;
-----
-
-----
---
+-- Ausgabe auf dem Bildschirm
 ----
 function mapviewer:draw()
 	if self.mapvieweractive then
@@ -1759,6 +1367,8 @@ function mapviewer:draw()
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransPlus"), InputBinding.BIGMAP_TransPlus);
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransMinus"), InputBinding.BIGMAP_TransMinus);
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_SwitchOverlay"), InputBinding.BIGMAP_SwitchOverlay);
+			-- unterscheiden wenn gedrückt dann info wechseln das maus geklickt werden muss
+			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Teleport"), InputBinding.BIGMAP_Teleport);
 		end;
 
 		mplayer = {};
@@ -1980,4 +1590,545 @@ function mapviewer:draw()
 	---------------------------
 end;
 ----
+
+----
+-- Update Funktion
+----
+function mapviewer:update(dt)
+	-- Ist der Spieler bereits geladen ?
+	if self.activePlayerNode == nil or self.activePlayerNode == 0 then
+		-- Wenn ja
+		if g_currentMission.player ~= nil then
+			-- Eigene Player.ID merken
+			self.activePlayerNode=g_currentMission.player.rootNode;
+			-- Variablen initialisieren
+			mapviewer:InitMapViewer();
+		end;
+	end;
+	
+	-- Nur wenn Variablen initialisiert sind, auf Tasten eingaben reagieren
+	if not self.mvInit then 
+		return;
+	end;
+
+	-- Taste für Map einblenden
+	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
+		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
+			self.mapvieweractive=not self.mapvieweractive;
+			if self.mapvieweractive then
+				g_mouseControlsHelp.active = false;
+				InputBinding.setShowMouseCursor(true);
+				InputBinding.wrapMousePositionEnabled = false;
+				if (g_currentMission.player.isEntered) then
+					g_currentMission.player.isFrozen = true;
+				end;
+			else
+				g_mouseControlsHelp.active = true;
+				InputBinding.setShowMouseCursor(false);
+				InputBinding.wrapMousePositionEnabled = true;
+				if (g_currentMission.player.isEntered) then
+					g_currentMission.player.isFrozen = false;
+				end;
+			end;
+		else
+			self.mv_Error = not self.mv_Error;
+			print(string.format("|| Update() - %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
+		end;
+	end;
+	--Taste für Legende einblenden
+	if InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
+		if self.mapvieweractive and self.useLegend then
+			--Legende einblenden
+			self.maplegende = not self.maplegende;
+			self.printInfo = self.maplegende;
+			if g_currentMission:getIsServer() then
+				mapviewer:SaveToFile();
+			end;
+		end;
+	end;
+
+	--Overlay wechseln
+	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
+		self.numOverlay = self.numOverlay+1;
+
+        ----
+        -- Überprüfen ob Feldnummern und PoI benutz werden können
+        ----
+        -- if not self.useFNum or not self.usePoi or not self.useBottles then
+            -- if self.numOverlay == 1 and not self.useFNum then
+                -- self.numOverlay = self.numOverlay+1;
+            -- end;
+            -- if self.numOverlay == 2 and not self.usePoi then
+                -- self.numOverlay = self.numOverlay+1;
+            -- end;
+            -- if self.numOverlay == 3 and (not self.usePoi or not self.useFNum) then
+                -- self.numOverlay = self.numOverlay+1;
+            -- end;
+            if self.numOverlay == 5 and not self.useBottles then
+                self.numOverlay = self.numOverlay+1;
+            end;
+        -- end;
+        ----
+        ----
+        -- Alle Overlays deaktivieren
+        ----
+        self.showPoi = false;
+        self.showFNum = false;
+        self.showCP = false;
+        self.showBottles = false;
+        ----
+
+		if self.numOverlay == 1 then	--nur Feldnummern
+			self.showFNum = true;
+		elseif self.numOverlay == 2 then	--nur PoI
+            self.showPoi = true;
+		elseif self.numOverlay == 3 then	--Poi und Nummern
+			self.showPoi = true;
+			self.showFNum = true;
+		elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
+			self.showCP = true;
+		elseif self.numOverlay == 5 then	--Bottlefinder anzeigen
+            self.showBottles = true;
+		else
+			self.numOverlay = 0;		--Alles aus
+			self.showPoi = false;
+			self.showFNum = false;
+            self.showCP = false;
+            self.showBottles = false;
+		end;
+
+		if self.Debug then
+			print("Debug Key BIGMAP_SwitchOverlay: ");
+            print(string.format("|| $s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
+		end;
+		if g_currentMission:getIsServer() then
+			mapviewer:SaveToFile();
+		end;
+	end;
+	
+	----
+	-- Panel Position an Fahrzeug anpassen
+	----
+	if self.mapvieweractive and self.showInfoPanel then
+		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then
+			local posX1, posY1, posZ1 = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
+			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+			
+			self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
+			self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
+			self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+		else
+			selfShowInfoPanel = false;
+			print("--\nFehler in Update() - showInfoPanel\n--");
+		end;	
+	end;	
+	----
+	
+	----
+	--BigMap Transparenz erhöhen und verringern
+	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
+		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
+			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
+		end;
+		if g_currentMission:getIsServer() then
+			mapviewer:SaveToFile();
+		end;
+	end;
+	----
+	if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
+		if self.bigmap.mapTransp > 0.1 and self.mapvieweractive then
+			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
+		end;
+		if g_currentMission:getIsServer() then
+			mapviewer:SaveToFile();
+		end;
+	end;
+	-- ende Transparenz umschalten
+	----
+	
+	----
+	-- Tasten Modofizierer für Teleport
+	----
+	if InputBinding.isPressed(InputBinding.BIGMAP_Teleport) then
+		--print("---- ALT Taste ist gedrückt ----");
+		self.useTeleport= not self.useTeleport;
+	else
+		self.useTeleport = false;
+	end;
+    ----
+
+end;
+----
+
+----
+-- Funktionen für Netzwerk / Multiplayer Synchronisierung
+----
+function mapviewer:readStream(streamId, connection)
+	if connection:getIsServer() then
+		-- local myPlayerId = streamReadFloat32(streamId);
+		-- local x = streamReadFloat32(streamId);
+		-- local y = streamReadFloat32(streamId);
+		-- local z = streamReadFloat32(streamId);
+	end;
+end;
+
+function mapviewer:writeStream(streamId, connection)
+	if not connection:getIsServer() then
+		-- local myPlayerId = streamWriteFloat32(streamId);
+		-- local x = streamWriteFloat32(streamId);
+		-- local y = streamWriteFloat32(streamId);
+		-- local z = streamWriteFloat32(streamId);
+	end;
+end;
+
+function mapviewer:readUpdateStream(streamId, timestamp, connection)
+	 self:readStream(streamId, connection);
+end;
+
+function mapviewer:writeUpdateStream(streamId, timestamp, connection)	
+	self:writeStream(streamId, connection);
+end;
+----
+
+----
+-- Neue Position an Server/Clients senden
+----
+function mapviewer:setNewPlayerPos(setNewPlyPosition, noEventSend)
+	-- if noEventSend == nil or noEventSend == false then
+		-- if g_server ~= nil then
+			-- g_server:broadcastEvent(MapViewerTeleportEvent:new(self, setNewPlyPosition), nil, nil, self);
+		-- else
+			-- g_client:getServerConnection():sendEvent(MapViewerTeleportEvent:new(self, setNewPlyPosition));
+		-- end;
+	-- end;
+end;
+----
+
+-------------------------------------------------------------------------------
+----
+--
+-- Ab hier kommen Funktionen die nicht unbedingt vom Mod verwendet werden
+-- Einige Funktionen dienen zur Hilfe beim Scripten
+--
+----
+-------------------------------------------------------------------------------
+
+----
+-- Funktionen die durch neue ersetzt wurden
+----
+function mapviewer:ShowPanelonMapAlt()
+	if self.showInfoPanel then
+		--local vehicleInfo = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+		local tX, tY, tLeft, tRight, tTop;
+		
+		----
+		-- Berechnen der benötigten Höhe für den Texthintergrund
+		----
+		local zeile = table.getn(self.bigmap.InfoPanel.Info);
+		self.bigmap.InfoPanel.background.height = zeile * 0.015;
+		----
+		
+		tX = self.bigmap.InfoPanel.background.Pos.x;
+		tY = self.bigmap.InfoPanel.background.Pos.y;
+		tTop = tY + self.bigmap.InfoPanel.background.height - 0.020;
+		tLeft = tX + 0.005; 
+		
+		renderOverlay(self.bigmap.InfoPanel.top.OverlayId, self.bigmap.InfoPanel.top.Pos.x, self.bigmap.InfoPanel.top.Pos.y, self.bigmap.InfoPanel.top.width, self.bigmap.InfoPanel.top.height);
+		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
+		renderOverlay(self.bigmap.InfoPanel.bottom.OverlayId, self.bigmap.InfoPanel.bottom.Pos.x, self.bigmap.InfoPanel.bottom.Pos.y, self.bigmap.InfoPanel.bottom.width, self.bigmap.InfoPanel.bottom.height);
+
+		----
+		--
+		----
+		print(table.show(self.bigmap.InfoPanel.Info, "self.bigmap.InfoPanel.Info"));
+		----
+		
+		-- local v = self.bigmap.InfoPanel.lastVehicle;
+		setTextBold(true);
+		setTextColor(0, 0, 0, 1);
+		-- Vehiclename
+		renderText(tLeft, tTop, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[1], g_i18n:getText("MV_Unknown"))));
+		-- Vehicletyp oder 
+		if self.bigmap.InfoPanel.Info[2] ~= nil then
+			renderText(tLeft, tTop-0.015, 0.012, string.format("%s", Utils.getNoNil(tostring(self.bigmap.InfoPanel.Info[2]), g_i18n:getText("MV_Unknown"))));
+		end;
+		if self.bigmap.InfoPanel.lastVehicle ~= nil then
+			local z=4;
+			if SpecializationUtil.hasSpecialization(Steerable, self.bigmap.InfoPanel.lastVehicle.specializations) and not SpecializationUtil.hasSpecialization(Combine, self.bigmap.InfoPanel.lastVehicle.specializations) then
+				if self.bigmap.InfoPanel.Info[3] ~= nil then
+				----
+				-- TODO: Rendertext Positionen, Zugriff auf richtige indexes, Übersetzungen
+				----
+				--if Fahrzeug dann Treibstoff
+					renderText(tLeft, tTop-0.030, 0.012, string.format("%s : %s", Utils.getNoNil( g_i18n:getText("MV_VehicleFuel"), "Fuel : "), Utils.getNoNil(self.bigmap.InfoPanel.Info[3], g_i18n:getText("MV_Unknown"))));
+					tTop = tTop - 0.045;
+				else
+					tTop = tTop - 0.030;
+				end;
+			elseif SpecializationUtil.hasSpecialization(Combine, self.bigmap.InfoPanel.lastVehicle.specializations) then
+				-- if combine dann Füllstand und  zusätzlich Treibstoff
+				if self.bigmap.InfoPanel.Info[3] ~= nil and self.bigmap.InfoPanel.Info[4] ~= nil then
+				--if Fahrzeug dann Treibstoff
+					renderText(tLeft, tTop-0.030, 0.012, string.format("%s %s", Utils.getNoNil( g_i18n:getText("MV_VehicleFuel"), "Fuel : "), Utils.getNoNil(self.bigmap.InfoPanel.Info[3], g_i18n:getText("MV_Unknown"))));
+					renderText(tLeft, tTop-0.045, 0.012, string.format("%s : %s", Utils.getNoNil( g_i18n:getText("MV_FillLevel"), "Capacity : "), Utils.getNoNil(self.bigmap.InfoPanel.Info[4], g_i18n:getText("MV_Unknown"))));
+					tTop = tTop - 0.060;
+					z=5;
+				else
+					tTop = tTop - 0.015;
+				end;
+			elseif SpecializationUtil.hasSpecialization(Fillable, self.bigmap.InfoPanel.lastVehicle.specializations) and not SpecializationUtil.hasSpecialization(Steerable, self.bigmap.InfoPanel.lastVehicle.specializations) then
+				if self.bigmap.InfoPanel.Info[3] ~= nil then
+				--Befüllbare Attaches
+					renderText(tLeft, tTop-0.030, 0.012, string.format("%s : %s", Utils.getNoNil( g_i18n:getText("MV_FillLevel"), "Capacity : "), Utils.getNoNil(self.bigmap.InfoPanel.Info[3], g_i18n:getText("MV_Unknown"))));
+					tTop = tTop - 0.045;
+					--z=4;
+				else
+					tTop = tTop - 0.030;
+				end;
+			else
+				tTop = tTop - 0.030;
+			end;
+			for r=z, table.getn(self.bigmap.InfoPanel.Info) do
+				renderText(tLeft, tTop-r*0.015+0.030, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
+			end;
+		end;
+		setTextColor(1, 1, 1, 0);
+		setTextBold(false);
+	end;
+end;
+
+function mapviewer:getFillLevelOld(vehicle)
+	local vehicleInfo = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+	local percent = 0;
+	if vehicle.grainTankFillLevel ~= nil then 
+		percent = vehicle.grainTankFillLevel / vehicle.grainTankCapacity * 100;
+		vehicleInfo.Tank = string.format("%d / %d | %.2f%%", vehicle.grainTankFillLevel, vehicle.grainTankCapacity, percent);
+		if vehicle.grainTankFillLevel > 0 then
+			-- vehicleInfo.Fruit = FruitUtil.fruitIndexToDesc[vehicle.currentGrainTankFruitType].name;
+			vehicleInfo.Fruit = tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[vehicle.currentGrainTankFruitType].name));
+		else 
+			vehicleInfo.Fruit = g_i18n:getText("MV_EmptyTank");
+		end;
+	elseif vehicle.capacity ~= nil then
+		percent = vehicle.fillLevel / vehicle.capacity * 100;
+		vehicleInfo.Tank = string.format("%d / %d | %.2f%%", vehicle.fillLevel, vehicle.capacity, percent);
+		if SpecializationUtil.hasSpecialization(Fillable, vehicle.specializations) then
+			if vehicle.currentFillType ~= Fillable.FILLTYPE_UNKNOWN then
+				if g_i18n:hasText (Fillable.fillTypeIntToName[vehicle.currentFillType]) then
+					vehicleInfo.Fruit = tostring(g_i18n:getText(Fillable.fillTypeIntToName[vehicle.currentFillType]));
+				else
+					vehicleInfo.Fruit = tostring(Fillable.fillTypeIntToName[vehicle.currentFillType]);
+				end;
+			end;
+		else 
+			vehicleInfo.Fruit = g_i18n:getText("MV_Unknown");
+		end;
+	elseif vehicle:getAttachedTrailersFillLevelAndCapacity() then
+		local f, c;
+		f, c = vehicle:getAttachedTrailersFillLevelAndCapacity();
+		if f ~= nil and c ~= nil then
+			--print(string.format("Fahrzeug Füllstand und Kapazität : %.2f | %.2f", f, c));
+			percent = f / c * 100;
+			vehicleInfo.Tank = string.format("%d / %d | %.2f%%", f, c, percent);
+		end;
+	else
+		vehicleInfo.Tank = "";
+		vehicleInfo.Fruit = ""; 
+	end;
+	return vehicleInfo;
+end;
+----
+
+----
+-- Trigger Array
+----
+function mapviewer:listTipTriggers()
+	local z=0;
+	for k,v in pairs(g_currentMission.tipTriggers) do
+		z=z+1;
+		print("TipTrigger: " .. tostring(z));
+		print(tostring(k) .."("..type(v)..")="..tostring(v));
+		for i,j in pairs(g_currentMission.tipTriggers[k]) do
+			print(tostring(i).."("..type(j)..")="..tostring(j));
+		end;
+	end;
+	print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
+end;
+----
+
+----
+-- Funktionen um mit Tables zu arbeiten
+----
+-- Funktion zum  kopieren einer Tabelle in eine neue Tabelle, 
+-- incl. Ausgabe der Datentypen, wenn Debug=TRUE
+-- Parameter :
+----
+-- tab = zu kopierende Tabelle
+-- parent = Übergeordnetes Element, für Ausgabe
+----
+function mapviewer:tablecopy(tab, parent)
+    local ret = {}
+	-- Prüfen auf gültige Tabelle
+	-- Abbrechen wenn NIL
+	if tab == nil then 
+		return nil;
+	end;
+	
+    for key, value in pairs(tab) do
+		if  self.Debug then
+			if parent ~= nil and type ~= "table" then 
+				print(string.format("%s.%s=%s (%s)", parent, tostring(key), tostring(value), type(value)));
+			elseif type ~= "table" then 
+				print(string.format("%s=%s (%s)", tostring(key), tostring(value), type(value)));
+			else
+				print(string.format("%s=%s", tostring(key), type(value)));
+			end;
+		end;
+		
+        if (type(value) == "table") then 
+			ret[key] = mapviewer:tablecopy(value, key)
+        else 
+			ret[key] = value 
+		end;
+    end;
+    return ret
+end;
+
+function mapviewer:tprint (t, indent, done)
+    if t == 0 or t == nil then
+        print("tprint() : keine Daten");
+        return;
+    end;
+    done = done or {}
+    indent = indent or 0
+    if type (t) == "table" then
+        for key, value in pairs (t) do
+            txt = string.format("%s",string.rep ("\t", indent));
+            if type (value) == "table" and not done [value] then
+                done [value] = true
+                print (string.format("%s[%s]:", string.rep("\t", indent), tostring (key)));
+                tprint (value, indent + 1, done)
+            else
+                print(string.format("%s%s=%s", txt, tostring(key), tostring(value)));
+            end;
+        end;
+    elseif type (t) == "string" then
+        print("Angegebene Tabelle ist keine Tabelle : -> " .. t);
+    else
+        print("Angegebene Tabelle ist keine Tabelle : -> " .. type(t));
+    end;
+end;
+
+function table.show(t, name, indent)
+   local cart     -- a container
+   local autoref  -- for self references
+
+   --[[ counts the number of elements in a table
+   local function tablecount(t)
+      local n = 0
+      for _, _ in pairs(t) do n = n+1 end
+      return n
+   end
+   ]]
+   -- (RiciLake) returns true if the table is empty
+   local function isemptytable(t) return next(t) == nil end
+
+   local function basicSerialize (o)
+      local so = tostring(o)
+      if type(o) == "function" then
+         local info = debug.getinfo(o, "S")
+         -- info.name is nil because o is not a calling level
+         if info.what == "C" then
+            return string.format("%q", so .. ", C function")
+         else 
+            -- the information is defined through lines
+            return string.format("%q", so .. ", defined in (" ..
+                info.linedefined .. "-" .. info.lastlinedefined ..
+                ")" .. info.source)
+         end
+      elseif type(o) == "number" then
+         return so
+      else
+         return string.format("%q", so)
+      end
+   end
+   local function addtocart (value, name, indent, saved, field)
+      indent = indent or ""
+      saved = saved or {}
+      field = field or name
+
+      cart = cart .. indent .. field
+
+      if type(value) ~= "table" then
+         cart = cart .. " = " .. basicSerialize(value) .. ";\n"
+      else
+         if saved[value] then
+            cart = cart .. " = {}; -- " .. saved[value] 
+                        .. " (self reference)\n"
+            autoref = autoref ..  name .. " = " .. saved[value] .. ";\n"
+         else
+            saved[value] = name
+            --if tablecount(value) == 0 then
+            if isemptytable(value) then
+               cart = cart .. " = {};\n"
+            else
+               cart = cart .. " = {\n"
+               for k, v in pairs(value) do
+                  k = basicSerialize(k)
+                  local fname = string.format("%s[%s]", name, k)
+                  field = string.format("[%s]", k)
+                  -- three spaces between levels
+                  addtocart(v, fname, indent .. "   ", saved, field)
+               end
+               cart = cart .. indent .. "};\n"
+            end
+         end
+      end
+   end
+
+   name = name or "__unnamed__"
+   if type(t) ~= "table" then
+      return name .. " = " .. basicSerialize(t)
+   end
+   cart, autoref = "", ""
+   addtocart(t, name, indent)
+   return cart .. autoref
+end
+
+function eval(str)
+   return assert(loadstring(str))()
+end   
+----
+
+----
+-- HilfsFunktionen für Datei Verarbeitung
+----
+-- Find the length of a file
+--   filename: file name
+-- returns
+--   len: length of file
+--   asserts on error
+----
+function mapviewer:length_of_file(filename)
+  local fh = assert(io.open(filename, "rb"))
+  local len = assert(fh:seek("end"))
+  fh:close()
+  return len
+end
+----
+
+----
+-- Return true if file exists and is readable.
+----
+function mapviewer:file_exists(path)
+  local file = io.open(path, "rb")
+  if file then file:close() end
+  return file ~= nil
+end
+----
+
 addModEventListener(mapviewer);
