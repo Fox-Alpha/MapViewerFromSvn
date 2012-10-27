@@ -20,12 +20,12 @@ mapviewer.modName = g_currentModName;
 ----
 -- GetNoNil aus den Aufrufen von getText entfernen oder gegen eigene Funktion ersetzten
 -- Übersetzungen prüfen
--- Panel position anpassen wenn am Bildschirmrand (Oben und rechts)
+-- DONE: Panel position anpassen wenn am Bildschirmrand (Oben und rechts)
 -- Kapazitäten gegen 0 prüfen, Zeile bei 0 ausblenden (Ballentransporthänger, Häcksler)
 -- Panelanzeige auf rootNode testen
 -- DONE: Michtruck auf Karte mit anzeigen, eigenes Symbol mit Farbe weiss g_currentMission.trafficVehicles[]   rootNode, ["typeName"] = "milktruck";, 
 -- Tastenhilfe
--- renderOverlay() auf gültigkeit Prüfen
+-- Alle renderOverlay() auf gültigkeit Prüfen
 -- Alle Spieler auf PDA anzeigen, Position des Spielernamens auf PDA korrigieren
 ----
 -- Testen:
@@ -492,9 +492,9 @@ function mapviewer:InitMapViewer()
 	-- Nur Laden und speichern, wenn Singleplayer oder nicht client im Multiplayer
 	-- print("Nur Laden und speichern, wenn Singleplayer oder nicht client im Multiplayer");
 	----
-	print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
-	print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
-	print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
+	-- print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
+	-- print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
+	-- print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
 	----
 	if g_currentMission:getIsServer() then
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LoadOptions")));
@@ -851,7 +851,7 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 			
 			if not self.useTeleport then
 				self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
-				--print(self:vehicleInMouseRange());
+				-- print(self:vehicleInMouseRange());
 				if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
 					-- print(string.format("vehicleInMouseRange() - Fahrzeug in der Nähe : %d / isVehicle : %s", self.bigmap.InfoPanel.vehicleIndex, tostring(self.bigmap.InfoPanel.isVehicle), tostring(self.bigmap.InfoPanel.lastVehicle.name)));
 					self.showInfoPanel = true;
@@ -862,8 +862,10 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 					self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
 					-- print(table.show(self.bigmap.InfoPanel.Info, "vehicleInfo."));
 					-- print(table.show(self.bigmap.InfoPanel.lastVehicle, "vehicle."));
+					-- print("mouseEvent() - showPanel = " .. tostring(self.showInfoPanel));
 				else
 					self.showInfoPanel = false;
+					-- print("mouseEvent() - showPanel = " .. tostring(self.showInfoPanel));
 				end;
 			else
 				----
@@ -871,15 +873,23 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				----
 				local tpX, tpY, tpZ;
 				
+				print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
+				print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
+				print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
+
 				tpX = self.mouseX/self.bigmap.mapWidth*self.bigmap.mapDimensionX-(self.bigmap.mapDimensionX/2);
 				tpZ = -self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
 				if g_currentMission.player.isControlled then
 					if isMultiplayer and g_currentMission:getIsServer() then
+						print("ServerMessage an alle Senden. Multiplayer = JA und Spieler ist Server");
 						g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
-					elseif isMultiplayer and isClient ~= nil and isClient then
+					-- elseif isMultiplayer and isClient ~= nil and isClient then
+					elseif isMultiplayer and not g_currentMission:getIsServer() then
+						print("ServerMessage an Server Senden. Multiplayer = JA und Spieler ist Client");	
 						g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
 					else
+						print("keine ServerMessage Senden. Multiplayer = NEIN und Locales Spiel");
 						setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
 					end;
 				end;
@@ -961,8 +971,12 @@ function mapviewer:vehicleInMouseRange()
 			-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, aDistance, distance));
 		end;
 	end;
-	-- print("----");
-
+	-- print("--vehicleInMouseRange()--");
+	-- print("vehicleInMouseRange() - showPanel = " .. tostring(self.showInfoPanel));
+	-- print("vehicleInMouseRange() - index = " .. tostring(index));
+	-- print("vehicleInMouseRange() - isVehicle = " .. tostring(isVehicle));
+	-- print("vehicleInMouseRange() - showPanel = " .. tostring(currV ~= nil));
+	-- print("--ENDE--");
 	return index, isVehicle, currV;	
 end;
 ----
@@ -1114,7 +1128,7 @@ function mapviewer:GetVehicleInfo(vehicle)
 					-- Gesamt Füllstand
 					----
 					f, c = vehicle:getAttachedTrailersFillLevelAndCapacity();
-					if f ~= nil and c ~= nil then
+					if f ~= nil and c ~= nil and c > 0 then
 						p = f / c * 100;
 						table.insert(vehicleInfo, string.format("%s %d / %d | %.2f%%", g_i18n:getText("MV_FillLevel"), f, c, p));	--Gesamt Füllstand
 					end;
@@ -1130,8 +1144,10 @@ function mapviewer:GetVehicleInfo(vehicle)
 					-- print(string.format("Fruittype %s, FillLevel % s, useGrainTank %s",tostring(fruitType), tostring(f), tostring(useGrainTank)));
 					if useGrainTank and f ~= nil then
 						c = vehicle.grainTankCapacity;
-						p = f / c * 100;
-						table.insert(vehicleInfo, string.format("%s %d / %d | %.2f%%", g_i18n:getText("MV_FillLevel"), f, c, p));
+						if c > 0 then
+							p = f / c * 100;
+							table.insert(vehicleInfo, string.format("%s %d / %d | %.2f%%", g_i18n:getText("MV_FillLevel"), f, c, p));
+						end;
 						--print(string.format("Combine - Füllstand / Kapazität : %.2f / %.2f | Name : %s | TankInfo : %s", f, c, tostring(vehicle.name), vehicleInfo.Tank));
 					end;
 					----
@@ -1622,12 +1638,14 @@ function mapviewer:draw()
 		setTextColor(1, 1, 1, 0);
 		if self.showInfoPanel then
 			self.bigmap.InfoPanel.Info = {};
-			self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
-			if self.bigmap.InfoPanel.vehicleIndex ~= nil and self.bigmap.InfoPanel.vehicleIndex ~= 0 then
+			print("draw() - showPanel = " .. tostring(self.showInfoPanel));
+			print("draw() - self.bigmap.InfoPanel.vehicleIndex" .. tostring(self.bigmap.InfoPanel.vehicleIndex));
+			-- if self.bigmap.InfoPanel.vehicleIndex ~= nil and self.bigmap.InfoPanel.vehicleIndex ~= 0 then
+				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
 				self:ShowPanelonMap();
-			else
-				self.showInfoPanel = false;
-			end;
+			-- else
+				-- self.showInfoPanel = false;
+			-- end;
 		end;
 		----
 	else
@@ -1697,6 +1715,7 @@ function mapviewer:update(dt)
 			print(string.format("|| Update() - %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
 		end;
 	end;
+
 	--Taste für Legende einblenden
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
 		if self.mapvieweractive and self.useLegend then
@@ -1771,9 +1790,18 @@ function mapviewer:update(dt)
 	----
 	-- Panel Position an Fahrzeug anpassen
 	----
-	if self.mapvieweractive and self.showInfoPanel then															--todo auf rootNode testen 
-		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then
-			if g_currentMission.vehicles[self.bigmap.InfoPanel.vehicleIndex].rootNode == self.bigmap.InfoPanel.lastVehicle.rootNode then
+	if self.mapvieweractive and self.showInfoPanel then 	--todo auf rootNode testen 
+		-- print(" ---- update() - Panel Position an Fahrzeug anpassen ----");
+		-- print("showInfoPanel = " .. tostring(self.showInfoPanel));
+		-- print("InfoPanel.vehicleIndex = " .. tostring(self.bigmap.InfoPanel.vehicleIndex));
+		-- print("self.bigmap.InfoPanel.lastVehicle.rootNode = " .. tostring(self.bigmap.InfoPanel.lastVehicle.rootNode));
+		-- print("nodeToVehicle[self.bigmap.InfoPanel.lastVehicle.rootNode] = Gültig ? " .. tostring(g_currentMission.nodeToVehicle[self.bigmap.InfoPanel.lastVehicle.rootNode]~=nil));
+		-- print("-- InfoPanel.lastVehicle Gültig ? -- " .. tostring(self.bigmap.InfoPanel.lastVehicle ~= nil));
+		-- print("-- InfoPanel.lastVehicle type() -- " .. tostring(type(self.bigmap.InfoPanel.lastVehicle)));
+		
+		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then	--nodeToVehicle
+			-- if g_currentMission.vehicles[self.bigmap.InfoPanel.vehicleIndex].rootNode == self.bigmap.InfoPanel.lastVehicle.rootNode then
+			if g_currentMission.nodeToVehicle[self.bigmap.InfoPanel.lastVehicle.rootNode] ~= nil then
 				local posX1, posY1, posZ1 = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
 				local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
 				local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
@@ -1792,6 +1820,7 @@ function mapviewer:update(dt)
 			print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateInfoPanel")));
 			print("-- InfoPanel.lastVehicle type() -- " .. tostring(type(self.bigmap.InfoPanel.lastVehicle)));
 		end;	
+		-- print(" ---- update() - Panel Position ENDE ----");
 	end;	
 	----
 	
