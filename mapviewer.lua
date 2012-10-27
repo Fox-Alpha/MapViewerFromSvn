@@ -27,6 +27,7 @@ mapviewer.modName = g_currentModName;
 -- Tastenhilfe
 -- Alle renderOverlay() auf gültigkeit Prüfen
 -- Alle Spieler auf PDA anzeigen, Position des Spielernamens auf PDA korrigieren
+-- Globale Tastenbelegung korriigieren.Zwei m<l InputBinding in Moddesc
 ----
 -- Testen:
 ----
@@ -113,7 +114,7 @@ function mapviewer:loadMap(name)
 	----
 	-- Workaround um in den Steerable den Namen als .name einzubinden
 	----
-	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
+	local aNameSearch = {"vehicle.typeDesc", "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
 	
 	if Steerable.load ~= nil then
 		local orgSteerableLoad = Steerable.load
@@ -126,6 +127,11 @@ function mapviewer:loadMap(name)
 				if self.name ~= nil then break; end;
 			end;
 			if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
+			self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
+			print(tostring(self.name));
+			-- if g_i18n:hasText(self.name) then
+				-- self.name = g_i18n:getText(self.name);
+			-- end;
 		end;
 	end;
 	
@@ -140,6 +146,12 @@ function mapviewer:loadMap(name)
 				if self.name ~= nil then break; end;
 			end;
 			if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
+			-- print(tostring(self.name));
+			-- if g_i18n:hasText(self.name) then
+				-- self.name = g_i18n:getText(self.name);
+			-- end;
+			self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
+			print(tostring(self.name));
 		end
 	end;
 	----
@@ -387,12 +399,12 @@ function mapviewer:InitMapViewer()
     self.bigmap.vehicleTypes.height = 0.01;
     
     self.bigmap.attachmentsTypes = {};
-    self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingMachine", "plough", "sprayer", "baler", "baleloader", "cultivator", "tedder", "windrower", "shovel", "mover", "other"};
+    self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingMachine", "plough", "sprayer", "baler", "baleLoader", "cultivator", "tedder", "windrower", "shovel", "mower", "cultivator_animated", "selfPropelledSprayer", "cutter_animated", "sprayer_animated", "manureSpreader", "forageWagon", "other"};
     self.bigmap.attachmentsTypes.icons = {}
     self.bigmap.attachmentsTypes.overlays = {}
     
     for at=1, table.getn(self.bigmap.attachmentsTypes.names) do
-        local tempIcon = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"), "icons/courseplay.png"), self.moddir);
+        local tempIcon = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"), "icons/feldgeraet.png"), self.moddir);
         table.insert(self.bigmap.attachmentsTypes.icons,tempIcon); 
         --getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"));
         self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[at]] = createImageOverlay(self.bigmap.attachmentsTypes.icons[at]);
@@ -839,7 +851,7 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 	--Infopanel an Mousepos anzeigen
 	local vehicle;
 	local panelX, panelY, panelZ;
-	if self.mapvieweractive then
+	if self.mapvieweractive and self.bigmap.mapTransp >= 1.0 then
 		if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_LEFT) and not Input.isMouseButtonPressed(Input.MOUSE_BUTTON_RIGHT) then
 			self.mouseX = posX;
 			self.mouseY = posY;
@@ -882,16 +894,17 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
 				if g_currentMission.player.isControlled then
 					if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission:getIsServer() then
-						print("ServerMessage an alle Senden. Multiplayer = JA und Spieler ist Server");
+						-- print("ServerMessage an alle Senden. Multiplayer = JA und Spieler ist Server");
 						g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
 					-- elseif isMultiplayer and g_currentMission.missionDynamicInfo.isClient ~= nil and g_currentMission.missionDynamicInfo.isClient then
 					elseif g_currentMission.missionDynamicInfo.isMultiplayer and not g_currentMission:getIsServer() then
-						print("ServerMessage an Server Senden. Multiplayer = JA und Spieler ist Client");	
+						-- print("ServerMessage an Server Senden. Multiplayer = JA und Spieler ist Client");	
 						g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
-					else
-						print("keine ServerMessage Senden. Multiplayer = NEIN und Locales Spiel");
-						setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
 					end;
+					-- else
+						-- print("keine ServerMessage Senden. Multiplayer = NEIN und Locales Spiel");
+						setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
+					-- end;
 				end;
 				----
 			end;
@@ -1283,7 +1296,13 @@ function mapviewer:draw()
 			-- if (g_currentMission.player.isEntered) then
 				-- g_currentMission.player.isFrozen = true;
 			-- end;
-		-- else
+		-- elseif self.bigmap.mapTransp < 1 then
+			-- g_mouseControlsHelp.active = true;
+			-- InputBinding.setShowMouseCursor(false);
+			-- InputBinding.wrapMousePositionEnabled = true;
+			-- if (g_currentMission.player.isEntered) then
+				-- g_currentMission.player.isFrozen = false;
+			-- end;
 		-- end;
 		----
 
@@ -1418,7 +1437,8 @@ function mapviewer:draw()
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransMinus"), InputBinding.BIGMAP_TransMinus);
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_SwitchOverlay"), InputBinding.BIGMAP_SwitchOverlay);
 			-- unterscheiden wenn gedrückt dann info wechseln das maus geklickt werden muss
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Teleport"), InputBinding.BIGMAP_Teleport);
+			-- g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Teleport"), InputBinding.BIGMAP_Teleport);
+			-- g_currentMission:addHelpButtonText("Teportation :" .. g_i18n:getText("BIGMAP_TPKey1") .. g_i18n:getText("BIGMAP_TPKey2") .. g_i18n:getText("BIGMAP_TPMouse"), "");
 		end;
 
 		mplayer = {};
@@ -1638,8 +1658,8 @@ function mapviewer:draw()
 		setTextColor(1, 1, 1, 0);
 		if self.showInfoPanel then
 			self.bigmap.InfoPanel.Info = {};
-			print("draw() - showPanel = " .. tostring(self.showInfoPanel));
-			print("draw() - self.bigmap.InfoPanel.vehicleIndex" .. tostring(self.bigmap.InfoPanel.vehicleIndex));
+			-- print("draw() - showPanel = " .. tostring(self.showInfoPanel));
+			-- print("draw() - self.bigmap.InfoPanel.vehicleIndex" .. tostring(self.bigmap.InfoPanel.vehicleIndex));
 			-- if self.bigmap.InfoPanel.vehicleIndex ~= nil and self.bigmap.InfoPanel.vehicleIndex ~= 0 then
 				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
 				self:ShowPanelonMap();
@@ -1672,6 +1692,67 @@ end;
 ----
 
 ----
+--
+----
+function mapviewer:updateTick(dt)
+	----
+	-- Mousesteuerung nach Transparenz prüfen
+	----
+
+	-- if self.mapvieweractive then 
+		-- if self.bigmap.mapTransp < 1 then --and g_mouseControlsHelp.active == true then 
+			-- print("Transparenz ist < 1: " .. tostring(self.bigmap.mapTransp));
+			-- g_mouseControlsHelp.active = true; 
+			-- InputBinding.setShowMouseCursor(false); 
+			-- InputBinding.wrapMousePositionEnabled = true; 
+			-- if (g_currentMission.player.isEntered) then
+				-- g_currentMission.player.isFrozen = false;
+			-- end;
+		-- elseif self.bigmap.mapTransp >= 1 then -- and g_mouseControlsHelp.active == false then 
+			-- print("Transparenz ist >= 1: " .. tostring(self.bigmap.mapTransp));
+			-- g_mouseControlsHelp.active = false; 
+			-- InputBinding.setShowMouseCursor(true); 
+			-- InputBinding.wrapMousePositionEnabled = false; 
+			-- if (g_currentMission.player.isEntered) then
+				-- g_currentMission.player.isFrozen = true;
+			-- end;
+		-- end; 
+	-- end;
+	
+	  -- if (self.bigmap.mapTransp < 1 or not self.mapvieweractive) and g_mouseControlsHelp.active == false then 
+          -- g_mouseControlsHelp.active = true; 
+          -- InputBinding.setShowMouseCursor(false); 
+          -- InputBinding.wrapMousePositionEnabled = true; 
+     -- elseif self.bigmap.mapTransp >= 1 and self.mapvieweractive == true and g_mouseControlsHelp.active == true then 
+          -- g_mouseControlsHelp.active = false; 
+          -- InputBinding.setShowMouseCursor(true); 
+          -- InputBinding.wrapMousePositionEnabled = false; 
+     -- end;  
+	
+	-- if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) or InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
+		-- if self.bigmap.mapTransp >= 1.0 then
+			-- g_mouseControlsHelp.active = false;
+			-- InputBinding.setShowMouseCursor(true);
+			-- InputBinding.wrapMousePositionEnabled = false;
+			-- if (g_currentMission.player.isEntered) then
+				-- g_currentMission.player.isFrozen = true;
+			-- end;
+		-- end;
+		-- if self.bigmap.mapTransp < 1 then
+			-- g_mouseControlsHelp.active = true;
+			-- InputBinding.setShowMouseCursor(false);
+			-- InputBinding.wrapMousePositionEnabled = true;		
+			-- if (g_currentMission.player.isEntered) then
+				-- g_currentMission.player.isFrozen = false;
+			-- end;
+		-- end;
+	-- end;
+	----
+
+end;
+----
+
+----
 -- Update Funktion
 ----
 function mapviewer:update(dt)
@@ -1695,21 +1776,29 @@ function mapviewer:update(dt)
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
 		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
 			self.mapvieweractive=not self.mapvieweractive;
-			if self.mapvieweractive then
-				g_mouseControlsHelp.active = false;
-				InputBinding.setShowMouseCursor(true);
-				InputBinding.wrapMousePositionEnabled = false;
-				if (g_currentMission.player.isEntered) then
-					g_currentMission.player.isFrozen = true;
-				end;
-			else
-				g_mouseControlsHelp.active = true;
-				InputBinding.setShowMouseCursor(false);
-				InputBinding.wrapMousePositionEnabled = true;
+			if not self.mapvieweractive then
+				g_mouseControlsHelp.active = true; 
+				InputBinding.setShowMouseCursor(false); 
+				InputBinding.wrapMousePositionEnabled = true; 
 				if (g_currentMission.player.isEntered) then
 					g_currentMission.player.isFrozen = false;
 				end;
 			end;
+			-- if self.mapvieweractive and self.bigmap.mapTransp == 1 then
+				-- g_mouseControlsHelp.active = false;
+				-- InputBinding.setShowMouseCursor(true);
+				-- InputBinding.wrapMousePositionEnabled = false;
+				-- if (g_currentMission.player.isEntered) then
+					-- g_currentMission.player.isFrozen = true;
+				-- end;
+			-- else
+				-- g_mouseControlsHelp.active = true;
+				-- InputBinding.setShowMouseCursor(false);
+				-- InputBinding.wrapMousePositionEnabled = true;
+				-- if (g_currentMission.player.isEntered) then
+					-- g_currentMission.player.isFrozen = false;
+				-- end;
+			-- end;
 		else
 			self.mv_Error = not self.mv_Error;
 			print(string.format("|| Update() - %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
@@ -1790,7 +1879,7 @@ function mapviewer:update(dt)
 	----
 	-- Panel Position an Fahrzeug anpassen
 	----
-	if self.mapvieweractive and self.showInfoPanel then 	--todo auf rootNode testen 
+	if self.mapvieweractive and self.showInfoPanel then 
 		-- print(" ---- update() - Panel Position an Fahrzeug anpassen ----");
 		-- print("showInfoPanel = " .. tostring(self.showInfoPanel));
 		-- print("InfoPanel.vehicleIndex = " .. tostring(self.bigmap.InfoPanel.vehicleIndex));
@@ -1818,7 +1907,7 @@ function mapviewer:update(dt)
 		else
 			self.showInfoPanel = false;
 			print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateInfoPanel")));
-			print("-- InfoPanel.lastVehicle type() -- " .. tostring(type(self.bigmap.InfoPanel.lastVehicle)));
+			-- print("-- InfoPanel.lastVehicle type() -- " .. tostring(type(self.bigmap.InfoPanel.lastVehicle)));
 		end;	
 		-- print(" ---- update() - Panel Position ENDE ----");
 	end;	
@@ -1830,6 +1919,7 @@ function mapviewer:update(dt)
 		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
 		end;
+			print("Transparenz ist < 1: " .. tostring(self.bigmap.mapTransp));
 		if g_currentMission:getIsServer() then
 			mapviewer:SaveToFile();
 		end;
@@ -1839,6 +1929,7 @@ function mapviewer:update(dt)
 		if self.bigmap.mapTransp > 0.1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
 		end;
+			print("Transparenz ist >= 1: " .. tostring(self.bigmap.mapTransp));
 		if g_currentMission:getIsServer() then
 			mapviewer:SaveToFile();
 		end;
@@ -1846,12 +1937,37 @@ function mapviewer:update(dt)
 	-- ende Transparenz umschalten
 	----
 	
+	if self.mapvieweractive then 
+		if self.bigmap.mapTransp < 1 and g_mouseControlsHelp.active == false then 
+			g_mouseControlsHelp.active = true; 
+			InputBinding.setShowMouseCursor(false); 
+			InputBinding.wrapMousePositionEnabled = true; 
+			if (g_currentMission.player.isEntered) then
+				g_currentMission.player.isFrozen = false;
+			end;
+		elseif self.bigmap.mapTransp >= 1 and g_mouseControlsHelp.active == true then 
+			g_mouseControlsHelp.active = false; 
+			InputBinding.setShowMouseCursor(true); 
+			InputBinding.wrapMousePositionEnabled = false; 
+			if (g_currentMission.player.isEntered) then
+				g_currentMission.player.isFrozen = true;
+			end;
+		end;
+	-- else
+		-- g_mouseControlsHelp.active = true; 
+		-- InputBinding.setShowMouseCursor(false); 
+		-- InputBinding.wrapMousePositionEnabled = true; 
+		-- if (g_currentMission.player.isEntered) then
+			-- g_currentMission.player.isFrozen = false;
+		-- end;
+	end;	
+	
 	----
 	-- Tasten Modofizierer für Teleport
 	----
-	if InputBinding.isPressed(InputBinding.BIGMAP_Teleport) then
-		--print("---- ALT Taste ist gedrückt ----");
-		self.useTeleport= not self.useTeleport;
+	if InputBinding.isPressed(InputBinding.BIGMAP_TPKey1) and InputBinding.isPressed(InputBinding.BIGMAP_TPKey2) then -- and InputBinding.isPressed(InputBinding.BIGMAP_TPMouse) then
+		-- print("---- ALT Taste ist gedrückt ----");
+		self.useTeleport= true; -- not self.useTeleport;
 	else
 		self.useTeleport = false;
 	end;
