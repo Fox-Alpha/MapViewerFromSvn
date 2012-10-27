@@ -20,9 +20,9 @@ mapviewer.modName = g_currentModName;
 ----
 -- GetNoNil aus den Aufrufen von getText entfernen oder gegen eigene Funktion ersetzten
 -- Übersetzungen prüfen
--- DONE: Panel position anpassen wenn am Bildschirmrand (Oben und rechts)
--- Kapazitäten gegen 0 prüfen, Zeile bei 0 ausblenden (Ballentransporthänger, Häcksler)
--- Panelanzeige auf rootNode testen
+-- Panel position anpassen wenn am Bildschirmrand (Oben und rechts)
+-- DONE: Kapazitäten gegen 0 prüfen, Zeile bei 0 ausblenden (Ballentransporthänger, Häcksler)
+-- DONE: Panelanzeige auf rootNode testen
 -- DONE: Michtruck auf Karte mit anzeigen, eigenes Symbol mit Farbe weiss g_currentMission.trafficVehicles[]   rootNode, ["typeName"] = "milktruck";, 
 -- Tastenhilfe
 -- Alle renderOverlay() auf gültigkeit Prüfen
@@ -30,7 +30,7 @@ mapviewer.modName = g_currentModName;
 ----
 -- Testen:
 ----
--- Client Teleport im MP Modus
+-- DONE: Client Teleport im MP Modus
 -- Bei Fahrzeugen mit fillKapazität und nicht Combine
 -- 
 ----
@@ -873,9 +873,9 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				----
 				local tpX, tpY, tpZ;
 				
-				print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
-				print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
-				print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
+				-- print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
+				-- print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
+				-- print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
 
 				tpX = self.mouseX/self.bigmap.mapWidth*self.bigmap.mapDimensionX-(self.bigmap.mapDimensionX/2);
 				tpZ = -self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
