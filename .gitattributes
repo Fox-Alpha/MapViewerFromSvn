@@ -1,51 +1,10 @@
 * text=auto !eol
 / svnc_tsvn_003aprojectlanguage=0x401
 /Panel svnc_tsvn_003aprojectlanguage=1025
-Panel/Bt_Close.png -text
-Panel/Bt_Switch.png -text
-Panel/Info_Panel.png -text
-Panel/Info_Panel_bg.png -text
-Panel/Info_Panel_bt.png -text
-Panel/Info_Panel_top.png -text
-Panel/button.png -text
-Panel/glow.png -text
-Panel/selectedbutton.png -text
 /gfx svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
-gfx/PoI_Karte_1.png -text svn_keywords
-gfx/background.png -text svn_keywords
-gfx/fn_Karte_1.png -text svn_keywords
-gfx/maplegende.png -text svn_keywords
-gfx/mapviewer.png -text svn_keywords
-gfx/mapviewer_.png -text svn_keywords
-gfx/pda_map.dds -text svn_keywords
 /icons svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
-icons/1.png -text svneol=unset#image/png
-icons/10.png -text svneol=unset#image/png
-icons/11.png -text svneol=unset#image/png
-icons/2.png -text svneol=unset#image/png
-icons/3.png -text svneol=unset#image/png
-icons/4.png -text svneol=unset#image/png
-icons/5.png -text svneol=unset#image/png
-icons/6.png -text svneol=unset#image/png
-icons/7.png -text svneol=unset#image/png
-icons/8.png -text svneol=unset#image/png
-icons/9.png -text svneol=unset#image/png
-icons/bottle.png -text svneol=unset#image/png svn_keywords
-icons/combine.png -text svneol=unset#image/png
-icons/courseplay.png -text svn_keywords
-icons/eigenerspieler.png -text svn_keywords
-icons/feldgeraet.png -text svn_keywords
-icons/glasscontainer.png -text
-icons/isBroken.png -text svneol=unset#image/png svn_keywords
-icons/milktruck.png -text
-icons/mpspieler.png -text svn_keywords
-icons/tractor.png -text svn_keywords
-icons/tractorctrl.png -text svn_keywords
 /mapviewer.lua -text svn_keywords
 /mapviewer.xml -text svn_keywords
 /modDesc.xml -text svn_keywords
-/mv_fnum_hagenstedt.png -text
-/mv_pda_hagenstedt.png -text
-/mv_poi_hagenstedt.png -text
 /readme_de.txt -text svn_keywords
 /readme_en.txt -text svn_keywords
