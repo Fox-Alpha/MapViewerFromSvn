@@ -1,8 +1,40 @@
 * text=auto !eol
 / svnc_tsvn_003aprojectlanguage=0x401
 /Panel svnc_tsvn_003aprojectlanguage=1025
+Panel/Bt_Close.dds -text
+Panel/Bt_Switch.dds -text
+Panel/Info_Panel.dds -text
+Panel/Info_Panel_bg.dds -text
+Panel/Info_Panel_bt.dds -text
+Panel/Info_Panel_top.dds -text
+Panel/button.dds -text
+Panel/selectedbutton.dds -text
 /gfx svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
+gfx/background.dds -text
+gfx/maplegende.dds -text
+gfx/mapviewer.dds -text
 /icons svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
+icons/1.dds -text
+icons/10.dds -text
+icons/11.dds -text
+icons/2.dds -text
+icons/3.dds -text
+icons/4.dds -text
+icons/5.dds -text
+icons/6.dds -text
+icons/7.dds -text
+icons/8.dds -text
+icons/9.dds -text
+icons/bottle.dds -text
+icons/combine.dds -text
+icons/courseplay.dds -text
+icons/eigenerspieler.dds -text
+icons/feldgeraet.dds -text
+icons/isBroken.dds -text
+icons/milktruck.dds -text
+icons/mpspieler.dds -text
+icons/tractor.dds -text
+icons/tractorctrl.dds -text
 /mapviewer.lua -text svn_keywords
 /mapviewer.xml -text svn_keywords
 /modDesc.xml -text svn_keywords
