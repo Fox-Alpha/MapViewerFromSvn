@@ -44,5 +44,8 @@ icons/tractorctrl.png -text svn_keywords
 /mapviewer.lua -text svn_keywords
 /mapviewer.xml -text svn_keywords
 /modDesc.xml -text svn_keywords
+/mv_fnum_hagenstedt.png -text
+/mv_pda_hagenstedt.png -text
+/mv_poi_hagenstedt.png -text
 /readme_de.txt -text svn_keywords
 /readme_en.txt -text svn_keywords

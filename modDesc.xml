@@ -5,7 +5,7 @@
 -- $URL$
 -->
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="4">
+<modDesc descVersion="9">
     <author>Fox-Alpha</author>
     <version>V0.6 $Rev$</version>
 	<iconFilename>gfx/mapviewer.png</iconFilename>

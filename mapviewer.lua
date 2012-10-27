@@ -569,6 +569,12 @@ function mapviewer:InitMapViewer()
 	----
 	
 	----
+	-- Hotspots printen
+	----
+	-- print(table.show(g_currentMission.missionPDA.hotspots, "Hotspots"));
+	----
+	
+	----
 	-- Initialisierung abgeschlossen
 	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
 	----
@@ -618,15 +624,15 @@ function mapviewer:checkLocalPDAFile()
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
 	
-	if self:file_exists(PathToModDir..fileName..".png") then
+	-- if self:file_exists(PathToModDir..fileName..".png") then
 		fileName = PathToModDir..fileName..".png";
 		isLocal = true;
-	elseif self:file_exists(PathToModDir..fileName..".dds") then
-		fileName = PathToModDir..fileName..".dds";
-		isLocal = true;
-	else
-		fileName = nil;
-	end; 
+	-- elseif self:file_exists(PathToModDir..fileName..".dds") then
+		-- fileName = PathToModDir..fileName..".dds";
+		-- isLocal = true;
+	-- else
+		-- fileName = nil;
+	-- end; 
 
 	return isLocal, fileName or nil;
 end;
@@ -652,15 +658,15 @@ function mapviewer:checkLocalFnumFile()
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
 	
-	if self:file_exists(PathToModDir..fileName..".png") then
+	-- if self:file_exists(PathToModDir..fileName..".png") then
 		fileName = PathToModDir..fileName..".png";
 		isLocal = true;
-	elseif self:file_exists(PathToModDir..fileName..".dds") then
-		fileName = PathToModDir..fileName..".dds";
-		isLocal = true;
-	else
-		fileName = nil;
-	end; 
+	-- elseif self:file_exists(PathToModDir..fileName..".dds") then
+		-- fileName = PathToModDir..fileName..".dds";
+		-- isLocal = true;
+	-- else
+		-- fileName = nil;
+	-- end; 
 
 	return isLocal, fileName or nil;
 end;
@@ -686,15 +692,15 @@ function mapviewer:checkLocalPoIFile()
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
 	
-	if self:file_exists(PathToModDir..fileName..".png") then
+	-- if self:file_exists(PathToModDir..fileName..".png") then
 		fileName = PathToModDir..fileName..".png";
 		isLocal = true;
-	elseif self:file_exists(PathToModDir..fileName..".dds") then
-		fileName = PathToModDir..fileName..".dds";
-		isLocal = true;
-	else
-		fileName = nil;
-	end; 
+	-- elseif self:file_exists(PathToModDir..fileName..".dds") then
+		-- fileName = PathToModDir..fileName..".dds";
+		-- isLocal = true;
+	-- else
+		-- fileName = nil;
+	-- end; 
 
 	return isLocal, fileName or nil;
 end;
@@ -705,8 +711,12 @@ end;
 ----
 function mapviewer:SaveToFile(mv_old)
     local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/";
-    local mvxml = nil; 
-    
+    local mvxml = nil;
+
+	return;	
+end;
+
+function mapviewer:oldSaveToFile(mv_old)
     if not mapviewer:file_exists(path .. "MapViewer.xml") or mv_old then
         -- XML Datei im Savegame Ordner erstellen
         mvxml = createXMLFile("MapViewerXML", path .. "MapViewer.xml", "MapViewer");
@@ -717,8 +727,8 @@ function mapviewer:SaveToFile(mv_old)
     -- Einstellungen in XML speichern
     if mvxml ~= nil then
         -- int
-        -- setXMLInt(mvxml, "mapviewer.map.mapSize#DimX", self.bigmap.mapDimensionX);
-        -- setXMLInt(mvxml, "mapviewer.map.mapSize#DimY", self.bigmap.mapDimensionY);
+        setXMLInt(mvxml, "mapviewer.map.mapSize#DimX", self.bigmap.mapDimensionX);
+        setXMLInt(mvxml, "mapviewer.map.mapSize#DimY", self.bigmap.mapDimensionY);
         
         setXMLInt(mvxml, "mapviewer.overlay#Index", self.numOverlay);
         -- Float
@@ -749,8 +759,7 @@ function mapviewer:SaveToFile(mv_old)
         saveXMLFile(mvxml);
    else
         print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorSaveOptions"));
-    end;
-    
+    end;    
 end;
 ----
 
@@ -761,7 +770,10 @@ function mapviewer:LoadFromFile()
     local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/";
     local mvxml = nil; 
 	local mv_ver = "v0.60"
-
+	
+	return;
+end;
+function mapviewer:oldLoadFromFile()
     mvxml = loadXMLFile("MapViewerXML", path .. "MapViewer.xml"); 
     
     if mvxml ~= nil then
@@ -1478,14 +1490,30 @@ function mapviewer:draw()
 		-- ToDo : Hotsspots ausblendbar machen
 		--Hotspots auf grosse Karte
 		----
+		local hsPosX, hsPosY;
+		-- print("-- Hotspot Loop --");
 		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
 			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
 			self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
-			self.hsPosX = (g_currentMission.missionPDA.hotspots[j].xMapPos/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-			self.hsPosY = 1-(g_currentMission.missionPDA.hotspots[j].yMapPos/self.bigmap.mapDimensionY);--self.hsHeight;
+			----
+			hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+			hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+			
+			-- if hsPosX < 0 then
+				-- hsPosX = hsPosX * -1;
+			-- end;
+			-- if hsPosY < 0 then
+				-- hsPosY = hsPosY * -1;
+			-- end;
+			-- self.hsPosX = (g_currentMission.missionPDA.hotspots[j].xMapPos/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+			-- self.hsPosY = 1-(g_currentMission.missionPDA.hotspots[j].yMapPos/self.bigmap.mapDimensionY);--self.hsHeight;
+			self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+			self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
 			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;
 			renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+			--print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY));
 		end;
+		-- print("-- Hotspot Loop Ende --");
 
 		----
 		-- Fahrzeuge auf grosse Karte
@@ -1834,9 +1862,9 @@ function mapviewer:update(dt)
             -- if self.numOverlay == 3 and (not self.usePoi or not self.useFNum) then
                 -- self.numOverlay = self.numOverlay+1;
             -- end;
-            if self.numOverlay == 5 and not self.useBottles then
-                self.numOverlay = self.numOverlay+1;
-            end;
+            -- if self.numOverlay == 5 and not self.useBottles then
+                -- self.numOverlay = self.numOverlay+1;
+            -- end;
         -- end;
         ----
         ----
@@ -1855,10 +1883,10 @@ function mapviewer:update(dt)
 		elseif self.numOverlay == 3 then	--Poi und Nummern
 			self.showPoi = true;
 			self.showFNum = true;
-		elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
-			self.showCP = true;
-		elseif self.numOverlay == 5 then	--Bottlefinder anzeigen
-            self.showBottles = true;
+		-- elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
+			-- self.showCP = true;
+		-- elseif self.numOverlay == 5 then	--Bottlefinder anzeigen
+            -- self.showBottles = true;
 		else
 			self.numOverlay = 0;		--Alles aus
 			self.showPoi = false;
@@ -2326,7 +2354,8 @@ end
 --   asserts on error
 ----
 function mapviewer:length_of_file(filename)
-  local fh = assert(io.open(filename, "rb"))
+  -- local fh = assert(io.open(filename, "rb"))
+  local fh = assert(io.open(filename, "r"))
   local len = assert(fh:seek("end"))
   fh:close()
   return len
@@ -2337,7 +2366,8 @@ end
 -- Return true if file exists and is readable.
 ----
 function mapviewer:file_exists(path)
-  local file = io.open(path, "rb")
+  -- local file = io.open(path, "rb")
+  local file = io.open(path, "r")
   if file then file:close() end
   return file ~= nil
 end
