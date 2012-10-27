@@ -184,8 +184,8 @@
 			<en>Baler</en>
 			<de>Presse</de>	
 		</text>
-		<text name="MV_AttachTypebaleloader">
-			<en>Baler Loader</en>
+		<text name="MV_AttachTypebaleLoader">
+			<en>Baleloader</en>
 			<de>Ballensammler</de>	
 		</text>
 		<text name="MV_AttachTypecultivator">
@@ -194,7 +194,7 @@
 		</text>
 		<text name="MV_AttachTypetedder">
 			<en>Tedder</en>
-			<de>Z-Kreisel</de>	
+			<de>Zettkreisel</de>	
 		</text>
 		<text name="MV_AttachTypewindrower">
 			<en>Windrower</en>
@@ -295,6 +295,10 @@
 		<text name="MV_ErrorSaveOptions">
 			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
 			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
+		</text>
+		<text name="MV_ErrorCreateInfoPanel">
+			<en>Error: Error in function Update() - Set Panel position to Vehicle, please see in log.txt for more information</en>
+			<de>Fehler: Fehler in Update() - Panel Position an Fahrzeug anpassen, weitere Informationen in der Log.txt</de>	
 		</text>
     </l10n>
     <extraSourceFiles>

@@ -21,11 +21,34 @@ mapviewer.modName = g_currentModName;
 -- GetNoNil aus den Aufrufen von getText entfernen oder gegen eigene Funktion ersetzten
 -- Übersetzungen prüfen
 -- Panel position anpassen wenn am Bildschirmrand (Oben und rechts)
+-- Kapazitäten gegen 0 prüfen, Zeile bei 0 ausblenden (Ballentransporthänger, Häcksler)
+-- Panelanzeige auf rootNode testen
+-- DONE: Michtruck auf Karte mit anzeigen, eigenes Symbol mit Farbe weiss g_currentMission.trafficVehicles[]   rootNode, ["typeName"] = "milktruck";, 
+-- Tastenhilfe
+-- renderOverlay() auf gültigkeit Prüfen
+-- Alle Spieler auf PDA anzeigen, Position des Spielernamens auf PDA korrigieren
 ----
 -- Testen:
 ----
 -- Client Teleport im MP Modus
--- Füllstand im Infopanel z.B. bei selbstfahspritze, Bei Fahrzeugen mit fillCapazität und nicht Combine
+-- Bei Fahrzeugen mit fillKapazität und nicht Combine
+-- 
+----
+-- Übersetzungen :
+----
+-- Selbstfahrspritze ist selfpropeleredsprayer / de fehlt || Filtype fehlt
+-- typ Implement, dann Typ=Name, Optional Typ vergleichen (Gewicht, Schild, Ballengabel, Palettengabel)
+-- saat in Maschine, Ausgewählte Saat !
+-- Miststreuer ist manuresprayder
+-- Ladewagen (Gras) ist foragewagon
+-- Güllefass ist Sprayer_animated
+-- Hecksler und Maisgebiss ist cutter_animated
+-- Mähwerk ist mower
+-- Ballensammler ist Name=automatic Baleloader, Typ baleLoader
+-- Schaufel Name=shovel
+-- Palletengabel angehängt ist Implement
+-- Type combine_cilyndered
+-- cultivator_animated muss grubber
 ----
 
 ----
@@ -285,6 +308,17 @@ function mapviewer:InitMapViewer()
 	self.bigmap.IconSteerable.mpOverlayId = createImageOverlay(self.bigmap.IconSteerable.filemp);
 	self.bigmap.IconSteerable.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconSteerable#width"), 0.0078125);
 	self.bigmap.IconSteerable.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconSteerable#height"), 0.0078125);
+	----
+
+	----
+	-- Arrayx für Milchtruck
+	----
+	self.bigmap.IconMilchtruck = {}; --file, OverlayId, width, height
+	self.bigmap.IconMilchtruck.file = "";
+	self.bigmap.IconMilchtruck.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.IconMilktruck#file"), "icons/milktruck.png"), self.moddir);
+	self.bigmap.IconMilchtruck.OverlayId = createImageOverlay(self.bigmap.IconMilchtruck.file);
+	self.bigmap.IconMilchtruck.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.IconMilchtruck#width"), 0.0078125);
+	self.bigmap.IconMilchtruck.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.IconMilchtruck#height"), 0.0078125);
 	----
     
 	--Array für Geräteicons
@@ -1556,6 +1590,31 @@ function mapviewer:draw()
 		----
 		
 		----
+		-- Milchtruck auf Karte Zeichnen
+		----
+		for i=1, table.getn(g_currentMission.trafficVehicles) do
+			if g_currentMission.trafficVehicles[i].typeName == "milktruck" then
+				self.currentVehicle = g_currentMission.trafficVehicles[i];
+				if self.bigmap.IconMilchtruck.OverlayId ~= nil and self.bigmap.IconMilchtruck.OverlayId ~= 0 then
+					self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+					self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+					self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+					
+					--self.bigmap.IconMilchtruck = {}; --file, OverlayId, width, height
+					if self.bigmap.IconMilchtruck.OverlayId ~= nil then
+						renderOverlay(self.bigmap.IconMilchtruck.OverlayId,
+									self.buttonX-self.bigmap.IconMilchtruck.width/2, 
+									self.buttonZ-self.bigmap.IconMilchtruck.height/2,
+									self.bigmap.IconMilchtruck.width,
+									self.bigmap.IconMilchtruck.height);
+					end;
+				end;
+				break;
+			end;
+		end;
+		----
+		
+		----
 		-- InfoPanel anzeigen
 		----
 		setTextColor(0, 0, 0, 1);
@@ -1564,8 +1623,11 @@ function mapviewer:draw()
 		if self.showInfoPanel then
 			self.bigmap.InfoPanel.Info = {};
 			self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
-			
-			self:ShowPanelonMap();
+			if self.bigmap.InfoPanel.vehicleIndex ~= nil and self.bigmap.InfoPanel.vehicleIndex ~= 0 then
+				self:ShowPanelonMap();
+			else
+				self.showInfoPanel = false;
+			end;
 		end;
 		----
 	else
@@ -1576,7 +1638,7 @@ function mapviewer:draw()
 	-- Namen auf PDA anzeigen
 	----
     ----
-    -- TODO: Alle Spieler auf PDA anzeiegn
+    -- TODO: Alle Spieler auf PDA anzeigen, Position des Namens korrigieren
     ----
 		self.plyname.name = g_currentMission.player.controllerName;
 		self.plyname.yPos = g_currentMission.missionPDA.pdaPlayerMapArrow.y - 0.003;
@@ -1709,21 +1771,26 @@ function mapviewer:update(dt)
 	----
 	-- Panel Position an Fahrzeug anpassen
 	----
-	if self.mapvieweractive and self.showInfoPanel then
+	if self.mapvieweractive and self.showInfoPanel then															--todo auf rootNode testen 
 		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then
-			local posX1, posY1, posZ1 = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
-			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
-			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
-			
-			self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
-			self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
-			self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+			if g_currentMission.vehicles[self.bigmap.InfoPanel.vehicleIndex].rootNode == self.bigmap.InfoPanel.lastVehicle.rootNode then
+				local posX1, posY1, posZ1 = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
+				local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+				local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+				
+				self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
+				self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
+				self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
+				self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
+				self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
+				self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+			else
+				self.showInfoPanel = false;
+			end;
 		else
-			selfShowInfoPanel = false;
-			print("--\nFehler in Update() - showInfoPanel\n--");
+			self.showInfoPanel = false;
+			print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateInfoPanel")));
+			print("-- InfoPanel.lastVehicle type() -- " .. tostring(type(self.bigmap.InfoPanel.lastVehicle)));
 		end;	
 	end;	
 	----

@@ -41,6 +41,7 @@
 			<iconMPPlayer  width="0.01" height="001" file="icons/mpspieler.png" />
 			<iconSteerable  width="0.01" height="0.01" file="icons/tractor.png" />
 			<iconSteerableCtrl  width="0.01" height="0.01" file="icons/tractorctrl.png" />
+            <iconMilktruck  width="0.01" height="0.01" file="icons/milktruck.png" />
 			<iconAttachmentFront  width="0.01" height="0.01" file="icons/feldgeraet.png" />
 			<iconAttachmentRear  width="0.01" height="0.01" file="icons/feldgeraet.png" />
 			<iconIsBroken  width="0.01" height="0.01" file="icons/isBroken.png" />
