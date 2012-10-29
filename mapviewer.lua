@@ -1366,35 +1366,35 @@ function mapviewer:draw()
         ----
 
 		--Bottles
-		local countBottlesFound = 0;
-		if self.showBottles and self.useBottles then
-			if self.bigmap.iconBottle.Icon.OverlayId ~= nil and self.bigmap.iconBottle.Icon.OverlayId ~= 0 then
-                for i=1, table.getn(g_currentMission.missionMapBottleTriggers) do
-                    local bottleFound=string.byte(g_currentMission.foundBottles, i);
-                    if bottleFound==48 then
-                        self.posX, self.posY, self.posZ=getWorldTranslation(g_currentMission.missionMapBottleTriggers[i]);
-                        self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-                        self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		-- local countBottlesFound = 0;
+		-- if self.showBottles and self.useBottles then
+			-- if self.bigmap.iconBottle.Icon.OverlayId ~= nil and self.bigmap.iconBottle.Icon.OverlayId ~= 0 then
+                -- for i=1, table.getn(g_currentMission.missionMapBottleTriggers) do
+                    -- local bottleFound=string.byte(g_currentMission.foundBottles, i);
+                    -- if bottleFound==48 then
+                        -- self.posX, self.posY, self.posZ=getWorldTranslation(g_currentMission.missionMapBottleTriggers[i]);
+                        -- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+                        -- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
                         
-                        renderOverlay(self.bigmap.iconBottle.Icon.OverlayId,
-                                    self.buttonX-self.bigmap.iconBottle.width/2, 
-                                    self.buttonZ-self.bigmap.iconBottle.height/2, 
-                                    self.bigmap.iconBottle.width, 
-                                    self.bigmap.iconBottle.height);
-					else
-						countBottlesFound = countBottlesFound+1;
-                    end;
-                end;
+                        -- renderOverlay(self.bigmap.iconBottle.Icon.OverlayId,
+                                    -- self.buttonX-self.bigmap.iconBottle.width/2, 
+                                    -- self.buttonZ-self.bigmap.iconBottle.height/2, 
+                                    -- self.bigmap.iconBottle.width, 
+                                    -- self.bigmap.iconBottle.height);
+					-- else
+						-- countBottlesFound = countBottlesFound+1;
+                    -- end;
+                -- end;
 				----
 				-- TODO: Container Positionen anzeigen
 				----
 				-- missionMapGlassContainerTriggers
 				----
-			else
-                print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorBottlesCreateOverlay")));
-				self.useBottles = not self.useBottles;
-			end;
-		end;
+			-- else
+                -- print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorBottlesCreateOverlay")));
+				-- self.useBottles = not self.useBottles;
+			-- end;
+		-- end;
         ----
 		
 		--Maplegende anzeigen
@@ -1514,15 +1514,21 @@ function mapviewer:draw()
 			self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
 			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
 
+			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
+			setTextColor(bc[1], bc[2], bc[3], bc[4]);
+			setTextAlignment(RenderText.ALIGN_CENTER);
+
 			if g_currentMission.missionPDA.hotspots[j].showName then
-				local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
-				-- setTextColor(bc[1], bc[2], bc[3], bc[4]);
-				setTextColor(0, 1, 0, 1);
-				renderText(self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight, 0.015, g_currentMission.missionPDA.hotspots[j].name);
-				setTextColor(1, 1, 1, 0);
+				-- setTextColor(0, 1, 0, 1);
+				-- print("--- showName() ---");
+				renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 			else
 				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+				renderText(self.hsPosX, self.hsPosY-self.hsHeight, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 			end;
+			setTextAlignment(RenderText.ALIGN_LEFT);
+			setTextColor(1, 1, 1, 0);
+
 			if self.debug.printHotSpots then
 				print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
 			end;
