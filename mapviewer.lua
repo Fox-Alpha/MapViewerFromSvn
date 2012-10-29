@@ -71,6 +71,7 @@ function mapviewer:loadMap(name)
     self.showCP = false;
     self.showBottles = false;
     self.showInfoPanel = false;
+	self.showHotSpots = false;
     
     self.useBottles = true;
     self.useLegend = true;
@@ -1497,53 +1498,56 @@ function mapviewer:draw()
 			end;
 			setTextColor(1, 1, 1, 0);
 		end;
+		
 		----
 		-- ToDo : Hotsspots ausblendbar machen
-		--Hotspots auf grosse Karte
+		-- Hotspots auf grosse Karte
 		----
-		local hsPosX, hsPosY;
-		-- print("-- Hotspot Loop --");
-		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
-			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
-			self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
-			----
-			hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
-			hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
-			
-			self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-			self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
-			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
+		if self.showHotSpots then
+			local hsPosX, hsPosY;
+			-- print("-- Hotspot Loop --");
+			for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
+				self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
+				self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
+				----
+				hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+				hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+				
+				self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+				self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+				self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
 
-			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
-			
-			setTextColor(1, 1, 1, 1);
-			setTextAlignment(RenderText.ALIGN_CENTER);
+				local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
+				
+				setTextColor(1, 1, 1, 1);
+				setTextAlignment(RenderText.ALIGN_CENTER);
 
-			if g_currentMission.missionPDA.hotspots[j].showName then
-				setTextColor(bc[1], bc[2], bc[3], bc[4]);
-				-- setTextColor(0, 1, 0, 1);
-				-- print("--- showName() ---");
-				renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
-			else
-				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
-				if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
-					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
+				if g_currentMission.missionPDA.hotspots[j].showName then
+					setTextColor(bc[1], bc[2], bc[3], bc[4]);
+					-- setTextColor(0, 1, 0, 1);
+					-- print("--- showName() ---");
+					renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 				else
-					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
-					-- print("Fehelende Übersetzung: " .. "MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name);
+					renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+					if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
+						renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
+					else
+						renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
+						-- print("Fehelende Übersetzung: " .. "MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name);
+					end;
+				end;
+				setTextAlignment(RenderText.ALIGN_LEFT);
+				setTextColor(1, 1, 1, 0);
+
+				if self.debug.printHotSpots then
+					print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
 				end;
 			end;
-			setTextAlignment(RenderText.ALIGN_LEFT);
-			setTextColor(1, 1, 1, 0);
-
 			if self.debug.printHotSpots then
-				print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+				self.debug.printHotSpots = false;
 			end;
+			-- print("-- Hotspot Loop Ende --");
 		end;
-		if self.debug.printHotSpots then
-			self.debug.printHotSpots = false;
-		end;
-		-- print("-- Hotspot Loop Ende --");
 
 		----
 		-- Fahrzeuge auf grosse Karte
@@ -1912,10 +1916,15 @@ function mapviewer:update(dt)
         ----
 
 		if self.numOverlay == 1 then	--nur Feldnummern
+			self.showHotSpots = true;
+		elseif self.numOverlay == 2 then	--nur Feldnummern
 			self.showFNum = true;
-		elseif self.numOverlay == 2 then	--nur PoI
+			self.showHotSpots = false;
+		elseif self.numOverlay == 3 then	--nur PoI
             self.showPoi = true;
-		elseif self.numOverlay == 3 then	--Poi und Nummern
+			self.showHotSpots = false;
+		elseif self.numOverlay == 4 then	--Poi und Nummern
+			self.showHotSpots = false;
 			self.showPoi = true;
 			self.showFNum = true;
 		-- elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
@@ -1928,6 +1937,7 @@ function mapviewer:update(dt)
 			self.showFNum = false;
             self.showCP = false;
             self.showBottles = false;
+			self.showHotSpots = false;
 		end;
 
 		if self.Debug then
