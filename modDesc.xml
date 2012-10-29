@@ -279,6 +279,50 @@
 			<de>-- Helfer --</de>	
 		</text>
 		
+		<!-- HotSpot Übersetungen -->
+							  
+		<text name="MV_HotSpotwoolDeliveryHotspot">
+			<en>Wool Delivery</en>
+			<de>Weberei(Wolle)</de>	
+		</text>
+		<text name="MV_HotSpotEggs">
+			<en>Egg Shop</en>
+			<de>Eierhändler</de>	
+		</text>
+		<text name="MV_HotSpotFuelStation">
+			<en>Fuelstation</en>
+			<de>Tankstelle</de>	
+		</text>
+		<text name="MV_HotSpotTipPlace">
+			<en>Tip place</en>
+			<de>Abladestelle</de>	
+		</text>
+		<text name="MV_HotSpotPhone">
+			<en>Phone</en>
+			<de>Telefonzelle</de>	
+		</text>
+		<text name="MV_HotSpotBank">
+			<en>Bank</en>
+			<de>Bank</de>	
+		</text>
+		<text name="MV_HotSpotSheep">
+			<en>Sheepfarm</en>
+			<de>Schaaffarm</de>	
+		</text>
+		<text name="MV_HotSpotCows">
+			<en>Cowfarm</en>
+			<de>Kuhfarm</de>	
+		</text>
+		<text name="MV_HotSpotShop">
+			<en>Shop</en>
+			<de>Shop</de>	
+		</text>
+		<text name="MV_HotSpotChickens">
+			<en>Chicken</en>
+			<de>Hühner</de>	
+		</text>
+		
+		
         <!-- Fehlermdeldungen -->
 		<text name="MV_ErrorInitPoI">
 			<en>Warning: Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>

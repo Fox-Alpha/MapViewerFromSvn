@@ -1515,16 +1515,23 @@ function mapviewer:draw()
 			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
 
 			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
-			setTextColor(bc[1], bc[2], bc[3], bc[4]);
+			
+			setTextColor(1, 1, 1, 1);
 			setTextAlignment(RenderText.ALIGN_CENTER);
 
 			if g_currentMission.missionPDA.hotspots[j].showName then
+				setTextColor(bc[1], bc[2], bc[3], bc[4]);
 				-- setTextColor(0, 1, 0, 1);
 				-- print("--- showName() ---");
 				renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 			else
 				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
-				renderText(self.hsPosX, self.hsPosY-self.hsHeight, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
+				if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
+					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
+				else
+					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
+					-- print("Fehelende Übersetzung: " .. "MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name);
+				end;
 			end;
 			setTextAlignment(RenderText.ALIGN_LEFT);
 			setTextColor(1, 1, 1, 0);
