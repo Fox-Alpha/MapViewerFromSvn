@@ -103,6 +103,10 @@ function mapviewer:loadMap(name)
 	self.mouseX = 0;
 	self.mouseY = 0;
 	
+	self.debug = {};
+	self.debug.printHotSpots = false;
+	
+	
 	----
 	-- Debug Modus
 	----
@@ -128,7 +132,7 @@ function mapviewer:loadMap(name)
 			end;
 			if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
 			self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
-			print(tostring(self.name));
+			-- print(tostring(self.name));
 			-- if g_i18n:hasText(self.name) then
 				-- self.name = g_i18n:getText(self.name);
 			-- end;
@@ -151,7 +155,7 @@ function mapviewer:loadMap(name)
 				-- self.name = g_i18n:getText(self.name);
 			-- end;
 			self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
-			print(tostring(self.name));
+			-- print(tostring(self.name));
 		end
 	end;
 	----
@@ -508,17 +512,17 @@ function mapviewer:InitMapViewer()
 	-- print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
 	-- print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
 	----
-	if g_currentMission:getIsServer() then
-		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LoadOptions")));
-		local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/mapviewer.xml";
+	-- if g_currentMission:getIsServer() then
+		-- print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LoadOptions")));
+		-- local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/mapviewer.xml";
 
-		if mapviewer:file_exists(path) then
-			mapviewer:LoadFromFile();
-		else
-			mapviewer:SaveToFile();
-		end;
-		print(string.format("|| %s || %s complete ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LoadOptions")));
-	end;
+		-- if mapviewer:file_exists(path) then
+			-- mapviewer:LoadFromFile();
+		-- else
+			-- mapviewer:SaveToFile();
+		-- end;
+		-- print(string.format("|| %s || %s complete ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LoadOptions")));
+	-- end;
 	----
 	
 	----
@@ -837,9 +841,11 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 	-- Taste um den Debugmodus zu aktivieren
 	-- ALT+d
     ----
-	-- if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
+	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
 		-- print("---- MapViwer Debug aktiviert ----");
-	-- end;
+		-- print(table.show(g_currentMission,  "g_CurrentMission"));
+		self.debug.printHotSpots = true;
+	end;
 	----
 	
 	----
@@ -1164,8 +1170,13 @@ function mapviewer:GetVehicleInfo(vehicle)
 				----
 				-- Füllstand bei Combine ermitteln
 				----
-				if vehicle:getFruitTypeAndFillLevelToUnload() then
-					fruitType, f, useGrainTank = vehicle:getFruitTypeAndFillLevelToUnload();
+				-- if vehicle:getFruitTypeAndFillLevelToUnload() then
+				if vehicle.grainTankCapacity ~= nil and vehicle.grainTankCapacity > 0 then
+					-- fruitType, f, useGrainTank = vehicle:getFruitTypeAndFillLevelToUnload();
+					fruitType = vehicle.currentGrainTankFruitType; 
+					fruitFillLevel = vehicle.grainTankFillLevel; 
+					f = fruitFillLevel;
+					useGrainTank = true;
 					-- print(string.format("Fruittype %s, FillLevel % s, useGrainTank %s",tostring(fruitType), tostring(f), tostring(useGrainTank)));
 					if useGrainTank and f ~= nil then
 						c = vehicle.grainTankCapacity;
@@ -1499,19 +1510,25 @@ function mapviewer:draw()
 			hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
 			hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
 			
-			-- if hsPosX < 0 then
-				-- hsPosX = hsPosX * -1;
-			-- end;
-			-- if hsPosY < 0 then
-				-- hsPosY = hsPosY * -1;
-			-- end;
-			-- self.hsPosX = (g_currentMission.missionPDA.hotspots[j].xMapPos/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-			-- self.hsPosY = 1-(g_currentMission.missionPDA.hotspots[j].yMapPos/self.bigmap.mapDimensionY);--self.hsHeight;
 			self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
 			self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
-			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;
-			renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
-			--print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY));
+			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
+
+			if g_currentMission.missionPDA.hotspots[j].showName then
+				local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
+				-- setTextColor(bc[1], bc[2], bc[3], bc[4]);
+				setTextColor(0, 1, 0, 1);
+				renderText(self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight, 0.015, g_currentMission.missionPDA.hotspots[j].name);
+				setTextColor(1, 1, 1, 0);
+			else
+				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+			end;
+			if self.debug.printHotSpots then
+				print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+			end;
+		end;
+		if self.debug.printHotSpots then
+			self.debug.printHotSpots = false;
 		end;
 		-- print("-- Hotspot Loop Ende --");
 
@@ -1804,6 +1821,7 @@ function mapviewer:update(dt)
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
 		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
 			self.mapvieweractive=not self.mapvieweractive;
+			-- g_currentMission.showHudEnv = not self.mapvieweractive;
 			if not self.mapvieweractive then
 				g_mouseControlsHelp.active = true; 
 				InputBinding.setShowMouseCursor(false); 
@@ -1811,7 +1829,11 @@ function mapviewer:update(dt)
 				if (g_currentMission.player.isEntered) then
 					g_currentMission.player.isFrozen = false;
 				end;
+				g_currentMission.showHudEnv = true;
+			else
+				g_currentMission.showHudEnv = false;
 			end;
+			
 			-- if self.mapvieweractive and self.bigmap.mapTransp == 1 then
 				-- g_mouseControlsHelp.active = false;
 				-- InputBinding.setShowMouseCursor(true);
