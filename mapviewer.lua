@@ -198,28 +198,19 @@ function mapviewer:InitMapViewer()
     --
 	self.mapName = g_currentMission.missionInfo.map.title;
 	self.mapZipName = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
-    if self.mapPath == "" and g_currentMission.missionInfo.map.title == "Karte 1" then
-        self.mapPath = getAppBasePath() .. "data/maps/map01/";
+	
+    if self.mapPath == "" then
+	--and g_currentMission.missionInfo.map.title == "Karte 1" then
+        self.mapPath = self.moddir; --getAppBasePath() .. "data/maps/map01/";
         self.useDefaultMap = true;
     else
         self.mapPath = self.mapPath .. "map01/"
     end;
 	----
 
-
 	----
 	-- Globale Kartengröße verwnenden
 	-----
-	-- self.testOverlay = {File= "", OverlayId=0};
-	-- package.path = package.path .. ";" ..self.moddir.. "\\?.lua";
-	-- self.ImageSize = require ("imagesize");
-	----
-	-- TODO: getFile() in Imagesize Funktionen testen
-	----
-	-- local demSizeX, demSizeY, fileType;
-	-- self.testOverlay.File = Utils.getFilename("map01_dem.png", self.mapPath);
-	-- demSizeX, demSizeY, fileType = self.ImageSize.imgsize(Utils.getFilename("map01_dem.png", self.mapPath));	
-	-- print(string.format("demX %s || demY %s || Type %s || Pfad : %s", tostring(demSizeX), tostring(demSizeY), tostring(fileType), tostring(self.testOverlay.File)));
 	if g_currentMission.terrainSize ~= 2050 then	
 		g_currentMission.missionPDA.worldSizeX = 4096;
 		g_currentMission.missionPDA.worldSizeZ = 4096;
@@ -227,9 +218,9 @@ function mapviewer:InitMapViewer()
 		g_currentMission.missionPDA.worldCenterOffsetZ = g_currentMission.missionPDA.worldSizeZ*0.5;
 	end;
 	
-	
     self.bigmap.mapDimensionX = g_currentMission.missionPDA.worldSizeX;
     self.bigmap.mapDimensionY = g_currentMission.missionPDA.worldSizeZ;
+	----
 	
 	----
 	-- Mapgroesse printen
@@ -250,22 +241,6 @@ function mapviewer:InitMapViewer()
 	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_MapName"), g_currentMission.missionInfo.map.title)));
 	----
 	
-    ----
-	-- Prüfen auf lokale PDA Datei
-	----
-	local bl, lf = self:checkLocalPDAFile();
-	
-	if bl and lf ~= nil then
-		self.bigmap.file = lf;
-	else
-		self.bigmap.file = Utils.getNoNil(Utils.getFilename("pda_map.png", self.mapPath), Utils.getFilename("pda_map.dds", self.mapPath));
-	end;
-    self.bigmap.OverlayId.ovid = createImageOverlay(self.bigmap.file);
-	if self.bigmap.OverlayId.ovid == nil or self.bigmap.OverlayId.ovid == 0 then
-		print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
-	end;
-	----
-
 	----
 	-- Startwert der Transparenz
 	----
@@ -283,36 +258,6 @@ function mapviewer:InitMapViewer()
 		print(string.format("Overlay  : %d", self.bigmap.OverlayId.ovid));
 	end;
 		
-	----
-	-- Point of Interest verwenden
-	----
-	self.usePoi = true;
-
-    self.bigmap.PoI.OverlayId = nil;
-    if self.useDefaultMap then
-        self.bigmap.PoI.file = Utils.getFilename("PoI_Karte_1.png", self.moddir .. "gfx/");
-    else
-         self.bigmap.PoI.file = Utils.getFilename("MV_PoI.png", self.mapPath);
-    end
-    self.bigmap.PoI.poiPosX = 0.5-(self.bigmap.PoI.width/2);
-    self.bigmap.PoI.poiPosY = 0.5-(self.bigmap.PoI.height/2);
-	----
-	
-	----
-	-- Fieldnumbers verwenden
-	----
-	self.useFNum = true;
-	if self.useFNum then
-		self.bigmap.FNum.OverlayId = nil
-		if self.useDefaultMap then
-			self.bigmap.FNum.file = Utils.getFilename("fn_Karte_1.png", self.moddir .. "gfx/");
-		else
-            self.bigmap.FNum.file = Utils.getFilename("MV_Feldnummern.png", self.mapPath);
-        end;
-		self.bigmap.FNum.FNumPosX = 0.5-(self.bigmap.FNum.width/2);
-		self.bigmap.FNum.FNumPosY = 0.5-(self.bigmap.FNum.height/2);
-	end;
-	----
     
 	----
 	-- Array für Fahrzeugicons
@@ -526,22 +471,65 @@ function mapviewer:InitMapViewer()
 	-- end;
 	----
 	
+    ----
+	-- Prüfen auf lokale PDA Datei
+	----
+	local bl, lf = self:checkLocalPDAFile();
+	
+	self.bigmap.file = Utils.getNoNil(Utils.getFilename("mv_pda_hagenstedt.dds", self.mapPath), "");
+
+	if bl and lf ~= nil then
+		self.bigmap.file = lf;
+	else
+		self.bigmap.file = Utils.getNoNil(Utils.getFilename("mv_pda_hagenstedt.dds", self.mapPath), "");
+	end;
+	
+	if fileExists(self.bigmap.file) then
+		self.bigmap.OverlayId.ovid = createImageOverlay(self.bigmap.file);
+	else
+		self.bigmap.file = 0;
+	end;
+	
+	if self.bigmap.OverlayId.ovid == 0 or self.bigmap.OverlayId.ovid == nil then	
+		 print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
+		 print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFileNotFound")));
+		 print(lf);
+	end;
+	----
+
 	----
 	-- Checken ob es lokale Fnum und Poi Dateien gibt
 	----
 	-- Lokale PoI Datei
+	-- Point of Interest verwenden
 	----
+	self.usePoi = false;
+    self.bigmap.PoI.OverlayId = nil;
+    self.bigmap.PoI.poiPosX = 0.5-(self.bigmap.PoI.width/2);
+    self.bigmap.PoI.poiPosY = 0.5-(self.bigmap.PoI.height/2);
+
+
 	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForLocaleOverlay")));
-	local bpoi, lfpoi;
-	bpoi, lfpoi = self:checkLocalPoIFile();
+
+	local bpoi, lfpoi = self:checkLocalPoIFile();
+    self.bigmap.PoI.file = Utils.getFilename("mv_poi_hagenstedt.dds", self.mapPath);
+	
 	if bpoi and lfpoi ~= nil then
         self.bigmap.PoI.file = lfpoi;
-    end
+	else
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFromLocalPoI")));
+    end;
+
+	if fileExists(self.bigmap.PoI.file) then 
+		self.bigmap.PoI.OverlayId = createImageOverlay(self.bigmap.PoI.file);
+	else
+		self.bigmap.FNum.file = 0;
+	end;
 	
-    self.bigmap.PoI.OverlayId = createImageOverlay(self.bigmap.PoI.file);
     if self.bigmap.PoI.OverlayId == nil or self.bigmap.PoI.OverlayId == 0 then
         self.usePoi = false;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitPoI")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreatePoIFileNotFound")));
 	else
 		self.usePoi = true;
     end;
@@ -550,20 +538,36 @@ function mapviewer:InitMapViewer()
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapPoISuccess")));
 	end;
 	----
-	-- Lokale Fnum Datei
+	
 	----
-	local bfnum, lfnum;
-	bfnum, lfnum = self:checkLocalFnumFile();
+	-- Lokale Fnum Datei
+	-- Fieldnumbers verwenden
+	----
+	self.useFNum = true;
+	self.bigmap.FNum.OverlayId = nil
+	self.bigmap.FNum.FNumPosX = 0.5-(self.bigmap.FNum.width/2);
+	self.bigmap.FNum.FNumPosY = 0.5-(self.bigmap.FNum.height/2);
+	
+	self.bigmap.FNum.file = Utils.getNoNil(Utils.getFilename("mv_fnum_hagenstedt.dds", self.mapPath), "");
+
+	local bfnum, lfnum = self:checkLocalFnumFile();
+	
 	if bfnum and lfnum ~= nil then
 		self.bigmap.FNum.file = lfnum;
+	else
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFromLocalFNum")));
 	end;
 	
-	self.bigmap.FNum.OverlayId = createImageOverlay(self.bigmap.FNum.file);
+	if fileExists(self.bigmap.FNum.file) then 
+		self.bigmap.FNum.OverlayId = createImageOverlay(self.bigmap.FNum.file);
+	else
+		self.bigmap.FNum.file = 0;
+	end;
+
 	if self.bigmap.FNum.OverlayId == nil or self.bigmap.FNum.OverlayId == 0 then
 		self.useFNum = false;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitFNum")));
-	else
-		self.useFNum = true;
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateFNumFileNotFound")));
 	end;
 
 	if self.useFNum then
@@ -571,6 +575,15 @@ function mapviewer:InitMapViewer()
 	end;
 	
 	print(string.format("|| %s || %s complete ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForLocaleOverlay")));
+	-- print("--Datein im Mod--");
+	-- print("Mod PDA:    " .. self.bigmap.file .. " || " .. tostring(fileExists(self.bigmap.file)));
+	-- print("Mod PoI:    " .. self.bigmap.PoI.file .. " || " .. tostring(fileExists(self.bigmap.PoI.file)));
+	-- print("Mod FNum:   " .. self.bigmap.FNum.file .. " || " .. tostring(fileExists(self.bigmap.FNum.file)));
+	-- print("--Dateien im Modordner--");
+	-- print("Lokal PDA:  " .. lf .. " || " .. tostring(fileExists(lf)));
+	-- print("Lokal PoI:  " .. lfpoi .. " || " .. tostring(fileExists(lfpoi)));
+	-- print("Lokal FNum: " .. lfnum .. " || " .. tostring(fileExists(lfnum)));
+	-- print("----");
 	----
 	
 	----
@@ -621,27 +634,20 @@ function mapviewer:checkLocalPDAFile()
 
 	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
-	else	-- Name der Map zip
-		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
-		-- mapName = string.gsub(mapName, "/", "");
+	else
 		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
 	
-	-- if self:file_exists(PathToModDir..fileName..".png") then
-		fileName = PathToModDir..fileName..".png";
-		isLocal = true;
-	-- elseif self:file_exists(PathToModDir..fileName..".dds") then
-		-- fileName = PathToModDir..fileName..".dds";
-		-- isLocal = true;
-	-- else
-		-- fileName = nil;
-	-- end; 
+	fileName = PathToModDir..fileName..".dds";
 
-	return isLocal, fileName or nil;
+	isLocal = fileExists(fileName);
+
+	return isLocal, fileName;
 end;
 ----
+
 function mapviewer:checkLocalFnumFile()
 	local fileName;
 	local temp;
@@ -654,28 +660,19 @@ function mapviewer:checkLocalFnumFile()
 
 	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
-	else	-- Name der Map zip
-		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
-		-- mapName = string.gsub(mapName, "/", "");
-		-- temp = mapName;
+	else
 		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
 	
-	-- if self:file_exists(PathToModDir..fileName..".png") then
-		fileName = PathToModDir..fileName..".png";
-		isLocal = true;
-	-- elseif self:file_exists(PathToModDir..fileName..".dds") then
-		-- fileName = PathToModDir..fileName..".dds";
-		-- isLocal = true;
-	-- else
-		-- fileName = nil;
-	-- end; 
-
-	return isLocal, fileName or nil;
+	fileName = PathToModDir..fileName..".dds";
+	isLocal = fileExists(fileName);
+	
+	return isLocal, fileName;
 end;
 ----
+
 function mapviewer:checkLocalPoIFile()
 	local fileName;
 	local temp;
@@ -688,26 +685,16 @@ function mapviewer:checkLocalPoIFile()
 
 	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
-	else	-- Name der Map zip
-		-- mapName = string.gsub(g_currentMission.missionInfo.map.baseDirectory, PathToModDir, "");
-		-- mapName = string.gsub(mapName, "/", "");
-		-- temp = mapName;
+	else
 		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
 	
-	-- if self:file_exists(PathToModDir..fileName..".png") then
-		fileName = PathToModDir..fileName..".png";
-		isLocal = true;
-	-- elseif self:file_exists(PathToModDir..fileName..".dds") then
-		-- fileName = PathToModDir..fileName..".dds";
-		-- isLocal = true;
-	-- else
-		-- fileName = nil;
-	-- end; 
+	fileName = PathToModDir..fileName..".dds";
+	isLocal = fileExists(fileName);
 
-	return isLocal, fileName or nil;
+	return isLocal, fileName;
 end;
 ----
 
@@ -1868,7 +1855,7 @@ function mapviewer:update(dt)
 			-- end;
 		else
 			self.mv_Error = not self.mv_Error;
-			print(string.format("|| Update() - %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
+			--print(string.format("|| Update() - %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
 		end;
 	end;
 

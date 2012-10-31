@@ -96,7 +96,7 @@
 		</text>
 		<text name="MV_CheckForLocaleOverlay">
 			<en>Checking for locale FNum and PoI overlay files</en>
-			<de>Prüfen auf lokale FNum und PoI  Overlay Dateien</de>	
+			<de>Prüfen auf lokale FNum und PoI Overlay Dateien</de>	
 		</text>
 		<text name="MV_LocaleFileSuccess">
 			<en>Checking for locale FNum and PoI overlay files</en>
@@ -332,14 +332,39 @@
 		
 		
         <!-- Fehlermdeldungen -->
+		<text name="MV_ErrorCreateMV">
+			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
+		</text>
+		<text name="MV_ErrorCreateMVFileNotFound">
+			<en>Critical Error: Creation of MapViewer failed. File for fullscreen PDA not found</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen. Datei für Vollbildkarte nicht gefunden</de>	
+		</text>
+		<text name="MV_ErrorCreateMVFromLocalPDA">
+			<en>Hint: Local PDA file does not exists in mod folder</en>
+			<de>Hinweis: Erzeugen des Mapviewers fehlgeschlagen, keine lokale PDA Datei im  Modordner vorhanden</de>	
+		</text>
+		
+		<!-- Fehlermeldungen für PoI -->
 		<text name="MV_ErrorInitPoI">
 			<en>Warning: Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>
 			<de>Warnung: Kann 'PoI Overlay' Datei nicht finden, PoI wird deaktiviert. Diese Karte unterstützt keine MapViewer PoI</de>
 		</text>
 		<text name="MV_ErrorPoICreateOverlay">
-			<en>Error: Could not create 'PoI Overlay'. PoI are disabled. </en>
-			<de>Fehler: Kann 'PoI Overlay' nicht erzeugen. PoI wird deaktiviert.</de>
+			<!-- Meldung im Dialog -->
+			<en>Error: Could not create 'PoI Overlay'. PoI is disabled. </en>
+			<de>Fehler: Kann 'PoI Overlay' nicht erzeugen. PoI ist deaktiviert.</de>
 		</text>
+		<text name="MV_ErrorCreatePoIFileNotFound">
+			<en>Warning: File for PoI Overlay not found</en>
+			<de>Warnung: Datei für PoI Overlay nicht gefunden</de>	
+		</text>
+		<text name="MV_ErrorCreateMVFromLocalPoI">
+			<en>Hint: Local PoI file does not exists in mod folder</en>
+			<de>Hinweis: Keine lokale PoI Datei im  Modordner vorhanden</de>	
+		</text>
+
+		<!-- Fehlermeldungen für Feldnummern -->
 		<text name="MV_ErrorInitFNum">
 			<en>Warning: Could not load 'Fieldnumber Overlay' file. Fieldnumbers are disabled. This Map doesn't support MapViewer Fieldnumbers</en>
 			<de>Warnung: Kann 'Feldnummern Overlay' Datei nicht finden, Feldnummern wird deaktiviert. Diese Karte unterstützt keine MapViewer Feldnummern</de>	
@@ -348,6 +373,16 @@
 			<en>Error: Could not create 'Fieldnumber Overlay'. Fieldnumber Overlay are disabled. </en>
 			<de>Fehler: Kann 'Feldnummern Overlay' nicht erzeugen. Feldnummern Overlay wird deaktiviert.</de>
 		</text>
+		<text name="MV_ErrorCreateFNumFileNotFound">
+			<en>Warning: File for FNum Overlay not found</en>
+			<de>Warnung: Datei für Feldnummern Overlay nicht gefunden</de>	
+		</text>
+		<text name="MV_ErrorCreateMVFromLocalFNum">
+			<en>Hint: Creation of MapViewer failed, local FNum file does not exists in mod folder</en>
+			<de>Hinweis: Keine lokale FNum Datei im  Modordner vorhanden</de>	
+		</text>
+		
+		<!-- Fehlermeldungen für Flaschen -->
 		<text name="MV_ErrorInitBottles">
 			<en>Warning: Could not load 'Bottlefinder Overlay' file. Bottlefinder are disabled. This Map doesn't support Bottles</en>
 			<de>Warnung: Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
@@ -356,6 +391,8 @@
 			<en>Error: Could not create 'Bottlefinder Overlay'. Bottlefinder Overlay are disabled. </en>
 			<de>Fehler: Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
 		</text>
+		
+		<!-- Fehlermeldungen für Legende -->
 		<text name="MV_ErrorInitLegend">
 			<en>Could not load 'Legend Overlay' file. Legend are disabled. This Map doesn't support Bottles</en>
 			<de>Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
@@ -364,10 +401,9 @@
 			<en>Warning: Could not create 'Legend Overlay'. Legend Overlay are disabled. </en>
 			<de>Warnung: Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
 		</text>
-		<text name="MV_ErrorCreateMV">
-			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
-			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
-		</text>
+		
+		
+		<!-- Fehlermeldungen für Optionen -->
 		<text name="MV_ErrorLoadOptions">
 			<en>Error: Cant load Options from file</en>
 			<de>Fehler: Kann die Einstellungen nicht aus der Datei laden</de>	
@@ -380,6 +416,8 @@
 			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
 			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
 		</text>
+		
+		<!-- Fehlermeldungen für InfoPanel -->
 		<text name="MV_ErrorCreateInfoPanel">
 			<en>Error: Error in function Update() - Set Panel position to Vehicle, please see in log.txt for more information</en>
 			<de>Fehler: Fehler in Update() - Panel Position an Fahrzeug anpassen, weitere Informationen in der Log.txt</de>	
