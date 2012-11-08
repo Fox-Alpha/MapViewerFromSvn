@@ -7,13 +7,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="9">
     <author>Fox-Alpha</author>
-    <version>V0.6 $Rev$</version>
+    <version>V0.7 $Rev$</version>
 	<iconFilename>gfx/mapviewer.dds</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
 	<title>
-        <en>Fullscreen PDA_Map</en>
-        <de>Vollbild Kartenansicht</de>
+        <en>MapViewer for LS2013</en>
+        <de>MapViewer für LS2013</de>
     </title>
     <description>
 		<en>
@@ -36,8 +36,8 @@
 	<l10n>
         <!-- Copyright Meldung -->
         <text name="mapviewtxt">
-            <en>Mapviewer V0.6 $Rev$ Copyright (C) Fox-Alpha</en>
-            <de>Mapviewer V0.6 $Rev$ Copyright (C) Fox-Alpha</de>
+            <en>Mapviewer V0.7 $Rev$ Copyright (C) Fox-Alpha</en>
+            <de>Mapviewer V0.7 $Rev$ Copyright (C) Fox-Alpha</de>
         </text>
         <!-- Tastenbeschreibungen -->
 		<text name="BIGMAP_Legende">

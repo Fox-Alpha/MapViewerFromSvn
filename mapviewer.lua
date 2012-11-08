@@ -14,6 +14,10 @@ mapviewer.moddir=g_currentModDirectory;
 mapviewer.modName = g_currentModName;
 -- source(mapviewer.moddir.."MapViewerTeleportEvent.lua");
 
+-- Pfad und Dateiname für PDA Map für Mod Karten
+-- Versuchen über missionPDA.pdaMapOverlay auf ganzen Bildschirm anzuzeigen
+
+-- Verschiedene Pfade für Modkarten vorgeben und schauen ob Pda Datrei vorhanden ist.
 
 ----
 -- Globale ToDo's :
@@ -119,7 +123,8 @@ function mapviewer:loadMap(name)
 	----
 	-- Workaround um in den Steerable den Namen als .name einzubinden
 	----
-	local aNameSearch = {"vehicle.typeDesc", "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
+	-- local aNameSearch = {"vehicle.typeDesc", "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
+	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle#type"};
 	
 	if Steerable.load ~= nil then
 		local orgSteerableLoad = Steerable.load
@@ -132,10 +137,10 @@ function mapviewer:loadMap(name)
 				if self.name ~= nil then break; end;
 			end;
 			if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
-			self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
-			-- print(tostring(self.name));
+			-- self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
 			-- if g_i18n:hasText(self.name) then
-				-- self.name = g_i18n:getText(self.name);
+			-- self.name = g_i18n:getText(self.name);
+			-- print(tostring(self.name));
 			-- end;
 		end;
 	end;
@@ -155,7 +160,8 @@ function mapviewer:loadMap(name)
 			-- if g_i18n:hasText(self.name) then
 				-- self.name = g_i18n:getText(self.name);
 			-- end;
-			self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
+			-- self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
+			-- self.name = g_i18n:getText(self.name);
 			-- print(tostring(self.name));
 		end
 	end;
@@ -198,13 +204,33 @@ function mapviewer:InitMapViewer()
     --
 	self.mapName = g_currentMission.missionInfo.map.title;
 	self.mapZipName = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+
+	local pdaPath = {};
+	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});					--[hauptverzeichnis]/
+	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map01/"});		--[hauptverzeichnis]/map01/ 
+	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map/map01/"});	--[hauptverzeichnis]/map/map01/
 	
     if self.mapPath == "" then
-	--and g_currentMission.missionInfo.map.title == "Karte 1" then
-        self.mapPath = self.moddir; --getAppBasePath() .. "data/maps/map01/";
+        self.mapPath = self.moddir;
         self.useDefaultMap = true;
     else
-        self.mapPath = self.mapPath .. "map01/"
+        -- self.mapPath = self.mapPath .. "map01/"
+		print(string.format("|| %s || Versuche PDA_map.dds zu finden||", g_i18n:getText("mapviewtxt"))); --TODO: Übersetzen !
+		local pdaI = 1;
+		
+		----
+		-- Alternative Pfade für pda_map.dds prüfen
+		----
+		for _,pdamap in pairs(pdaPath) do
+			-- print(pdaPath[pdaI].path..pdaPath[pdaI].file .. "||" .. tostring(fileExists(pdaPath[pdaI].path..pdaPath[pdaI].file)));
+			if fileExists(Utils.getFilename(pdaPath[pdaI].file, pdaPath[pdaI].path)) then
+				self.bigmap.file = pdaPath[pdaI].path..pdaPath[pdaI].file;
+				print(string.format("|| %s || PDA_map.dds in Zip der Map gefunden ||", g_i18n:getText("mapviewtxt"))); --TODO: Übersetzen !
+				break;
+			end;
+			pdaI = pdaI+1;
+		end;
+		----
     end;
 	----
 
@@ -476,24 +502,20 @@ function mapviewer:InitMapViewer()
 	----
 	local bl, lf = self:checkLocalPDAFile();
 	
-	self.bigmap.file = Utils.getNoNil(Utils.getFilename("mv_pda_hagenstedt.dds", self.mapPath), "");
-
-	if bl and lf ~= nil then
+	if bl == true and lf ~= nil then
 		self.bigmap.file = lf;
-	else
-		self.bigmap.file = Utils.getNoNil(Utils.getFilename("mv_pda_hagenstedt.dds", self.mapPath), "");
+		print(string.format("|| %s || Lokale PDA vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
 	end;
+	-- print(string.format("|| %s || checkLocalPDAFile(): %s / %s ||", g_i18n:getText("mapviewtxt"), tostring(bl), lf));
 	
 	if fileExists(self.bigmap.file) then
 		self.bigmap.OverlayId.ovid = createImageOverlay(self.bigmap.file);
 	else
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFileNotFound")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), self.bigmap.file));
+
 		self.bigmap.file = 0;
-	end;
-	
-	if self.bigmap.OverlayId.ovid == 0 or self.bigmap.OverlayId.ovid == nil then	
-		 print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
-		 print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFileNotFound")));
-		 print(lf);
 	end;
 	----
 
@@ -516,6 +538,7 @@ function mapviewer:InitMapViewer()
 	
 	if bpoi and lfpoi ~= nil then
         self.bigmap.PoI.file = lfpoi;
+		print(string.format("|| %s || Lokale PoI vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
 	else
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFromLocalPoI")));
     end;
@@ -554,6 +577,7 @@ function mapviewer:InitMapViewer()
 	
 	if bfnum and lfnum ~= nil then
 		self.bigmap.FNum.file = lfnum;
+		print(string.format("|| %s || Lokale Feldnummern vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
 	else
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFromLocalFNum")));
 	end;
@@ -900,17 +924,24 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
 				if g_currentMission.player.isControlled then
 					if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission:getIsServer() then
-						-- print("ServerMessage an alle Senden. Multiplayer = JA und Spieler ist Server");
 						g_server:broadcastEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ), nil, nil, self);
-					-- elseif isMultiplayer and g_currentMission.missionDynamicInfo.isClient ~= nil and g_currentMission.missionDynamicInfo.isClient then
 					elseif g_currentMission.missionDynamicInfo.isMultiplayer and not g_currentMission:getIsServer() then
-						-- print("ServerMessage an Server Senden. Multiplayer = JA und Spieler ist Client");	
 						g_client:getServerConnection():sendEvent(PlayerTeleportEvent:new(tpX, tpY, tpZ));
 					end;
-					-- else
-						-- print("keine ServerMessage Senden. Multiplayer = NEIN und Locales Spiel");
-						setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
-					-- end;
+					setTranslation(g_currentMission.player.rootNode, tpX, tpY, tpZ);
+					self.mapvieweractive = false;	
+					
+					----
+					-- Mouse Kontrolle wiederherstellen
+					----
+					g_mouseControlsHelp.active = true; 
+					InputBinding.setShowMouseCursor(false); 
+					InputBinding.wrapMousePositionEnabled = true; 
+					if (g_currentMission.player.isEntered) then
+						g_currentMission.player.isFrozen = false;
+					end;
+					g_currentMission.showHudEnv = true;
+					----
 				end;
 				----
 			end;
