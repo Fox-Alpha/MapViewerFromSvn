@@ -213,7 +213,7 @@ function mapviewer:InitMapViewer()
     if self.mapPath == "" then
         self.mapPath = self.moddir;
         self.useDefaultMap = true;
-		self.bigmap.file = Utils.getFilename("mv_pda_hagenstedt.dds", self.mappath);
+		self.bigmap.file = Utils.getFilename("mv_pda_hagenstedt.dds", self.moddir);
     else
         -- self.mapPath = self.mapPath .. "map01/"
 		print(string.format("|| %s || Versuche PDA_map.dds zu finden||", g_i18n:getText("mapviewtxt"))); --TODO: Übersetzen !
