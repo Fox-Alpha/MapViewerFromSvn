@@ -7,7 +7,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="9">
     <author>Fox-Alpha</author>
-    <version>V0.7 $Rev$</version>
+    <version>V0.7 LS2013</version>
 	<iconFilename>gfx/mapviewer.dds</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
@@ -18,18 +18,17 @@
     <description>
 		<en>
 		<![CDATA[Shows the PDA Map over the hole Screen. Press insert to activate. Key Delete show legend!
-			Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername + Playername auf PDAMap
+			Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername
             New in this version, an Infopanel. Open it with mouseclick on an vehicle.
-			You can see the name an Filllevel. Panel still apears when map is deaktivated.
-			Datas are live updated. Also new, automatic detect the mapsize. No more switching needed]]>
+			You can see the name, the Filllevel and many more informations. 
+			Automatic detect the mapsize.]]>
 		</en>
 		<de>
 		<![CDATA[Zeigt die PDA Map als Vollbild an. 
 			Zeigt die Karte auf dem gesamten Bildschirm an. Mit aktuellen Positionen aller Fahrzeuge und Anbaugeräte.
 			Neu: - Infopanel. Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.
-					Das Panel zeigt die Ladung und den Ladestand an.
-				 - Automatisches ermitteln der Kartengroesse. Kein Umschalten mehr bei doppeltgrossen Maps notwendig.
-			Script: fox-alpha]]>		
+					Das Panel zeigt die Ladung und den Ladestand und weitere Informationen an.
+				 - Automatisches ermitteln der Kartengroesse.]]>		
 		</de>
 	</description>
     <multiplayer supported="true"/>
@@ -427,7 +426,7 @@
         <sourceFile filename="mapviewer.lua" />
     </extraSourceFiles>
 	<inputBindings>
-       <input name="BIGMAP_Activate" category="ONFOOT VEHICLE" key1="KEY_insert" key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Activate" category="ONFOOT VEHICLE" key1="KEY_KP_minus" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_Legende" category="ONFOOT VEHICLE" key1="KEY_delete" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_SwitchOverlay" category="ONFOOT VEHICLE" key1="KEY_end" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_TransPlus" category="ONFOOT VEHICLE" key1="KEY_KP_plus" key2="" button="" device="0" mouse="" />
