@@ -73,11 +73,11 @@ function mapviewer:loadMap(name)
 	self.showFNum = false;
 	self.showPoi = false;
     self.showCP = false;
-    self.showBottles = false;
+    self.showHorseShoes = false;
     self.showInfoPanel = false;
 	self.showHotSpots = false;
     
-    self.useBottles = true;
+    self.useHorseShoes = true;
     self.useLegend = true;
 	self.useTeleport = false;
 	
@@ -408,19 +408,19 @@ function mapviewer:InitMapViewer()
 	self.bigmap.iconIsBroken.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconIsBroken#height"), 0.0078125);
 	----
 
-	--Array für Bottle anzeige
-    self.useBottles = true;
-	self.bigmap.iconBottle = {};
-	self.bigmap.iconBottle.Icon = {};
-    self.bigmap.iconBottle.Icon.OverlayId = nil;
-    self.bigmap.iconBottle.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconBottle#file"), "icons/Bottle.dds"), self.moddir);
-	self.bigmap.iconBottle.Icon.OverlayId = createImageOverlay(self.bigmap.iconBottle.Icon.file);
-    if self.bigmap.iconBottle.Icon.OverlayId == nil or self.bigmap.iconBottle.Icon.OverlayId == 0 then
-        self.useBottles = false;
-		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitBottles")));
+	--Array für HorseShoes anzeige
+    self.useHorseShoes = true;
+	self.bigmap.iconHorseShoes = {};
+	self.bigmap.iconHorseShoes.Icon = {};
+    self.bigmap.iconHorseShoes.Icon.OverlayId = nil;
+    self.bigmap.iconHorseShoes.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#file"), "icons/hufeisen.dds"), self.moddir);
+	self.bigmap.iconHorseShoes.Icon.OverlayId = createImageOverlay(self.bigmap.iconHorseShoes.Icon.file);
+    if self.bigmap.iconHorseShoes.Icon.OverlayId == nil or self.bigmap.iconHorseShoes.Icon.OverlayId == 0 then
+        self.useHorseShoes = false;
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
     end;
-	self.bigmap.iconBottle.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#width"), 0.0078125);
-	self.bigmap.iconBottle.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#height"), 0.0156250);
+	self.bigmap.iconHorseShoes.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#width"), 0.0078125);
+	self.bigmap.iconHorseShoes.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#height"), 0.0156250);
 	----
     
 	--Array für Spielerinfos
@@ -765,8 +765,8 @@ function mapviewer:oldSaveToFile(mv_old)
         setXMLBool(mvxml, "mapviewer.overlay.poi#use", self.usePoi);
         setXMLBool(mvxml, "mapviewer.overlay.poi#show", self.showPoi);
 
-        setXMLBool(mvxml, "mapviewer.overlay.bottles#use", self.useBottles);
-        setXMLBool(mvxml, "mapviewer.overlay.bottles#show", self.showBottles);
+        setXMLBool(mvxml, "mapviewer.overlay.HorseShoe#use", self.useHorseShoes);
+        setXMLBool(mvxml, "mapviewer.overlay.HorseShoe#show", self.showHorseShoes);
 
         -- self.courseplay = true;
         setXMLBool(mvxml, "mapviewer.overlay.courseplay#show", self.showCP);
@@ -820,8 +820,8 @@ function mapviewer:oldLoadFromFile()
 			self.usePoi = getXMLBool(mvxml, "mapviewer.overlay.poi#use");
 			self.showPoi = getXMLBool(mvxml, "mapviewer.overlay.poi#show");
 
-			self.useBottles = getXMLBool(mvxml, "mapviewer.overlay.bottles#use");
-			self.showBottles = getXMLBool(mvxml, "mapviewer.overlay.bottles#show");
+			self.useHorseShoes = getXMLBool(mvxml, "mapviewer.overlay.HorseShoes#use");
+			self.showHorseShoes = getXMLBool(mvxml, "mapviewer.overlay.HorseShoes#show");
 
 			-- self.courseplay = true;
 			self.showCP = getXMLBool(mvxml, "mapviewer.overlay.courseplay#show");
@@ -1385,36 +1385,48 @@ function mapviewer:draw()
 		end;
         ----
 
-		--Bottles
-		-- local countBottlesFound = 0;
-		-- if self.showBottles and self.useBottles then
-			-- if self.bigmap.iconBottle.Icon.OverlayId ~= nil and self.bigmap.iconBottle.Icon.OverlayId ~= 0 then
-                -- for i=1, table.getn(g_currentMission.missionMapBottleTriggers) do
-                    -- local bottleFound=string.byte(g_currentMission.foundBottles, i);
-                    -- if bottleFound==48 then
-                        -- self.posX, self.posY, self.posZ=getWorldTranslation(g_currentMission.missionMapBottleTriggers[i]);
-                        -- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-                        -- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		----
+		-- TODO: Horseshoes
+		----
+		-- g_currentMission.["collectableHorseshoesObject"]["horseshoes"] = {
+         -- [1] = {
+            -- ["horseshoeId"] = 24622;
+            -- ["visId"] = 24624;
+            -- ["horseshoeTriggerId"] = 24623;
+         -- };
+		 -- .["missionStats"].["foundHorseshoes"]
+		----
+
+		----
+		--Horseshoes
+		----
+		local countHorseShoesFound = 0;
+		local HShoes = {};
+		hShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
+		if self.showHorseShoes and self.useHorseShoes then
+			if self.bigmap.iconHorseShoes.Icon.OverlayId ~= nil and self.bigmap.iconHorseShoes.Icon.OverlayId ~= 0 then
+                --for i=1, table.getn(g_currentMission.missionMapBottleTriggers) do
+                for i=1, table.getn(HShoes) do
+                    local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
+                    if bottleFound==48 then
+                        self.posX, self.posY, self.posZ=getWorldTranslation(HShoes.horseshoeTriggerId[i]);
+                        self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+                        self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
                         
-                        -- renderOverlay(self.bigmap.iconBottle.Icon.OverlayId,
-                                    -- self.buttonX-self.bigmap.iconBottle.width/2, 
-                                    -- self.buttonZ-self.bigmap.iconBottle.height/2, 
-                                    -- self.bigmap.iconBottle.width, 
-                                    -- self.bigmap.iconBottle.height);
-					-- else
-						-- countBottlesFound = countBottlesFound+1;
-                    -- end;
-                -- end;
-				----
-				-- TODO: Container Positionen anzeigen
-				----
-				-- missionMapGlassContainerTriggers
-				----
-			-- else
-                -- print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorBottlesCreateOverlay")));
-				-- self.useBottles = not self.useBottles;
-			-- end;
-		-- end;
+                        renderOverlay(self.bigmap.iconHorseShoes.Icon.OverlayId,
+                                    self.buttonX-self.bigmap.iconHorseShoes.width/2, 
+                                    self.buttonZ-self.bigmap.iconHorseShoes.height/2, 
+                                    self.bigmap.iconHorseShoes.width, 
+                                    self.bigmap.iconHorseShoes.height);
+					else
+						countHorseShoesFound = countHorseShoesFound+1;
+                    end;
+                end;
+			else
+                print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
+				self.useHorseShoes = not self.useHorseShoes;
+			end;
+		end;
         ----
 		
 		--Maplegende anzeigen
@@ -1529,11 +1541,14 @@ function mapviewer:draw()
 				self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
 				self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
 				----
-				hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
-				hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+				-- hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+				-- hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+				----
+				-- hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
+				-- hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
 				
-				self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-				self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+				-- self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+				-- self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
 				self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
 
 				local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
@@ -1541,12 +1556,28 @@ function mapviewer:draw()
 				setTextColor(1, 1, 1, 1);
 				setTextAlignment(RenderText.ALIGN_CENTER);
 
+				----
+				-- Feldnummern ?
+				----
 				if g_currentMission.missionPDA.hotspots[j].showName then
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+					
+					self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+					self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+
 					setTextColor(bc[1], bc[2], bc[3], bc[4]);
 					-- setTextColor(0, 1, 0, 1);
 					-- print("--- showName() ---");
+					renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
 					renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 				else
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
+					
+					self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+					self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+
 					renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
 					if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
 						renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
@@ -1931,7 +1962,7 @@ function mapviewer:update(dt)
         self.showPoi = false;
         self.showFNum = false;
         self.showCP = false;
-        self.showBottles = false;
+        self.showHorseShoes = false;
         ----
 
 		if self.numOverlay == 1 then	--nur Feldnummern
@@ -1948,14 +1979,14 @@ function mapviewer:update(dt)
 			self.showFNum = true;
 		-- elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
 			-- self.showCP = true;
-		-- elseif self.numOverlay == 5 then	--Bottlefinder anzeigen
-            -- self.showBottles = true;
+		elseif self.numOverlay == 5 then	--HorseShoes anzeigen
+            self.showHorseShoes = true;
 		else
 			self.numOverlay = 0;		--Alles aus
 			self.showPoi = false;
 			self.showFNum = false;
             self.showCP = false;
-            self.showBottles = false;
+            self.showHorseShoes = false;
 			self.showHotSpots = false;
 		end;
 
