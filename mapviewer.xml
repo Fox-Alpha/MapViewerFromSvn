@@ -46,7 +46,7 @@
 			<iconAttachmentRear  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
 			<iconIsBroken  width="0.01" height="0.01" file="icons/isBroken.dds" />
 			<!-- <iconBottle  width="0.01" height="0.02" file="icons/Bottle.dds" />  -->
-			<iconHorseShoe  width="0.01" height="0.01" file="icons/hufeisen.dds" /> 
+			<iconHorseShoe  width="0.018" height="0.015" file="icons/hufeisen.dds" /> 
 			
             
             <iconSteerabletractor  width="0.01" height="0.01" file="icons/tractor.dds" />

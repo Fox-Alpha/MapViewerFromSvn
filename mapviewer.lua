@@ -110,6 +110,7 @@ function mapviewer:loadMap(name)
 	
 	self.debug = {};
 	self.debug.printHotSpots = false;
+	self.debug.printHorseShoes = false;
 	
 	
 	----
@@ -415,12 +416,15 @@ function mapviewer:InitMapViewer()
     self.bigmap.iconHorseShoes.Icon.OverlayId = nil;
     self.bigmap.iconHorseShoes.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#file"), "icons/hufeisen.dds"), self.moddir);
 	self.bigmap.iconHorseShoes.Icon.OverlayId = createImageOverlay(self.bigmap.iconHorseShoes.Icon.file);
+	self.bigmap.iconHorseShoes.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#width"), 0.0078125);
+	self.bigmap.iconHorseShoes.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#height"), 0.0156250);
     if self.bigmap.iconHorseShoes.Icon.OverlayId == nil or self.bigmap.iconHorseShoes.Icon.OverlayId == 0 then
         self.useHorseShoes = false;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
+	else
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InitHorseShoesSuccess")));
+		-- print(table.show(self.bigmap.iconHorseShoes, "Hufeisen"));
     end;
-	self.bigmap.iconHorseShoes.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#width"), 0.0078125);
-	self.bigmap.iconHorseShoes.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#height"), 0.0156250);
 	----
     
 	--Array für Spielerinfos
@@ -857,7 +861,8 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
 		-- print("---- MapViwer Debug aktiviert ----");
 		-- print(table.show(g_currentMission,  "g_CurrentMission"));
-		self.debug.printHotSpots = true;
+		-- self.debug.printHotSpots = true;
+		self.debug.printHorseShoes = true;
 	end;
 	----
 	
@@ -1398,18 +1403,17 @@ function mapviewer:draw()
 		----
 
 		----
-		--Horseshoes
+		-- Horseshoes
 		----
 		local countHorseShoesFound = 0;
 		local HShoes = {};
-		hShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
+		HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
 		if self.showHorseShoes and self.useHorseShoes then
 			if self.bigmap.iconHorseShoes.Icon.OverlayId ~= nil and self.bigmap.iconHorseShoes.Icon.OverlayId ~= 0 then
-                --for i=1, table.getn(g_currentMission.missionMapBottleTriggers) do
                 for i=1, table.getn(HShoes) do
                     local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
                     if bottleFound==48 then
-                        self.posX, self.posY, self.posZ=getWorldTranslation(HShoes.horseshoeTriggerId[i]);
+                        self.posX, self.posY, self.posZ=getWorldTranslation(HShoes[i].horseshoeTriggerId);
                         self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
                         self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
                         
@@ -1421,7 +1425,14 @@ function mapviewer:draw()
 					else
 						countHorseShoesFound = countHorseShoesFound+1;
                     end;
+
+					if self.debug.printHorseShoes then
+						print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | Index: %s | Count: %d", self.posX, self.posZ, self.buttonX, self.buttonZ, tostring(i), countHorseShoesFound));
+					end;
                 end;
+				if self.debug.printHorseShoes then
+					self.debug.printHorseShoes = false;
+				end;
 			else
                 print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
 				self.useHorseShoes = not self.useHorseShoes;
