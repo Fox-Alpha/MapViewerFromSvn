@@ -421,6 +421,9 @@ function mapviewer:InitMapViewer()
     if self.bigmap.iconHorseShoes.Icon.OverlayId == nil or self.bigmap.iconHorseShoes.Icon.OverlayId == 0 then
         self.useHorseShoes = false;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
+    elseif g_currentMission.collectableHorseshoesObject.horseshoes == nil or g_currentMission.collectableHorseshoesObject.horseshoes == 0 then
+        self.useHorseShoes = false;
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
 	else
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InitHorseShoesSuccess")));
 		-- print(table.show(self.bigmap.iconHorseShoes, "Hufeisen"));
@@ -1391,18 +1394,6 @@ function mapviewer:draw()
         ----
 
 		----
-		-- TODO: Horseshoes
-		----
-		-- g_currentMission.["collectableHorseshoesObject"]["horseshoes"] = {
-         -- [1] = {
-            -- ["horseshoeId"] = 24622;
-            -- ["visId"] = 24624;
-            -- ["horseshoeTriggerId"] = 24623;
-         -- };
-		 -- .["missionStats"].["foundHorseshoes"]
-		----
-
-		----
 		-- Horseshoes
 		----
 		local countHorseShoesFound = 0;
@@ -1990,7 +1981,7 @@ function mapviewer:update(dt)
 			self.showFNum = true;
 		-- elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
 			-- self.showCP = true;
-		elseif self.numOverlay == 5 then	--HorseShoes anzeigen
+		elseif self.numOverlay == 5 and self.useHorseShoes then	--HorseShoes anzeigen
             self.showHorseShoes = true;
 		else
 			self.numOverlay = 0;		--Alles aus
