@@ -1845,11 +1845,14 @@ end;
 ----
 
 ----
--- Funktion um einen HotSpot für jeden sinnvollen TipTrigger anzuzeigen
+-- Funktion um einen HotSpot für jeden TipTrigger anzuzeigen
 ----
 function mapviewer:showTipTriggerHotSpot()
-	local t=0;
+	local t, z;
 	local ttX, ttY, ttZ;
+	local countFruits;
+	local fillType;
+	local fruitType;
 	
 	for k,v in pairs(g_currentMission.tipTriggers) do
 		for i,j in pairs(g_currentMission.tipTriggers[k]) do
@@ -1862,6 +1865,27 @@ function mapviewer:showTipTriggerHotSpot()
 						self.ttPosZ-self.bigmap.iconTipTrigger.height/2, 
 						self.bigmap.iconTipTrigger.width, 
 						self.bigmap.iconTipTrigger.height);
+						
+			countFruits = g_currentMission.tipTriggers[k].acceptedFillTypes;
+			
+			z=1;
+			-- print("----");
+			for t,s in pairs (countFruits) do
+				setTextColor(0, 1, 0, 1);
+				setTextAlignment(RenderText.ALIGN_CENTER);
+				fillType = t;
+				fruitType = FruitUtil.fillTypeToFruitType[fillType];
+				if fruitType ~= nil then
+					renderText(self.ttPosX, self.ttPosZ+0.015*z, 0.01, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fruitType].name))));
+					-- print(FruitUtil.fruitIndexToDesc[fruitType].name);
+					-- print(tostring(t) .. "=" .. tostring(s) .. " / fillType=" .. tostring(fillType) .. " / fruitType=" .. tostring(fruitType));
+					-- print("acceptedFruitsIndex=" .. tostring(z));
+					z=z+1;
+				end;
+				setTextAlignment(RenderText.ALIGN_LEFT);
+				setTextColor(1, 1, 1, 0);
+			end;
+			-- print("----");
 		end;
 	end;
 end;
