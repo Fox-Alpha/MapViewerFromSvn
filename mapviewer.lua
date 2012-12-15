@@ -76,10 +76,13 @@ function mapviewer:loadMap(name)
     self.showHorseShoes = false;
     self.showInfoPanel = false;
 	self.showHotSpots = false;
+	self.showTipTrigger = true;
     
     self.useHorseShoes = true;
     self.useLegend = true;
 	self.useTeleport = false;
+	self.useHotSpots = false;
+	self.useTipTrigger = true;
 	
 	self.setNewPlyPosition = false;
     
@@ -427,6 +430,28 @@ function mapviewer:InitMapViewer()
 	else
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InitHorseShoesSuccess")));
 		-- print(table.show(self.bigmap.iconHorseShoes, "Hufeisen"));
+    end;
+	----
+    
+	--Array für TipTrigger anzeige
+    self.useTipTrigger = true;
+	self.bigmap.iconTipTrigger = {};
+	self.bigmap.iconTipTrigger.Icon = {};
+    self.bigmap.iconTipTrigger.Icon.OverlayId = nil;
+    self.bigmap.iconTipTrigger.Icon.file = Utils.getFilename("$dataS2/missions/hud_pda_spot_tipPlace.png", self.baseDirectory); -- Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#file"), "icons/hufeisen.dds"), self.moddir);
+	self.bigmap.iconTipTrigger.Icon.OverlayId = createImageOverlay(self.bigmap.iconTipTrigger.Icon.file);
+	self.bigmap.iconTipTrigger.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#width"), 0.0078125);
+	self.bigmap.iconTipTrigger.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#height"), 0.0156250);
+    if self.bigmap.iconTipTrigger.Icon.OverlayId == nil or self.bigmap.iconTipTrigger.Icon.OverlayId == 0 then
+        self.useTipTrigger = false;
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
+    elseif g_currentMission.collectableHorseshoesObject.horseshoes == nil or g_currentMission.collectableHorseshoesObject.horseshoes == 0 then
+        self.useTipTrigger = false;
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
+	else
+		-- print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InitHorseShoesSuccess")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), "TipTrigger vorbereiten erfolgreich"));
+		print(table.show(self.bigmap.iconTipTrigger, "TipTrigger"));
     end;
 	----
     
@@ -865,7 +890,8 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 		-- print("---- MapViwer Debug aktiviert ----");
 		-- print(table.show(g_currentMission,  "g_CurrentMission"));
 		-- self.debug.printHotSpots = true;
-		self.debug.printHorseShoes = true;
+		-- self.debug.printHorseShoes = true;
+		-- self.showTipTrigger = true;
 	end;
 	----
 	
@@ -1394,7 +1420,20 @@ function mapviewer:draw()
         ----
 
 		----
+		-- Trigger
+		----
+		if self.showTipTrigger and self.useTipTrigger then
+			self:showTipTriggerHotSpot();
+			--self.showTipTriggers = false;
+		end;
+		-- self.missionPDA:createMapHotspot("TipPlace", Utils.getFilename("$dataS2/missions/hud_pda_spot_tipPlace.png", self.baseDirectory), 
+					-- 1024 + 43.5, 1024 - 128.3, 
+					-- iconSize, iconSize * (4 / 3), 
+					-- false, false, false, 0, true);
+		
+		----
 		-- Horseshoes
+		----
 		----
 		local countHorseShoesFound = 0;
 		local HShoes = {};
@@ -1536,7 +1575,7 @@ function mapviewer:draw()
 		-- ToDo : Hotsspots ausblendbar machen
 		-- Hotspots auf grosse Karte
 		----
-		if self.showHotSpots then
+		if self.showHotSpots and self.useHotsSpots then
 			local hsPosX, hsPosY;
 			-- print("-- Hotspot Loop --");
 			for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
@@ -1806,6 +1845,29 @@ end;
 ----
 
 ----
+-- Funktion um einen HotSpot für jeden sinnvollen TipTrigger anzuzeigen
+----
+function mapviewer:showTipTriggerHotSpot()
+	local t=0;
+	local ttX, ttY, ttZ;
+	
+	for k,v in pairs(g_currentMission.tipTriggers) do
+		for i,j in pairs(g_currentMission.tipTriggers[k]) do
+			ttX, ttY, ttZ = getWorldTranslation(g_currentMission.tipTriggers[k].rootNode)
+			self.ttPosX = ((((self.bigmap.mapDimensionX/2)+ttX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+			self.ttPosZ = ((((self.bigmap.mapDimensionY/2)-ttZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+			
+			renderOverlay(self.bigmap.iconTipTrigger.Icon.OverlayId,
+						self.ttPosX-self.bigmap.iconTipTrigger.width/2, 
+						self.ttPosZ-self.bigmap.iconTipTrigger.height/2, 
+						self.bigmap.iconTipTrigger.width, 
+						self.bigmap.iconTipTrigger.height);
+		end;
+	end;
+end;
+----
+
+----
 --
 ----
 function mapviewer:updateTick(dt)
@@ -1969,6 +2031,7 @@ function mapviewer:update(dt)
 
 		if self.numOverlay == 1 then	--nur Feldnummern
 			self.showHotSpots = true;
+			self.showTipTrigger = true;
 		elseif self.numOverlay == 2 then	--nur Feldnummern
 			self.showFNum = true;
 			self.showHotSpots = false;
@@ -2293,7 +2356,7 @@ function mapviewer:listTipTriggers()
 			print(tostring(i).."("..type(j)..")="..tostring(j));
 		end;
 	end;
-	print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
+	--print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
 end;
 ----
 
