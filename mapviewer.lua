@@ -567,7 +567,8 @@ function mapviewer:initMapViewer()
 	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForLocaleOverlay")));
 
 	local bpoi, lfpoi = self:checkLocalPoIFile();
-    self.bigmap.PoI.file = Utils.getFilename("mv_poi_hagenstedt.dds", self.mapPath);
+    -- self.bigmap.PoI.file = Utils.getFilename("mv_poi_hagenstedt.dds", self.mapPath);
+    self.bigmap.PoI.file = Utils.getFilename("mv_poi_" .. self:getModName(self.mapPath) .. ".dds", self.mapPath);
 	
 	if bpoi and lfpoi ~= nil then
         self.bigmap.PoI.file = lfpoi;
@@ -591,6 +592,9 @@ function mapviewer:initMapViewer()
     end;
 	
 	if self.usePoi then
+		if not bpoi then 
+			print(string.format("|| %s || PoI Overlay in Map vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		end;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapPoISuccess")));
 	end;
 	----
@@ -604,7 +608,8 @@ function mapviewer:initMapViewer()
 	self.bigmap.FNum.FNumPosX = 0.5-(self.bigmap.FNum.width/2);
 	self.bigmap.FNum.FNumPosY = 0.5-(self.bigmap.FNum.height/2);
 	
-	self.bigmap.FNum.file = Utils.getNoNil(Utils.getFilename("mv_fnum_hagenstedt.dds", self.mapPath), "");
+	-- self.bigmap.FNum.file = Utils.getNoNil(Utils.getFilename("mv_fnum_hagenstedt.dds", self.mapPath), "");
+	self.bigmap.PoI.file = Utils.getFilename("mv_fnum_" .. self:getModName(self.mapPath) .. ".dds", self.mapPath);
 
 	local bfnum, lfnum = self:checkLocalFnumFile();
 	
@@ -628,6 +633,9 @@ function mapviewer:initMapViewer()
 	end;
 
 	if self.useFNum then
+		if not bfnum then 
+			print(string.format("|| %s || Feldnummern Overlay in Map vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		end;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapFNumSuccess")));
 	end;
 	
