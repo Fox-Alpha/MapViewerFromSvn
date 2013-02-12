@@ -1,11 +1,9 @@
-<!--
--- Revision der letzten Änderung :     $Rev$
--- Author der letzten Änderung   :     $Author$
--- Date der letzten Änderung     :     $Date$
--- $URL$
--->
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="9">
+<!-- Revision der letzten Änderung :     $Rev$ -->
+<!-- Author der letzten Änderung   :     $Author$ -->
+<!-- Date der letzten Änderung     :     $Date$ -->
+<!-- $URL$ -->
     <author>Fox-Alpha</author>
     <version>V0.7 LS2013</version>
 	<iconFilename>gfx/mapviewer.dds</iconFilename>

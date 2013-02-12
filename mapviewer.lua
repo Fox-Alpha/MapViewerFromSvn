@@ -177,7 +177,7 @@ end;
 -- Grundwerte des Mods setzen
 -- Laden und erstellen der Overlays, usw.
 ----
-function mapviewer:InitMapViewer()
+function mapviewer:initMapViewer()
     print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
     
 	----
@@ -658,11 +658,15 @@ function mapviewer:InitMapViewer()
 end;
 ----
 
+function mapviewer.test(t, z)
+
+end;
+
 ----
 -- Namen der Datei eines Mods ermitteln
 -- Ermittelt aus dem Pfad den Namen ohne Dateiendung
 ----
-function mapviewer:getModName(s)
+function mapviewer:getModName(s) 
 	local temp;
 	local PathToModDir;
 	
@@ -892,6 +896,7 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 		-- self.debug.printHotSpots = true;
 		-- self.debug.printHorseShoes = true;
 		-- self.showTipTrigger = true;
+		print("getKeyNamesOfDigitalAction() : " .. InputBinding.getKeyNamesOfDigitalAction(InputBinding.SPEED_LEVEL3));
 	end;
 	----
 	
@@ -1126,7 +1131,7 @@ function getVehicleAttachmentsFruitTypes(object)
 	return nil;
 end;
 
-function getImplements(object, o)
+function mapviewer:getImplements(object, o)
 	if table.getn(object.attachedImplements) > 0 then
 		for a=1, table.getn(object.attachedImplements) do
 			table.insert(o, object.attachedImplements[a].object);
@@ -1654,6 +1659,8 @@ function mapviewer:draw()
                 ----
                 -- Auslesen der Kurse wenn CoursePlay vorhanden ist
                 ----
+				-- TODO: CP Kurse nur bei aktriven Panel rendern. Nur für gewähltes Fahrzeug
+				----
                 if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
                     if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
                         if self.currentVehicle.current_course_name ~=nil then
@@ -1819,6 +1826,36 @@ function mapviewer:draw()
 			-- else
 				-- self.showInfoPanel = false;
 			-- end;
+			
+			
+			
+			----
+			-- CoursePlayKurse für gewähltes Fahrzeug
+			----
+			self.currentVehicle = self.bigmap.InfoPanel.lastVehicle;
+			if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) then
+				if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+					if self.currentVehicle.current_course_name ~=nil then
+						Courseplayname = self.currentVehicle.current_course_name;
+					end;
+					-- for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
+					
+					for w=1, table.getn(self.currentVehicle.Waypoints) do
+						local wx = self.currentVehicle.Waypoints[w].cx;
+						local wz = self.currentVehicle.Waypoints[w].cz;
+						wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+						wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+
+						renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+									wx-self.bigmap.IconCourseplay.width/2, 
+									wz-self.bigmap.IconCourseplay.height/2,
+									self.bigmap.IconCourseplay.width,
+									self.bigmap.IconCourseplay.height);
+					end;
+					setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+				end;
+			end;
+			----
 		end;
 		----
 	else
@@ -1963,7 +2000,7 @@ function mapviewer:update(dt)
 			-- Eigene Player.ID merken
 			self.activePlayerNode=g_currentMission.player.rootNode;
 			-- Variablen initialisieren
-			mapviewer:InitMapViewer();
+			mapviewer:initMapViewer();
 		end;
 	end;
 	
