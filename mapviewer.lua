@@ -353,12 +353,15 @@ function mapviewer:initMapViewer()
 		end;
 	end;
 	if self.useCoursePlay then
+		print(string.format("|| %s || CoursePlay vorhanden ||", g_i18n:getText("mapviewtxt")));
 		self.bigmap.IconCourseplay = {};
 		self.bigmap.IconCourseplay.Icon = {};
 		self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
 		self.bigmap.IconCourseplay.Icon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.Icon.file);
 		self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
 		self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
+	else
+		print(string.format("|| %s || Kein CoursePlay vorhanden ||", g_i18n:getText("mapviewtxt")));
 	end;
 	----
 
@@ -531,8 +534,10 @@ function mapviewer:initMapViewer()
 	if self.usePoi then
 		if not bpoi and not self.useDefaultMap then 
 			print(string.format("|| %s || PoI Overlay in Map vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
-		else
+		elseif not bpoi and self.useDefaultMap then 
 			print(string.format("|| %s || Nutze MapViewer PoI Overlay ", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		else
+			print(string.format("|| %s || Nutze lokale PoI Overlay Datei", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
 		end;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapPoISuccess")));
 	end;
@@ -581,8 +586,10 @@ function mapviewer:initMapViewer()
 	if self.useFNum then
 		if not bfnum and not self.useDefaultMap then 
 			print(string.format("|| %s || Feldnummern Overlay in Map vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
-		else
+		elseif not bfnum and self.useDefaultMap then 
 			print(string.format("|| %s || Nutze MapViewer Feldnummern Overlay ", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		else
+			print(string.format("|| %s || Nutze lokale Feldnummern Overlay Datei", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
 		end;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapFNumSuccess")));
 	end;
@@ -1666,7 +1673,7 @@ function mapviewer:update(dt)
 	end;
 
 	--Taste für Legende einblenden
-	if InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
+	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
 		if self.mapvieweractive and self.useLegend then
 			--Legende einblenden
 			self.maplegende = not self.maplegende;
@@ -1691,21 +1698,37 @@ function mapviewer:update(dt)
 		if self.numOverlay == 1 then	--nur Feldnummernhotspots und Besitzstatus
 			self.showHotSpots = true;
 			self.showTipTrigger = true;
-		elseif self.numOverlay == 2 then	--nur Feldnummern
+		end;
+		
+		if self.numOverlay == 2 then	--nur Feldnummern
 			self.showFNum = true;
 			self.showHotSpots = false;
-		elseif self.numOverlay == 3 then	--nur PoI
+		end;
+		
+		if self.numOverlay == 3 then	--nur PoI
             self.showPoi = true;
 			self.showHotSpots = false;
-		elseif self.numOverlay == 4 then	--Poi und Nummern
+		end;
+		
+		if self.numOverlay == 4 then	--Poi und Nummern
 			self.showHotSpots = false;
 			self.showPoi = true;
 			self.showFNum = true;
-		elseif self.numOverlay == 5 and self.useHorseShoes then	--HorseShoes anzeigen
+		end;
+		
+		if self.numOverlay == 5 and self.useHorseShoes then	--HorseShoes anzeigen
             self.showHorseShoes = true;
-		elseif self.numOverlay == 6 and self.useCoursePlay then	--Courseplay vorhanden, dann anzeigen
+		elseif self.numOverlay == 5 and not self.useHorseShoes then
+			self.numOverlay = self.numOverlay +1;
+		end;
+		
+		if self.numOverlay == 6 and self.useCoursePlay then	--Courseplay vorhanden, dann anzeigen
             self.showCP = true;
-		else
+		elseif self.numOverlay == 6 and not self.useCoursePlay then
+			self.numOverlay = self.numOverlay +1;
+		end;
+		
+		if self.numOverlay > 6 then
 			self.numOverlay = 0;		--Alles aus
 			self.showPoi = false;
 			self.showFNum = false;

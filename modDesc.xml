@@ -393,8 +393,8 @@
 		
 		<!-- Fehlermeldungen für Hufeisen -->
 		<text name="MV_ErrorInitHorseShoes">
-			<en>Warning: Horseshoefinder are disabled. This Map doesn't support horseshoes</en>
-			<de>Warnung: Hufeisenanzeige wird deaktiviert. Diese Karte unterstützt kein Hufeisen sammeln</de>	
+			<en>Hint: Horseshoefinder are disabled. This Map doesn't support horseshoes</en>
+			<de>Hinweis: Hufeisenanzeige wird deaktiviert. Diese Karte unterstützt kein Hufeisen sammeln</de>	
 		</text>
 		<text name="MV_ErrorHorseShoesCreateOverlay">
 			<en>Error: Could not create 'Horseshoefinder Overlay'. Horseshoefinder Overlay are disabled. </en>
