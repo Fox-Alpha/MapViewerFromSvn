@@ -382,8 +382,8 @@ function mapviewer:initMapViewer()
 	self.bigmap.iconHorseShoes.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#height"), 0.0156250);
     if self.bigmap.iconHorseShoes.Icon.OverlayId == nil or self.bigmap.iconHorseShoes.Icon.OverlayId == 0 then
         self.useHorseShoes = false;
-		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
-    elseif g_currentMission.collectableHorseshoesObject.horseshoes == nil or g_currentMission.collectableHorseshoesObject.horseshoes == 0 then
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
+    elseif g_currentMission.collectableHorseshoesObject == nil or g_currentMission.collectableHorseshoesObject == 0 then
         self.useHorseShoes = false;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
 	else
