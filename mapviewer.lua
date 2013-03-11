@@ -103,7 +103,7 @@ function mapviewer:loadMap(name)
 	-- Debug Modus
 	----
 	self.Debug = {};
-	self.Debug.active = false;
+	self.Debug.active = true;
 	self.Debug.printHotSpots = false;
 	self.Debug.printHorseShoes = false;
 	----
@@ -1128,17 +1128,6 @@ function mapviewer:draw()
 		setTextColor(1, 1, 1, 0);
         ----
 
-        ----
-        -- Anzeigen des aktuell gewählten Modus
-        ----
-        if self.numOverlay > 0 then
-            setTextColor(1, 1, 1, 1);
-            renderText(0.5-0.0273, 1-0.05, 0.020, g_i18n:getText(string.format("MV_Mode%d", self.numOverlay)));
-            renderText(0.5-0.0273, 1-0.065, 0.020, g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)));
-            setTextColor(1, 1, 1, 0);
-        end;
-        ----
-
 		--Points of Interessts
 		if self.showPoi then
 			if self.bigmap.PoI.OverlayId ~= nil and self.bigmap.PoI.OverlayId ~= 0 then
@@ -1178,9 +1167,9 @@ function mapviewer:draw()
 		----
 		----
 		local countHorseShoesFound = 0;
-		local HShoes = {};
-		HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
 		if self.showHorseShoes and self.useHorseShoes then
+			local HShoes = {};
+			HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
 			if self.bigmap.iconHorseShoes.Icon.OverlayId ~= nil and self.bigmap.iconHorseShoes.Icon.OverlayId ~= 0 then
                 for i=1, table.getn(HShoes) do
                     local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
@@ -1504,6 +1493,21 @@ function mapviewer:draw()
 		end;
 		----
 		
+        ----
+        -- Anzeigen des aktuell gewählten Modus
+        ----
+        if self.numOverlay > 0 then
+            setTextColor(1, 1, 1, 1);
+            renderText(0.5-0.0273, 1-0.05, 0.020, g_i18n:getText(string.format("MV_Mode%d", self.numOverlay)));
+			if self.showHorseShoes then
+				renderText(0.5-0.0273, 1-0.065, 0.020, string.format("%s (%s/%s)", g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)), tostring(countHorseShoesFound), tostring(table.getn(g_currentMission.collectableHorseshoesObject.horseshoes))));
+			else
+				renderText(0.5-0.0273, 1-0.065, 0.020, g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)));
+			end;
+            setTextColor(1, 1, 1, 0);
+        end;
+        ----
+
 		----
 		-- InfoPanel anzeigen
 		----
