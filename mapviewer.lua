@@ -13,7 +13,7 @@ mapviewer={};
 mapviewer.moddir=g_currentModDirectory;
 mapviewer.modName = g_currentModName;
 ----
--- Globale ToDo's :
+-- Globale ToDos :
 ----
 -- GetNoNil aus den Aufrufen von getText entfernen oder gegen eigene Funktion ersetzten
 -- Übersetzungen prüfen
@@ -28,19 +28,20 @@ mapviewer.modName = g_currentModName;
 ----
 -- Übersetzungen :
 ----
--- Selbstfahrspritze ist selfpropeleredsprayer / de fehlt || Filtype fehlt
--- typ Implement, dann Typ=Name, Optional Typ vergleichen (Gewicht, Schild, Ballengabel, Palettengabel)
--- saat in Maschine, Ausgewählte Saat !
--- Miststreuer ist manuresprayder
--- Ladewagen (Gras) ist foragewagon
--- Güllefass ist Sprayer_animated
--- Hecksler und Maisgebiss ist cutter_animated
--- Mähwerk ist mower
--- Ballensammler ist Name=automatic Baleloader, Typ baleLoader
--- Schaufel Name=shovel
--- Palletengabel angehängt ist Implement
--- Type combine_cilyndered
--- cultivator_animated muss grubber
+-- TODO: Selbstfahrspritze ist selfpropeleredsprayer / de fehlt || Filtype fehlt
+-- TODO: typ Implement, dann Typ=Name, Optional Typ vergleichen (Gewicht, Schild, Ballengabel, Palettengabel)
+-- TODO: saat in Maschine, Ausgewählte Saat !
+-- TODO: Miststreuer ist manuresprayder
+-- TODO: Ladewagen (Gras) ist foragewagon
+-- TODO: Güllefass ist Sprayer_animated
+-- TODO: Hecksler und Maisgebiss ist cutter_animated
+-- TODO: Mähwerk ist mower
+-- TODO: Ballensammler ist Name=automatic Baleloader, Typ baleLoader
+-- TODO: Schaufel Name=shovel
+-- TODO: Palletengabel angehängt ist Implement
+-- TODO: Type combine_cilyndered
+-- TODO: cultivator_animated muss grubber
+-- TODO: auf weitere LS2013 Fahrzeugtypen für Legende prüfen
 ----
 
 ----
@@ -68,6 +69,7 @@ function mapviewer:loadMap(name)
 	self.useTeleport = false;
 	self.useHotSpots = true;
 	self.useTipTrigger = true;
+    self.useCoursePlay = false;
 	
 	self.setNewPlyPosition = false;
     
@@ -77,7 +79,6 @@ function mapviewer:loadMap(name)
 	self.useDefaultMap = false;
 	self.mapName = "";
     
-    self.courseplay = true;
 	
 	self.printInfo = false;
 	
@@ -102,8 +103,8 @@ function mapviewer:loadMap(name)
 	-- Debug Modus
 	----
 	self.Debug = {};
-	self.Debug.active = true;
-	self.Debug.printHotSpots = true;
+	self.Debug.active = false;
+	self.Debug.printHotSpots = false;
 	self.Debug.printHorseShoes = false;
 	----
 	
@@ -342,12 +343,23 @@ function mapviewer:initMapViewer()
     ----
 
 	--Array für CourseplayIcon
-	self.bigmap.IconCourseplay = {};
-	self.bigmap.IconCourseplay.Icon = {};
-    self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
-	self.bigmap.IconCourseplay.Icon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.Icon.file);
-	self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
-	self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
+	local mods = g_currentMission.missionDynamicInfo.mods;
+	local beg, ende = 0, 0;
+	for i=1, table.getn(mods) do
+		beg, ende = string.find(string.lower(mods[i].modName), "courseplay");
+		if beg ~= nil and ende ~= nil then
+			self.useCoursePlay = true;
+			break;
+		end;
+	end;
+	if self.useCoursePlay then
+		self.bigmap.IconCourseplay = {};
+		self.bigmap.IconCourseplay.Icon = {};
+		self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
+		self.bigmap.IconCourseplay.Icon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.Icon.file);
+		self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
+		self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
+	end;
 	----
 
 	--Array für isBrokenIcon
@@ -912,10 +924,8 @@ end;
 ----
 function mapviewer:GetVehicleInfo(vehicle)
 	----
-	-- TODO:
-	----
-	-- getNoNil aufrufe entfernen
-	-- getText aufrufe durch eigene Funktion ersetzen
+	-- TODO: getNoNil aufrufe entfernen
+	-- TODO: getText aufrufe durch eigene Funktion ersetzen
 	----
 	local vehicleInfo = {}; --{Type = "", Ply= "", Tank = 0, Fruit = ""};
 	local percent = 0;
@@ -1065,13 +1075,14 @@ function mapviewer:ShowPanelonMap()
 		----
 		
 		----
-		-- ToDo: Position anpassen wenn Panel zuweit oben oder zu weit rechts ist.
+		-- TODO: Position anpassen wenn Panel zuweit oben oder zu weit rechts ist.
 		----		
 		tX = self.bigmap.InfoPanel.background.Pos.x;
 		tY = self.bigmap.InfoPanel.background.Pos.y;
 		tTop = tY + self.bigmap.InfoPanel.background.height; -- - 0.035;
 		tLeft = tX + 0.005; 
 		
+		-- TODO: prüfen ob an dieser Stelle ein rendern erfolgen muss
 		renderOverlay(self.bigmap.InfoPanel.top.OverlayId, self.bigmap.InfoPanel.top.Pos.x, self.bigmap.InfoPanel.top.Pos.y, self.bigmap.InfoPanel.top.width, self.bigmap.InfoPanel.top.height);
 		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
 		renderOverlay(self.bigmap.InfoPanel.bottom.OverlayId, self.bigmap.InfoPanel.bottom.Pos.x, self.bigmap.InfoPanel.bottom.Pos.y, self.bigmap.InfoPanel.bottom.width, self.bigmap.InfoPanel.bottom.height);
@@ -1288,8 +1299,7 @@ function mapviewer:draw()
 		end;
 		
 		----
-		-- ToDo: Hotsspots ausblendbar machen
-		-- Hotspots auf grosse Karte
+		-- Hotspots auf grosse Karte, zusammen mit den Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
 		----
 		if self.showHotSpots and self.useHotSpots then
 			local hsPosX, hsPosY;
@@ -1353,7 +1363,6 @@ function mapviewer:draw()
 		-- Fahrzeuge auf grosse Karte
 		----
 		for i=1, table.getn(g_currentMission.steerables) do
-            local Courseplayname = "";
 			if not g_currentMission.steerables[i].isBroken then
 				self.currentVehicle = g_currentMission.steerables[i];
 				self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
@@ -1363,28 +1372,25 @@ function mapviewer:draw()
                 ----
                 -- Auslesen der Kurse wenn CoursePlay vorhanden ist
                 ----
-				-- TODO: CP Kurse nur bei aktriven Panel rendern. Nur für gewähltes Fahrzeug
-				----
-                if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
-                    if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
-                        if self.currentVehicle.current_course_name ~=nil then
-                            Courseplayname = self.currentVehicle.current_course_name;
-                        end;
-                        for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
-                            local wx = g_currentMission.steerables[i].Waypoints[w].cx;
-                            local wz = g_currentMission.steerables[i].Waypoints[w].cz;
-                            wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-                            wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+				if self.useCoursePlay then
+					if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
+						if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+							for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
+								local wx = g_currentMission.steerables[i].Waypoints[w].cx;
+								local wz = g_currentMission.steerables[i].Waypoints[w].cz;
+								wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+								wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 
-                            renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
-                                        wx-self.bigmap.IconCourseplay.width/2, 
-                                        wz-self.bigmap.IconCourseplay.height/2,
-                                        self.bigmap.IconCourseplay.width,
-                                        self.bigmap.IconCourseplay.height);
-                        end;
-                        setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
-                    end;
-                end;
+								renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+											wx-self.bigmap.IconCourseplay.width/2, 
+											wz-self.bigmap.IconCourseplay.height/2,
+											self.bigmap.IconCourseplay.width,
+											self.bigmap.IconCourseplay.height);
+							end;
+							setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+						end;
+					end;
+				end;
                 ----
 				
 				setTextColor(0, 1, 0, 1);
@@ -1399,11 +1405,6 @@ function mapviewer:draw()
 					end;
 					
 					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.plyname.name));
-                    -- Kursnamen am Fahrzeug anzeigen
-                    if Courseplayname ~= "" then
-                        renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.020, 0.015, string.format("CoursePlay : %s", Courseplayname));
-                    end;
-                    --
 					renderText(0.020, 0.020, 0.015, string.format("Koordinaten : x=%.1f / y=%.1f",self.buttonX * 1000,self.buttonZ * 1000));
 				elseif self.currentVehicle.isControlled then
 					if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
@@ -1415,13 +1416,7 @@ function mapviewer:draw()
 						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
 					end;
 					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.currentVehicle.controllerName));
-                    
-                    -- Kursnamen am Fahrzeug anzeigen
-                    if Courseplayname ~= "" then
-                        renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.020, 0.015, string.format("CoursePlay : %s", Courseplayname));
-                    end;
-                    --
-				else
+                else
 					if self.bigmap.IconSteerable.OverlayId ~= nil and self.bigmap.IconSteerable.OverlayId ~= 0 then
 						renderOverlay(self.bigmap.IconSteerable.OverlayId,
 									self.buttonX-self.bigmap.IconSteerable.width/2, 
@@ -1429,11 +1424,6 @@ function mapviewer:draw()
 									self.bigmap.IconSteerable.width,
 									self.bigmap.IconSteerable.height);
 						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
-                        -- Kursnamen am Fahrzeug anzeigen
-                        if Courseplayname ~= "" then
-                            renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("CoursePlay : %s", Courseplayname));
-                        end;
-                        --
 					end;
 				end;
 				setTextColor(1, 1, 1,0);
@@ -1506,6 +1496,7 @@ function mapviewer:draw()
 									self.buttonZ-self.bigmap.IconMilchtruck.height/2,
 									self.bigmap.IconMilchtruck.width,
 									self.bigmap.IconMilchtruck.height);
+					-- TODO: Milchtruckposition an Clients senden
 					end;
 				end;
 				break;
@@ -1521,17 +1512,19 @@ function mapviewer:draw()
 		setTextColor(1, 1, 1, 0);
 		if self.showInfoPanel then
 			self.bigmap.InfoPanel.Info = {};
-				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
-				self:ShowPanelonMap();
-			
+			self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
+		
 			----
 			-- CoursePlayKurse für gewähltes Fahrzeug
 			----
+			local Courseplayname = nil;
 			self.currentVehicle = self.bigmap.InfoPanel.lastVehicle;
 			if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) then
 				if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
 					if self.currentVehicle.current_course_name ~=nil then
 						Courseplayname = self.currentVehicle.current_course_name;
+					else
+						Courseplayname = nil;
 					end;
 					
 					for w=1, table.getn(self.currentVehicle.Waypoints) do
@@ -1547,9 +1540,13 @@ function mapviewer:draw()
 									self.bigmap.IconCourseplay.height);
 					end;
 					setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+					if Courseplayname ~= nil then
+						table.insert(self.bigmap.InfoPanel.Info, 2, string.format("%s: %s",g_i18n:getText("MV_ActiveCPCourse"), Courseplayname));
+					end;
 				end;
 			end;
 			----
+			self:ShowPanelonMap();
 		end;
 		----
 	else
@@ -1687,7 +1684,7 @@ function mapviewer:update(dt)
 		self.showHotSpots = false;
         ----
 
-		if self.numOverlay == 1 then	--nur Feldnummernhotspots
+		if self.numOverlay == 1 then	--nur Feldnummernhotspots und Besitzstatus
 			self.showHotSpots = true;
 			self.showTipTrigger = true;
 		elseif self.numOverlay == 2 then	--nur Feldnummern
@@ -1702,6 +1699,8 @@ function mapviewer:update(dt)
 			self.showFNum = true;
 		elseif self.numOverlay == 5 and self.useHorseShoes then	--HorseShoes anzeigen
             self.showHorseShoes = true;
+		elseif self.numOverlay == 6 and self.useCoursePlay then	--Courseplay vorhanden, dann anzeigen
+            self.showCP = true;
 		else
 			self.numOverlay = 0;		--Alles aus
 			self.showPoi = false;
@@ -1711,7 +1710,7 @@ function mapviewer:update(dt)
 			self.showHotSpots = false;
 		end;
 
-		if self.Debug.active then
+		if self.Debug.active and self.numOverlay > 0 then
 			print("Debug Key BIGMAP_SwitchOverlay: ");
             print(string.format("|| %s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
 		end;

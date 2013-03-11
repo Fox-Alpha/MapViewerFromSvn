@@ -115,7 +115,7 @@
 		</text>
 		<text name="MV_Mode1Name">
 			<en>HotSpots and Fieldstatus</en>
-			<de>HotSpots und Felderstatus</de>	
+			<de>HotSpots und Felderbesitzstatus</de>	
 		</text>
 		<text name="MV_Mode2">
 			<en>MapViewer Overlay Mode 2</en>
@@ -150,12 +150,12 @@
 			<de>Noch offene Hufeisen anzeigen</de>	
 		</text>
 		<text name="MV_Mode6">
-			<en>MapViewer Overlay Mode 5</en>
-			<de>MapViewer Overlay Modus 5</de>	
+			<en>MapViewer Overlay Mode 6</en>
+			<de>MapViewer Overlay Modus 6</de>	
 		</text>
 		<text name="MV_Mode6Name">
 			<en>Show active Courseplay Tracks</en>
-			<de>Aktive CoursePlay Kurse anzeigen</de>	
+			<de>Alle aktiven CoursePlay Kurse anzeigen</de>	
 		</text>
 		
         <!-- Maplegende Bezeichnung -->
@@ -290,6 +290,10 @@
 		<text name="MV_HiredVehicle">
 			<en>-- Hired --</en>
 			<de>-- Helfer --</de>	
+		</text>
+		<text name="MV_ActiveCPCourse">
+			<en>Active CP Course</en>
+			<de>Aktiver CP Kurs</de>	
 		</text>
 		
 		<!-- HotSpot Übersetungen -->
