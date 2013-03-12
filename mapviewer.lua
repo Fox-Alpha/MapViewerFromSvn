@@ -312,9 +312,23 @@ function mapviewer:initMapViewer()
 	self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
 	-- Informationen die angezeigt werden
 	self.bigmap.InfoPanel.Info = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+	--- Fahrzeug Informationen
 	self.bigmap.InfoPanel.vehicleIndex = 0;
 	self.bigmap.InfoPanel.isVehicle = false;
 	self.bigmap.InfoPanel.lastVehicle = {};
+	--- Trigger Informationen
+	self.bigmap.InfoPanel.triggerIndex = 0;
+	self.bigmap.InfoPanel.isTrigger = false;
+	self.bigmap.InfoPanel.lastTrigger = {};
+	self.bigmap.InfoPanel.triggerType = {	
+											"StationTrigger",	-- Verkaufsstellen
+											"FarmTrigger", 		-- HofSilos
+											"BGA", 				-- BGA Lager ?
+											"GAS", 				-- Tankstellen	
+											"FieldTrigger",		-- Feldnummern
+											"Other",			-- Alles andere
+										};
+	----
 	
     ----
     -- Tabelle für Typen
@@ -328,6 +342,7 @@ function mapviewer:initMapViewer()
     self.bigmap.vehicleTypes.width = 0.01;
     self.bigmap.vehicleTypes.height = 0.01;
     
+	-- TODO: Typen an LS 2013 anpassen
     self.bigmap.attachmentsTypes = {};
     self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingMachine", "plough", "sprayer", "baler", "baleLoader", "cultivator", "tedder", "windrower", "shovel", "mower", "cultivator_animated", "selfPropelledSprayer", "cutter_animated", "sprayer_animated", "manureSpreader", "forageWagon", "other"};
     self.bigmap.attachmentsTypes.icons = {}
@@ -746,12 +761,21 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 			
 			if not self.useTeleport then
 				self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
+				self.bigmap.InfoPanel.triggerIndex, self.bigmap.InfoPanel.isTrigger, self.bigmap.InfoPanel.lastTrigger = self:triggerInMouseRange();
 				if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
 					self.showInfoPanel = true;
-					panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
-					self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
-					self.bigmap.InfoPanel.background.Pos.y = posY;
+					-- panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
+					-- self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
+					-- self.bigmap.InfoPanel.background.Pos.y = posY;
 					self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
+				-- elseif self.bigmap.InfoPanel.triggerIndex == nil then
+				elseif self.bigmap.InfoPanel.lastTrigger ~= nil and type(self.bigmap.InfoPanel.lastTrigger) == "table" and self.bigmap.InfoPanel.triggerIndex > 0 then
+					-- self.bigmap.InfoPanel.triggerIndex, self.bigmap.InfoPanel.isTrigger, self.bigmap.InfoPanel.lastTrigger = self:triggerInMouseRange();
+					-- panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastTrigger.rootNode);
+					-- self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
+					-- self.bigmap.InfoPanel.background.Pos.y = posY;
+					self.bigmap.InfoPanel.Info = self:GetTriggerInfo(self.bigmap.InfoPanel.lastTrigger);
+					self.showInfoPanel = true;
 				else
 					self.showInfoPanel = false;
 				end;
@@ -793,6 +817,125 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 		end;
 	end;
 	----
+end;
+----
+
+----
+-- Trigger in der Nähe des Mausklicks finden
+----
+function mapviewer:triggerInMouseRange()
+	print("mapviewer:triggerInMouseRange()");
+	local currTT = nil;
+	local isTrigger = false;
+	local index = 0;
+	local triggerIndex = 0;
+	
+	local nearestDistance = 0.005;
+	local tmpDistance = 0.006;
+	local distance = 0.006;
+	local sDistance = 0.006
+	local aDistance = 0.006;
+	local vDistance = 0.006;
+
+	
+	-- for j=1, table.getn(g_currentMission.tipTriggers) do
+	for i,j in pairs(g_currentMission.tipTriggers) do
+		triggerIndex = triggerIndex +1;
+		local currT = j;-- g_currentMission.tipTriggers[j];
+		
+		local posX1, posY1, posZ1 = getWorldTranslation(currT.rootNode);
+		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+		
+		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
+		-- print(string.format("Trigger Nr. %s - x:%s - y:%s - z:%s - distance:%s ", tostring(i), tostring(posX1), tostring(posY1), tostring(posZ1), tostring(tmpDistance)));
+		
+		if tmpDistance < nearestDistance then
+			sDistance = tmpDistance;
+			if sDistance < distance then 
+				distance = sDistance;
+				index = triggerIndex;
+				isTrigger = true;
+				currTT = currT;
+			end;
+		end;
+	end;
+	print("index " .. tostring(index));
+	print("isTrigger " .. tostring(isTrigger));
+	print("currTT " .. tostring(currTT));
+	
+	return index, isTrigger, currTT;	
+end;
+----
+
+----
+-- Ermitteln der Trigger Informationen
+----
+function mapviewer:GetTriggerInfo(trigger)
+	local triggerInfo = {};
+	local fruits = {};
+	local prices = {};
+	
+	print("GetTriggerInfo() : " .. tostring(trigger));
+	
+	if trigger ~= nil and type(trigger) == "table" then
+		----
+		-- Aktzeptierte Waren und Preise ermitteln
+		----
+		fruits, prices = self:getTriggerFruitTypesAndPrices(trigger);
+		
+		table.insert(triggerInfo, string.format("Name: %s", trigger.stationName));
+		for i=1, table.getn(fruits) do
+			table.insert(triggerInfo, string.format("%s (%s€)", fruits[i], prices[i]));
+			print(string.format("%s (%s€)", fruits[i], prices[i]));
+		end;
+		----
+	end;
+	
+	return triggerInfo;
+end;
+----
+
+----
+--
+----
+function mapviewer:getTriggerFruitTypesAndPrices(trigger)
+	local fruits = {};
+	local prices = {};
+	local missionStats = g_currentMission.missionStats;
+	
+	print("getTriggerFruitTypesAndPrices() : " .. tostring(trigger));
+	
+	-- for i = 1, FruitUtil.NUM_FRUITTYPES do
+		-- local fillType = FruitUtil.fruitTypeToFillType[i]
+		-- if trigger.acceptedFillTypes[fillType] then
+			-- local difficultyMultiplier = math.max(2 * (3 - missionStats.difficulty), 1)
+			-- local greatDemandMultiplier = 1
+			-- local greatDemand = g_currentMission.economyManager:getCurrentGreatDemand(trigger.stationName, fillType)
+			-- if greatDemand ~= nil then
+				-- greatDemandMultiplier = greatDemand.demandMultiplier
+			-- end
+			-- local price = math.ceil(Fillable.fillTypeIndexToDesc[fillType].pricePerLiter * 1000 * trigger.priceMultipliers[fillType] * difficultyMultiplier * greatDemandMultiplier);
+			-- table.insert(prices, price);
+			-- table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name);
+		-- end;
+	-- end;
+	
+	-- for j=1, table.getn(trigger.acceptedFillTypes) do
+	for fillType, _ in pairs (trigger.acceptedFillTypes) do
+		-- local fillType = FruitUtil.fruitTypeToFillType[fruitType]
+		local difficultyMultiplier = math.max(2 * (3 - missionStats.difficulty), 1)
+		local greatDemandMultiplier = 1
+		local greatDemand = g_currentMission.economyManager:getCurrentGreatDemand(trigger.stationName, fillType)
+		if greatDemand ~= nil then
+			greatDemandMultiplier = greatDemand.demandMultiplier
+		end
+		local price = math.ceil(Fillable.fillTypeIndexToDesc[fillType].pricePerLiter * 1000 * trigger.priceMultipliers[fillType] * difficultyMultiplier * greatDemandMultiplier);
+		table.insert(prices, price);
+		table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name);
+	end;
+	
+	return fruits, prices;
 end;
 ----
 
@@ -1100,7 +1243,8 @@ function mapviewer:ShowPanelonMap()
 		----
 		setTextBold(true);
 		setTextColor(0, 0, 0, 1);
-		if self.bigmap.InfoPanel.lastVehicle ~= nil then
+		print("RenderPanel() Anzahl in Info : " .. tostring(table.getn(self.bigmap.InfoPanel.Info)));
+		if self.bigmap.InfoPanel.lastVehicle ~= nil or self.bigmap.InfoPanel.lastTrigger ~= nil then
 			for r=1, table.getn(self.bigmap.InfoPanel.Info) do
 				--renderText(tLeft, tTop-r*0.015+0.015, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
 				renderText(tLeft, tTop-r*0.015, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
@@ -1523,41 +1667,51 @@ function mapviewer:draw()
 		setTextColor(1, 1, 1, 0);
 		if self.showInfoPanel then
 			self.bigmap.InfoPanel.Info = {};
-			self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
+			if self.bigmap.InfoPanel.lastVehicle ~= nil then
+				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
+			elseif self.bigmap.InfoPanel.lastTrigger ~= nil then
+				self.bigmap.InfoPanel.Info = self:GetTriggerInfo(self.bigmap.InfoPanel.lastTrigger); -- self.bigmap.InfoPanel.vehicleIndex
+			else
+				self.showInfoPanel = false;
+			end;
 		
 			----
 			-- CoursePlayKurse für gewähltes Fahrzeug
 			----
-			local Courseplayname = nil;
-			self.currentVehicle = self.bigmap.InfoPanel.lastVehicle;
-			if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) then
-				if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
-					if self.currentVehicle.current_course_name ~=nil then
-						Courseplayname = self.currentVehicle.current_course_name;
-					else
-						Courseplayname = nil;
-					end;
-					
-					for w=1, table.getn(self.currentVehicle.Waypoints) do
-						local wx = self.currentVehicle.Waypoints[w].cx;
-						local wz = self.currentVehicle.Waypoints[w].cz;
-						wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-						wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+			if self.bigmap.InfoPanel.lastVehicle ~= nil then
+				local Courseplayname = nil;
+				self.currentVehicle = self.bigmap.InfoPanel.lastVehicle;
+				if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) then
+					if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+						if self.currentVehicle.current_course_name ~=nil then
+							Courseplayname = self.currentVehicle.current_course_name;
+						else
+							Courseplayname = nil;
+						end;
+						
+						for w=1, table.getn(self.currentVehicle.Waypoints) do
+							local wx = self.currentVehicle.Waypoints[w].cx;
+							local wz = self.currentVehicle.Waypoints[w].cz;
+							wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+							wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 
-						renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
-									wx-self.bigmap.IconCourseplay.width/2, 
-									wz-self.bigmap.IconCourseplay.height/2,
-									self.bigmap.IconCourseplay.width,
-									self.bigmap.IconCourseplay.height);
-					end;
-					setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
-					if Courseplayname ~= nil then
-						table.insert(self.bigmap.InfoPanel.Info, 2, string.format("%s: %s",g_i18n:getText("MV_ActiveCPCourse"), Courseplayname));
+							renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+										wx-self.bigmap.IconCourseplay.width/2, 
+										wz-self.bigmap.IconCourseplay.height/2,
+										self.bigmap.IconCourseplay.width,
+										self.bigmap.IconCourseplay.height);
+						end;
+						setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+						if Courseplayname ~= nil then
+							table.insert(self.bigmap.InfoPanel.Info, 2, string.format("%s: %s",g_i18n:getText("MV_ActiveCPCourse"), Courseplayname));
+						end;
 					end;
 				end;
 			end;
 			----
-			self:ShowPanelonMap();
+			if self.showInfoPanel then
+				self:ShowPanelonMap();
+			end;
 		end;
 		----
 	else
@@ -1594,33 +1748,15 @@ function mapviewer:showTipTriggerHotSpot()
 	local fruitType;
 	
 	for k,v in pairs(g_currentMission.tipTriggers) do
-		for i,j in pairs(g_currentMission.tipTriggers[k]) do
-			ttX, ttY, ttZ = getWorldTranslation(g_currentMission.tipTriggers[k].rootNode)
-			self.ttPosX = ((((self.bigmap.mapDimensionX/2)+ttX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-			self.ttPosZ = ((((self.bigmap.mapDimensionY/2)-ttZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-			
-			renderOverlay(self.bigmap.iconTipTrigger.Icon.OverlayId,
-						self.ttPosX-self.bigmap.iconTipTrigger.width/2, 
-						self.ttPosZ-self.bigmap.iconTipTrigger.height/2, 
-						self.bigmap.iconTipTrigger.width, 
-						self.bigmap.iconTipTrigger.height);
-						
-			countFruits = g_currentMission.tipTriggers[k].acceptedFillTypes;
-			
-			z=1;
-			for t,s in pairs (countFruits) do
-				setTextColor(0, 1, 0, 1);
-				setTextAlignment(RenderText.ALIGN_CENTER);
-				fillType = t;
-				fruitType = FruitUtil.fillTypeToFruitType[fillType];
-				if fruitType ~= nil then
-					renderText(self.ttPosX, self.ttPosZ+0.015*z, 0.01, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fruitType].name))));
-					z=z+1;
-				end;
-				setTextAlignment(RenderText.ALIGN_LEFT);
-				setTextColor(1, 1, 1, 0);
-			end;
-		end;
+		ttX, ttY, ttZ = getWorldTranslation(g_currentMission.tipTriggers[k].rootNode)
+		self.ttPosX = ((((self.bigmap.mapDimensionX/2)+ttX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+		self.ttPosZ = ((((self.bigmap.mapDimensionY/2)-ttZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		
+		renderOverlay(self.bigmap.iconTipTrigger.Icon.OverlayId,
+					self.ttPosX-self.bigmap.iconTipTrigger.width/2, 
+					self.ttPosZ-self.bigmap.iconTipTrigger.height/2, 
+					self.bigmap.iconTipTrigger.width, 
+					self.bigmap.iconTipTrigger.height);
 	end;
 end;
 ----
@@ -1747,25 +1883,32 @@ function mapviewer:update(dt)
 	-- Panel Position an Fahrzeug anpassen
 	----
 	if self.mapvieweractive and self.showInfoPanel then 
+		local obj = nil;
 		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then	--nodeToVehicle
 			if g_currentMission.nodeToVehicle[self.bigmap.InfoPanel.lastVehicle.rootNode] ~= nil then
-				local posX1, posY1, posZ1 = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
-				local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
-				local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
-				
-				self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
-				self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
-				self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
-				self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
-				self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
-				self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+				obj = self.bigmap.InfoPanel.lastVehicle.rootNode;
 			else
 				self.showInfoPanel = false;
 			end;
+		elseif self.bigmap.InfoPanel.lastTrigger ~= nil and type(self.bigmap.InfoPanel.lastTrigger) == "table" then
+			obj = self.bigmap.InfoPanel.lastTrigger.rootNode;
 		else
 			self.showInfoPanel = false;
-			print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateInfoPanel")));
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateInfoPanel")));
 		end;	
+		
+		if self.showInfoPanel and obj ~= nil then
+			local posX1, posY1, posZ1 = getWorldTranslation(obj);
+			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+			
+			self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
+			self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
+			self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+		end;
 	end;	
 	----
 	
