@@ -328,6 +328,9 @@ function mapviewer:initMapViewer()
 											"FieldTrigger",		-- Feldnummern
 											"Other",			-- Alles andere
 										};
+	self.bigmap.InfoPanel.isField = false;
+	self.bigmap.InfoPanel.lastField = {};
+	self.bigmap.InfoPanel.fieldIndex = 0;
 	----
 	
     ----
@@ -759,22 +762,28 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 			self.bigmap.InfoPanel.vehicleIndex = nil;
 			self.bigmap.InfoPanel.isVehicle = nil;
 			
+			self.bigmap.InfoPanel.lastTrigger = nil;
+			self.bigmap.InfoPanel.Info = nil;
+			self.bigmap.InfoPanel.triggerIndex = nil;
+			self.bigmap.InfoPanel.isTrigger = nil;
+			
+			self.bigmap.InfoPanel.lastField = nil;
+			self.bigmap.InfoPanel.Info = nil;
+			self.bigmap.InfoPanel.fieldIndex = nil;
+			self.bigmap.InfoPanel.isField = nil;
+			
 			if not self.useTeleport then
 				self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
 				self.bigmap.InfoPanel.triggerIndex, self.bigmap.InfoPanel.isTrigger, self.bigmap.InfoPanel.lastTrigger = self:triggerInMouseRange();
+				self.bigmap.InfoPanel.fieldIndex, self.bigmap.InfoPanel.isField, self.bigmap.InfoPanel.lastField = self:fieldInMouseRange();
 				if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
 					self.showInfoPanel = true;
-					-- panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
-					-- self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
-					-- self.bigmap.InfoPanel.background.Pos.y = posY;
 					self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
-				-- elseif self.bigmap.InfoPanel.triggerIndex == nil then
 				elseif self.bigmap.InfoPanel.lastTrigger ~= nil and type(self.bigmap.InfoPanel.lastTrigger) == "table" and self.bigmap.InfoPanel.triggerIndex > 0 then
-					-- self.bigmap.InfoPanel.triggerIndex, self.bigmap.InfoPanel.isTrigger, self.bigmap.InfoPanel.lastTrigger = self:triggerInMouseRange();
-					-- panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastTrigger.rootNode);
-					-- self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
-					-- self.bigmap.InfoPanel.background.Pos.y = posY;
 					self.bigmap.InfoPanel.Info = self:GetTriggerInfo(self.bigmap.InfoPanel.lastTrigger);
+					self.showInfoPanel = true;
+				elseif self.bigmap.InfoPanel.lastField ~= nil and type(self.bigmap.InfoPanel.lastField) == "table" and self.bigmap.InfoPanel.fieldIndex > 0 then
+					self.bigmap.InfoPanel.Info = self:GetFieldInfo(self.bigmap.InfoPanel.lastField);
 					self.showInfoPanel = true;
 				else
 					self.showInfoPanel = false;
@@ -817,6 +826,53 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 		end;
 	end;
 	----
+end;
+----
+
+----
+-- Feld Trigger in der Nähe des Mausklicks finden
+----
+function mapviewer:fieldInMouseRange()
+	print("mapviewer:fieldInMouseRange()");
+	local currFT = nil;
+	local isField = false;
+	local index = 0;
+	local fieldIndex = 0;
+	
+	local nearestDistance = 0.005;
+	local tmpDistance = 0.006;
+	local distance = 0.006;
+	local sDistance = 0.006
+	local aDistance = 0.006;
+	local vDistance = 0.006;
+
+	
+	-- for j=1, table.getn(g_currentMission.tipTriggers) do
+	for i=1, g_currentMission.fieldDefinitionBase.numberOfFields do
+		local currF = g_currentMission.fieldDefinitionBase.fieldDefsByFieldNumber[i];
+		
+		local posX1, posY1, posZ1 = getWorldTranslation(currF.fieldBuyTrigger);
+		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+		
+		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
+		-- print(string.format("Trigger Nr. %s - x:%s - y:%s - z:%s - distance:%s ", tostring(i), tostring(posX1), tostring(posY1), tostring(posZ1), tostring(tmpDistance)));
+		
+		if tmpDistance < nearestDistance then
+			sDistance = tmpDistance;
+			if sDistance < distance then 
+				distance = sDistance;
+				index = i;
+				isField = true;
+				currFT = currF;
+			end;
+		end;
+	end;
+	print("index " .. tostring(index));
+	print("isField " .. tostring(isField));
+	print("currFT " .. tostring(currFT));
+	
+	return index, isField, currFT;	
 end;
 ----
 
@@ -865,6 +921,31 @@ function mapviewer:triggerInMouseRange()
 	print("currTT " .. tostring(currTT));
 	
 	return index, isTrigger, currTT;	
+end;
+----
+
+----
+-- Ermitteln der Felder Informationen
+----
+function mapviewer:GetFieldInfo(field)
+	local fieldInfo = {};
+	
+	print("GetFieldInfo() : " .. tostring(field));
+	
+	-- TODO: Texte Übersetzen
+	if field ~= nil and type(field) == "table" then
+		table.insert(fieldInfo, string.format("Feld Nr.: %s", tostring(field.fieldNumber)));
+		table.insert(fieldInfo,string.format("Feldgröße: %0.2f ha",field.fieldArea));		
+		if not field.ownedByPlayer and not field.fieldAuctionActive then
+			table.insert(fieldInfo, string.format("Kaufpreis: %s€", field.fieldPrice));
+		elseif not field.ownedByPlayer and field.fieldAuctionActive then
+			table.insert(fieldInfo,string.format("Aktuelles Gebot: %s",tostring(field.fieldCurrentBid)));
+			table.insert(fieldInfo,string.format("Höchstrer Bieter: %s",tostring(field.fieldHighestBidder)));
+			table.insert(fieldInfo,string.format("Nächstes Gebot: %s",tostring(field.fieldPrice+field.fieldBidStep)));			
+		end;
+	end;
+	
+	return fieldInfo;
 end;
 ----
 
@@ -1214,7 +1295,7 @@ end;
 -- Panel anzeigen
 ----
 function mapviewer:ShowPanelonMap()
-	if self.showInfoPanel then
+	if self.showInfoPanel and self.bigmap.InfoPanel.Info ~=nil then
 		local tX, tY, tLeft, tRight, tTop;
 		
 		----
@@ -1243,8 +1324,8 @@ function mapviewer:ShowPanelonMap()
 		----
 		setTextBold(true);
 		setTextColor(0, 0, 0, 1);
-		print("RenderPanel() Anzahl in Info : " .. tostring(table.getn(self.bigmap.InfoPanel.Info)));
-		if self.bigmap.InfoPanel.lastVehicle ~= nil or self.bigmap.InfoPanel.lastTrigger ~= nil then
+		-- print("RenderPanel() Anzahl in Info : " .. tostring(table.getn(self.bigmap.InfoPanel.Info)));
+		if self.bigmap.InfoPanel.lastVehicle ~= nil or self.bigmap.InfoPanel.lastTrigger ~= nil or self.bigmap.InfoPanel.lastField ~= nil then
 			for r=1, table.getn(self.bigmap.InfoPanel.Info) do
 				--renderText(tLeft, tTop-r*0.015+0.015, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
 				renderText(tLeft, tTop-r*0.015, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
@@ -1671,6 +1752,8 @@ function mapviewer:draw()
 				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
 			elseif self.bigmap.InfoPanel.lastTrigger ~= nil then
 				self.bigmap.InfoPanel.Info = self:GetTriggerInfo(self.bigmap.InfoPanel.lastTrigger); -- self.bigmap.InfoPanel.vehicleIndex
+			elseif self.bigmap.InfoPanel.lastField ~= nil then
+				self.bigmap.InfoPanel.Info = self:GetFieldInfo(self.bigmap.InfoPanel.lastField); -- self.bigmap.InfoPanel.vehicleIndex
 			else
 				self.showInfoPanel = false;
 			end;
@@ -1892,6 +1975,8 @@ function mapviewer:update(dt)
 			end;
 		elseif self.bigmap.InfoPanel.lastTrigger ~= nil and type(self.bigmap.InfoPanel.lastTrigger) == "table" then
 			obj = self.bigmap.InfoPanel.lastTrigger.rootNode;
+		elseif self.bigmap.InfoPanel.lastField ~= nil and type(self.bigmap.InfoPanel.lastField) == "table" then
+			obj = self.bigmap.InfoPanel.lastField.fieldBuyTrigger;
 		else
 			self.showInfoPanel = false;
 			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateInfoPanel")));
