@@ -956,19 +956,28 @@ function mapviewer:GetTriggerInfo(trigger)
 	local triggerInfo = {};
 	local fruits = {};
 	local prices = {};
+	local amounts = {};
 	
 	print("GetTriggerInfo() : " .. tostring(trigger));
 	
 	if trigger ~= nil and type(trigger) == "table" then
+		
 		----
 		-- Aktzeptierte Waren und Preise ermitteln
 		----
 		fruits, prices = self:getTriggerFruitTypesAndPrices(trigger);
-		
 		table.insert(triggerInfo, string.format("Name: %s", trigger.stationName));
+		for fillType, _ in pairs (trigger.acceptedFillTypes) do
+			table.insert(amounts, g_currentMission.missionStats.farmSiloAmounts[fillType]);
+		end;
+
 		for i=1, table.getn(fruits) do
-			table.insert(triggerInfo, string.format("%s (%s€)", fruits[i], prices[i]));
-			print(string.format("%s (%s€)", fruits[i], prices[i]));
+			if trigger.isFarmTrigger then
+				table.insert(triggerInfo, string.format("%s : %s", fruits[i], amounts[i]));
+			else
+				table.insert(triggerInfo, string.format("%s (%s€)", fruits[i], prices[i]));
+				--print(string.format("%s (%s€)", fruits[i], prices[i]));
+			end;
 		end;
 		----
 	end;
@@ -987,24 +996,7 @@ function mapviewer:getTriggerFruitTypesAndPrices(trigger)
 	
 	print("getTriggerFruitTypesAndPrices() : " .. tostring(trigger));
 	
-	-- for i = 1, FruitUtil.NUM_FRUITTYPES do
-		-- local fillType = FruitUtil.fruitTypeToFillType[i]
-		-- if trigger.acceptedFillTypes[fillType] then
-			-- local difficultyMultiplier = math.max(2 * (3 - missionStats.difficulty), 1)
-			-- local greatDemandMultiplier = 1
-			-- local greatDemand = g_currentMission.economyManager:getCurrentGreatDemand(trigger.stationName, fillType)
-			-- if greatDemand ~= nil then
-				-- greatDemandMultiplier = greatDemand.demandMultiplier
-			-- end
-			-- local price = math.ceil(Fillable.fillTypeIndexToDesc[fillType].pricePerLiter * 1000 * trigger.priceMultipliers[fillType] * difficultyMultiplier * greatDemandMultiplier);
-			-- table.insert(prices, price);
-			-- table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name);
-		-- end;
-	-- end;
-	
-	-- for j=1, table.getn(trigger.acceptedFillTypes) do
 	for fillType, _ in pairs (trigger.acceptedFillTypes) do
-		-- local fillType = FruitUtil.fruitTypeToFillType[fruitType]
 		local difficultyMultiplier = math.max(2 * (3 - missionStats.difficulty), 1)
 		local greatDemandMultiplier = 1
 		local greatDemand = g_currentMission.economyManager:getCurrentGreatDemand(trigger.stationName, fillType)
