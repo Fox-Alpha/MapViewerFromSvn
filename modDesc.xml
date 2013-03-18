@@ -158,6 +158,12 @@
 			<de>Alle aktiven CoursePlay Kurse anzeigen</de>	
 		</text>
 		
+		<!-- windrow Übersetzung -->
+		<text name="MV_Windrow">
+			<en> windrow</en>
+			<de> Schwad</de>	
+		</text>
+		
         <!-- Maplegende Bezeichnung -->
 		<text name="MV_LegendeLocalPlayer">
 			<en>Local Player Position</en>

@@ -833,7 +833,7 @@ end;
 -- Feld Trigger in der Nähe des Mausklicks finden
 ----
 function mapviewer:fieldInMouseRange()
-	print("mapviewer:fieldInMouseRange()");
+	-- print("mapviewer:fieldInMouseRange()");
 	local currFT = nil;
 	local isField = false;
 	local index = 0;
@@ -868,9 +868,9 @@ function mapviewer:fieldInMouseRange()
 			end;
 		end;
 	end;
-	print("index " .. tostring(index));
-	print("isField " .. tostring(isField));
-	print("currFT " .. tostring(currFT));
+	-- print("index " .. tostring(index));
+	-- print("isField " .. tostring(isField));
+	-- print("currFT " .. tostring(currFT));
 	
 	return index, isField, currFT;	
 end;
@@ -880,7 +880,7 @@ end;
 -- Trigger in der Nähe des Mausklicks finden
 ----
 function mapviewer:triggerInMouseRange()
-	print("mapviewer:triggerInMouseRange()");
+	-- print("mapviewer:triggerInMouseRange()");
 	local currTT = nil;
 	local isTrigger = false;
 	local index = 0;
@@ -916,9 +916,9 @@ function mapviewer:triggerInMouseRange()
 			end;
 		end;
 	end;
-	print("index " .. tostring(index));
-	print("isTrigger " .. tostring(isTrigger));
-	print("currTT " .. tostring(currTT));
+	-- print("index " .. tostring(index));
+	-- print("isTrigger " .. tostring(isTrigger));
+	-- print("currTT " .. tostring(currTT));
 	
 	return index, isTrigger, currTT;	
 end;
@@ -958,7 +958,7 @@ function mapviewer:GetTriggerInfo(trigger)
 	local prices = {};
 	local amounts = {};
 	
-	print("GetTriggerInfo() : " .. tostring(trigger));
+	-- print("GetTriggerInfo() : " .. tostring(trigger));
 	
 	if trigger ~= nil and type(trigger) == "table" then
 		
@@ -968,14 +968,23 @@ function mapviewer:GetTriggerInfo(trigger)
 		fruits, prices = self:getTriggerFruitTypesAndPrices(trigger);
 		table.insert(triggerInfo, string.format("Name: %s", trigger.stationName));
 		for fillType, _ in pairs (trigger.acceptedFillTypes) do
-			table.insert(amounts, g_currentMission.missionStats.farmSiloAmounts[fillType]);
+			table.insert(amounts, math.ceil(g_currentMission.missionStats.farmSiloAmounts[fillType]));
 		end;
 
 		for i=1, table.getn(fruits) do
+			local Frucht;
+			
+			-- if g_i18n.hasText(fruits[i]) then
+				-- Frucht = Utils.getNoNil(g_i18n:getText(fruits[i]), fruits[i]);
+			-- else
+				-- Frucht = fruits[i];
+			-- end;
 			if trigger.isFarmTrigger then
 				table.insert(triggerInfo, string.format("%s : %s", fruits[i], amounts[i]));
+				-- table.insert(triggerInfo, string.format("%s : %s", Frucht, amounts[i]));
 			else
 				table.insert(triggerInfo, string.format("%s (%s€)", fruits[i], prices[i]));
+				-- table.insert(triggerInfo, string.format("%s (%s€)", Frucht, prices[i]));
 				--print(string.format("%s (%s€)", fruits[i], prices[i]));
 			end;
 		end;
@@ -994,7 +1003,7 @@ function mapviewer:getTriggerFruitTypesAndPrices(trigger)
 	local prices = {};
 	local missionStats = g_currentMission.missionStats;
 	
-	print("getTriggerFruitTypesAndPrices() : " .. tostring(trigger));
+	-- print("getTriggerFruitTypesAndPrices() : " .. tostring(trigger));
 	
 	for fillType, _ in pairs (trigger.acceptedFillTypes) do
 		local difficultyMultiplier = math.max(2 * (3 - missionStats.difficulty), 1)
@@ -1005,7 +1014,15 @@ function mapviewer:getTriggerFruitTypesAndPrices(trigger)
 		end
 		local price = math.ceil(Fillable.fillTypeIndexToDesc[fillType].pricePerLiter * 1000 * trigger.priceMultipliers[fillType] * difficultyMultiplier * greatDemandMultiplier);
 		table.insert(prices, price);
-		table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name);
+		
+		-- print("acceptedFillTypes:" .. tostring(fillType));
+		if not FruitUtil.fillTypeIsWindrow[fillType] then
+			table.insert(fruits, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fillType].name)), g_i18n:getText("MV_Unknown")));
+		else
+			-- table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name);
+			table.insert(fruits, tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[FruitUtil.fillTypeToFruitType[fillType]].name) .. g_i18n:getText("MV_Windrow")));
+			-- print(g_i18n:getText(Fillable.fillTypeIndexToDesc[fillType].name));
+		end;
 	end;
 	
 	return fruits, prices;
@@ -1077,7 +1094,7 @@ end;
 ----
 -- Ermitteln ob Attachments vorhanden sind
 ----
-function getVehicleAttachmentsFruitTypes(object)
+function mapviewer:getVehicleAttachmentsFruitTypes(object)
 	local fruits = {};
 	local Attaches = {}; --name, fillLevel, fillType, capacity, fillName
 	local FruitNames;
@@ -1089,7 +1106,7 @@ function getVehicleAttachmentsFruitTypes(object)
 			table.insert(oImplements, object.attachedImplements[a].object);
 		end;
 		for z=1, table.getn(oImplements) do
-			getImplements(oImplements[z], oImplements);
+			self:getImplements(oImplements[z], oImplements);
 		end;
 
 		for a=1, table.getn(oImplements) do
@@ -1254,7 +1271,7 @@ function mapviewer:GetVehicleInfo(vehicle)
 			----
 		end;
 		--attachList = {name, fillLevel, fillType, capacity, fillName}
-		fruitNames, attachList = getVehicleAttachmentsFruitTypes(vehicle);
+		fruitNames, attachList = self:getVehicleAttachmentsFruitTypes(vehicle);
 		
 		----
 		-- Attachment Infos. Name und Füllstand und Ladungsname
