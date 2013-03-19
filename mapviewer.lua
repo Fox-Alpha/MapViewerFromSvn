@@ -217,7 +217,7 @@ function mapviewer:initMapViewer()
 	----
 	-- Hintergrundbild in GUI setzen
 	----
-	g_mapViewerDialog:setMapImageFilename(self.bigmap.file);
+	-- g_mapViewerDialog:setMapImageFilename(self.bigmap.file);
 	----
 
 	----
@@ -628,6 +628,41 @@ function mapviewer:initMapViewer()
 	----
 	-- Initialisierung abgeschlossen
 	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
+	----
+	
+	----
+	-- Daten an den Dialog übergeben
+	----
+	-- Map Daten
+	local tblTemp={
+					file=self.bigmap.file,
+					overlay=self.bigmap.OverlayId, 
+					width=self.bigmap.mapWidth,
+					height=self.bigmap.mapHeight,
+					posX=self.bigmap.mapPosX,
+					posY=self.bigmap.mapPosY,
+					transp=self.bigmap.mapTransp,
+					mapDimensionX=g_currentMission.missionPDA.worldSizeX,
+					mapDimensionY=g_currentMission.missionPDA.worldSizeZ					
+					};
+	-- TODO: Fehlerbehandlungen
+	--Übersetzung der Meldungen
+	-- print(table.show(tblTemp, "mapViewer.tblTemp"));
+	if g_mapViewerDialog:initMap(tblTemp) then
+		local init = false;
+		local errFunc = "";
+		-- Spielerdaten
+		init = g_mapViewerDialog:initPlayer(self.bigmap.player);
+		if not init then
+			errFunc = "initPlayer()";
+			print(string.format("|| %s || ERROR: %s / Initializing der Dialogdaten fehlgeschlagen ||", g_i18n:getText("mapviewtxt"), errFunc));
+		end;
+		if init == true then
+			print(string.format("|| %s || Initializing der Dialogdaten erfolgreich ||", g_i18n:getText("mapviewtxt")));
+		end;
+	else
+		print(string.format("|| %s || ERROR: initMap() / Initializing der Dialogdaten fehlgeschlagen ||", g_i18n:getText("mapviewtxt")));
+	end;
 	----
 
 	self.mvInit = true;
@@ -1506,39 +1541,39 @@ function mapviewer:draw()
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_SwitchOverlay"), InputBinding.BIGMAP_SwitchOverlay);
 		end;
 
-		mplayer = {};
-		for key, value in pairs (g_currentMission.players) do
-			mplayer.player = value;
-			if mplayer.player.isControlled == false then
-				posX = mplayer.player.lastXPos;
-				posY = mplayer.player.lastYPos;
-				posZ = posY;
-			else
-				posX, posY, posZ = getWorldTranslation(mplayer.player.rootNode);
-			end;
+		-- mplayer = {};
+		-- for key, value in pairs (g_currentMission.players) do
+			-- mplayer.player = value;
+			-- if mplayer.player.isControlled == false then
+				-- posX = mplayer.player.lastXPos;
+				-- posY = mplayer.player.lastYPos;
+				-- posZ = posY;
+			-- else
+				-- posX, posY, posZ = getWorldTranslation(mplayer.player.rootNode);
+			-- end;
 
-			mplayer.xPos = ((((self.bigmap.mapDimensionX/2)+posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);--self.bigmap.player.xPosPDA+0.008;
-			mplayer.yPos = ((((self.bigmap.mapDimensionY/2)-posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);--self.bigmap.player.yPosPDA+0.003;
-			setTextColor(0, 1, 0, 1);
+			-- mplayer.xPos = ((((self.bigmap.mapDimensionX/2)+posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);--self.bigmap.player.xPosPDA+0.008;
+			-- mplayer.yPos = ((((self.bigmap.mapDimensionY/2)-posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);--self.bigmap.player.yPosPDA+0.003;
+			-- setTextColor(0, 1, 0, 1);
 
-			if mplayer.player.rootNode == self.activePlayerNode and mplayer.player.isControlled then
-				if self.bigmap.player.ArrowOverlayId ~= nil and self.bigmap.player.ArrowOverlayId ~= 0 then
-					renderOverlay(self.bigmap.player.ArrowOverlayId, 
-									mplayer.xPos-self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2,
-									self.bigmap.player.width, self.bigmap.player.height);
-				end;
-				renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
-				renderText(0.020, 0.060, 0.015, string.format("Koordinaten : x%.1f / y%.1f",mplayer.xPos*1000,mplayer.yPos*1000));
-			elseif mplayer.player.isControlled then
-				if self.bigmap.player.mpArrowOverlayId ~=nil and self.bigmap.player.mpArrowOverlayId ~= 0 then
-					renderOverlay(self.bigmap.player.mpArrowOverlayId, 
-									mplayer.xPos-self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 
-									self.bigmap.player.width, self.bigmap.player.height);
-				end;
-				renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
-			end;
-			setTextColor(1, 1, 1, 0);
-		end;
+			-- if mplayer.player.rootNode == self.activePlayerNode and mplayer.player.isControlled then
+				-- if self.bigmap.player.ArrowOverlayId ~= nil and self.bigmap.player.ArrowOverlayId ~= 0 then
+					-- renderOverlay(self.bigmap.player.ArrowOverlayId, 
+									-- mplayer.xPos-self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2,
+									-- self.bigmap.player.width, self.bigmap.player.height);
+				-- end;
+				-- renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
+				-- renderText(0.020, 0.060, 0.015, string.format("Koordinaten : x%.1f / y%.1f",mplayer.xPos*1000,mplayer.yPos*1000));
+			-- elseif mplayer.player.isControlled then
+				-- if self.bigmap.player.mpArrowOverlayId ~=nil and self.bigmap.player.mpArrowOverlayId ~= 0 then
+					-- renderOverlay(self.bigmap.player.mpArrowOverlayId, 
+									-- mplayer.xPos-self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 
+									-- self.bigmap.player.width, self.bigmap.player.height);
+				-- end;
+				-- renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
+			-- end;
+			-- setTextColor(1, 1, 1, 0);
+		-- end;
 		
 		----
 		-- Hotspots auf grosse Karte, zusammen mit den Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
@@ -2421,5 +2456,11 @@ function mapviewer:file_exists(path)
   return file ~= nil
 end
 ----
+
+function table.count(T)
+	local count = 0
+	for _ in pairs(T) do count = count + 1 end
+	return count
+end
 
 addModEventListener(mapviewer);
