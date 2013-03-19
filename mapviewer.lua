@@ -632,6 +632,8 @@ function mapviewer:initMapViewer()
 	
 	----
 	-- Daten an den Dialog übergeben
+	-- TODO: Fehlerbehandlungen
+	-- Übersetzung der Meldungen
 	----
 	-- Map Daten
 	local tblTemp={
@@ -645,20 +647,42 @@ function mapviewer:initMapViewer()
 					mapDimensionX=g_currentMission.missionPDA.worldSizeX,
 					mapDimensionY=g_currentMission.missionPDA.worldSizeZ					
 					};
-	-- TODO: Fehlerbehandlungen
-	--Übersetzung der Meldungen
+
+	-- Vehicle Daten
+	local tblVehicle = {};
+	tblVehicle.Steerable = self.bigmap.IconSteerable;
+	tblVehicle.Steerable.types = self.bigmap.vehicleTypes;
+	tblVehicle.Attachments = self.bigmap.IconAttachments;
+	tblVehicle.Attachments.types = self.bigmap.attachmentsTypes;
+	tblVehicle.Milchtruck = self.bigmap.IconMilchtruck;
+	tblVehicle.brocken = self.bigmap.iconIsBroken;
+	tblVehicle.CoursePlay = self.bigmap.IconCourseplay;
+	
+	-- tblVehicle. = {};
+	-- tblVehicle. = {};
 	-- print(table.show(tblTemp, "mapViewer.tblTemp"));
 	if g_mapViewerDialog:initMap(tblTemp) then
 		local init = false;
 		local errFunc = "";
+		----
 		-- Spielerdaten
+		----
 		init = g_mapViewerDialog:initPlayer(self.bigmap.player);
 		if not init then
 			errFunc = "initPlayer()";
-			print(string.format("|| %s || ERROR: %s / Initializing der Dialogdaten fehlgeschlagen ||", g_i18n:getText("mapviewtxt"), errFunc));
 		end;
+		----
+		--Fahrzeugdaten
+		----
+		init = g_mapViewerDialog:initVehicle(tblVehicle);
+		if not init then
+			errFunc = "initVehicle()";
+		end;
+		----
 		if init == true then
 			print(string.format("|| %s || Initializing der Dialogdaten erfolgreich ||", g_i18n:getText("mapviewtxt")));
+		else
+			print(string.format("|| %s || ERROR: %s / Initializing der Dialogdaten fehlgeschlagen ||", g_i18n:getText("mapviewtxt"), errFunc));
 		end;
 	else
 		print(string.format("|| %s || ERROR: initMap() / Initializing der Dialogdaten fehlgeschlagen ||", g_i18n:getText("mapviewtxt")));
@@ -1639,146 +1663,146 @@ function mapviewer:draw()
 		----
 		-- Fahrzeuge auf grosse Karte
 		----
-		for i=1, table.getn(g_currentMission.steerables) do
-			if not g_currentMission.steerables[i].isBroken then
-				self.currentVehicle = g_currentMission.steerables[i];
-				self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-				self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		-- for i=1, table.getn(g_currentMission.steerables) do
+			-- if not g_currentMission.steerables[i].isBroken then
+				-- self.currentVehicle = g_currentMission.steerables[i];
+				-- self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+				-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+				-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
                 
                 ----
                 -- Auslesen der Kurse wenn CoursePlay vorhanden ist
                 ----
-				if self.useCoursePlay then
-					if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
-						if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
-							for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
-								local wx = g_currentMission.steerables[i].Waypoints[w].cx;
-								local wz = g_currentMission.steerables[i].Waypoints[w].cz;
-								wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-								wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+				-- if self.useCoursePlay then
+					-- if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
+						-- if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+							-- for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
+								-- local wx = g_currentMission.steerables[i].Waypoints[w].cx;
+								-- local wz = g_currentMission.steerables[i].Waypoints[w].cz;
+								-- wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+								-- wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 
-								renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
-											wx-self.bigmap.IconCourseplay.width/2, 
-											wz-self.bigmap.IconCourseplay.height/2,
-											self.bigmap.IconCourseplay.width,
-											self.bigmap.IconCourseplay.height);
-							end;
-							setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
-						end;
-					end;
-				end;
+								-- renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+											-- wx-self.bigmap.IconCourseplay.width/2, 
+											-- wz-self.bigmap.IconCourseplay.height/2,
+											-- self.bigmap.IconCourseplay.width,
+											-- self.bigmap.IconCourseplay.height);
+							-- end;
+							-- setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+						-- end;
+					-- end;
+				-- end;
                 ----
 				
-				setTextColor(0, 1, 0, 1);
-				if self.currentVehicle.isControlled and self.currentVehicle.controllerName == self.plyname.name then
-					if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
-						renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
-									self.buttonX-self.bigmap.IconSteerable.width/2, 
-									self.buttonZ-self.bigmap.IconSteerable.height/2,
-									self.bigmap.IconSteerable.width,
-									self.bigmap.IconSteerable.height);
-						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
-					end;
+				-- setTextColor(0, 1, 0, 1);
+				-- if self.currentVehicle.isControlled and self.currentVehicle.controllerName == self.plyname.name then
+					-- if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
+						-- renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
+									-- self.buttonX-self.bigmap.IconSteerable.width/2, 
+									-- self.buttonZ-self.bigmap.IconSteerable.height/2,
+									-- self.bigmap.IconSteerable.width,
+									-- self.bigmap.IconSteerable.height);
+						-- setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
+					-- end;
 					
-					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.plyname.name));
-					renderText(0.020, 0.020, 0.015, string.format("Koordinaten : x=%.1f / y=%.1f",self.buttonX * 1000,self.buttonZ * 1000));
-				elseif self.currentVehicle.isControlled then
-					if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
-						renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
-									self.buttonX-self.bigmap.IconSteerable.width/2, 
-									self.buttonZ-self.bigmap.IconSteerable.height/2,
-									self.bigmap.IconSteerable.width,
-									self.bigmap.IconSteerable.height);
-						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
-					end;
-					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.currentVehicle.controllerName));
-                else
-					if self.bigmap.IconSteerable.OverlayId ~= nil and self.bigmap.IconSteerable.OverlayId ~= 0 then
-						renderOverlay(self.bigmap.IconSteerable.OverlayId,
-									self.buttonX-self.bigmap.IconSteerable.width/2, 
-									self.buttonZ-self.bigmap.IconSteerable.height/2,
-									self.bigmap.IconSteerable.width,
-									self.bigmap.IconSteerable.height);
-						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
-					end;
-				end;
-				setTextColor(1, 1, 1,0);
-			elseif g_currentMission.steerables[i].isBroken then
+					-- renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.plyname.name));
+					-- renderText(0.020, 0.020, 0.015, string.format("Koordinaten : x=%.1f / y=%.1f",self.buttonX * 1000,self.buttonZ * 1000));
+				-- elseif self.currentVehicle.isControlled then
+					-- if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
+						-- renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
+									-- self.buttonX-self.bigmap.IconSteerable.width/2, 
+									-- self.buttonZ-self.bigmap.IconSteerable.height/2,
+									-- self.bigmap.IconSteerable.width,
+									-- self.bigmap.IconSteerable.height);
+						-- setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
+					-- end;
+					-- renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.currentVehicle.controllerName));
+                -- else
+					-- if self.bigmap.IconSteerable.OverlayId ~= nil and self.bigmap.IconSteerable.OverlayId ~= 0 then
+						-- renderOverlay(self.bigmap.IconSteerable.OverlayId,
+									-- self.buttonX-self.bigmap.IconSteerable.width/2, 
+									-- self.buttonZ-self.bigmap.IconSteerable.height/2,
+									-- self.bigmap.IconSteerable.width,
+									-- self.bigmap.IconSteerable.height);
+						-- setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
+					-- end;
+				-- end;
+				-- setTextColor(1, 1, 1,0);
+			-- elseif g_currentMission.steerables[i].isBroken then
 			----
 			-- unbrauchbare Fahrzeuge mit weiterem Icon anzeigen
 			----
-				self.posX, self.posY, self.posZ = getWorldTranslation(g_currentMission.steerables[i].rootNode);
-				self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-                if self.bigmap.iconIsBroken.Icon.OverlayId ~= nil and self.bigmap.iconIsBroken.Icon.OverlayId ~= 0 then
-                    renderOverlay(self.bigmap.iconIsBroken.Icon.OverlayId,
-                                self.buttonX-self.bigmap.iconIsBroken.width/2, 
-                                self.buttonZ-self.bigmap.iconIsBroken.height/2,
-                                self.bigmap.iconIsBroken.width,
-                                self.bigmap.iconIsBroken.height);
-                    setOverlayColor(self.bigmap.iconIsBroken.Icon.OverlayId, 1, 1, 1, 1);
-                end;
-			end;
-		end;
+				-- self.posX, self.posY, self.posZ = getWorldTranslation(g_currentMission.steerables[i].rootNode);
+				-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+				-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+                -- if self.bigmap.iconIsBroken.Icon.OverlayId ~= nil and self.bigmap.iconIsBroken.Icon.OverlayId ~= 0 then
+                    -- renderOverlay(self.bigmap.iconIsBroken.Icon.OverlayId,
+                                -- self.buttonX-self.bigmap.iconIsBroken.width/2, 
+                                -- self.buttonZ-self.bigmap.iconIsBroken.height/2,
+                                -- self.bigmap.iconIsBroken.width,
+                                -- self.bigmap.iconIsBroken.height);
+                    -- setOverlayColor(self.bigmap.iconIsBroken.Icon.OverlayId, 1, 1, 1, 1);
+                -- end;
+			-- end;
+		-- end;
 
 		-----
 		-- Darstellen der Geräte auf der Karte
 		----
-		for i=1, table.getn(g_currentMission.attachables) do
-			self.currentVehicle = g_currentMission.attachables[i];
-			self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-			self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-			self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		-- for i=1, table.getn(g_currentMission.attachables) do
+			-- self.currentVehicle = g_currentMission.attachables[i];
+			-- self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+			-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+			-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 
-            if g_currentMission.attachables[i].attacherVehicle == nil or g_currentMission.attachables[i].attacherVehicle == 0 then
-				if self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName] ~= nil then
-					renderOverlay(self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName],
-                                self.buttonX-self.bigmap.attachmentsTypes.width/2, 
-                                self.buttonZ-self.bigmap.attachmentsTypes.height/2,
-                                self.bigmap.attachmentsTypes.width,
-                                self.bigmap.attachmentsTypes.height);
-				else
-					renderOverlay(self.bigmap.attachmentsTypes.overlays["other"],
-                                self.buttonX-self.bigmap.attachmentsTypes.width/2, 
-                                self.buttonZ-self.bigmap.attachmentsTypes.height/2,
-                                self.bigmap.attachmentsTypes.width,
-                                self.bigmap.attachmentsTypes.height);
-				end;
-            else
-                renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
-                                self.buttonX-self.bigmap.IconAttachments.width/2, 
-                                self.buttonZ-self.bigmap.IconAttachments.height/2,
-                                self.bigmap.IconAttachments.width,
-                                self.bigmap.IconAttachments.height);
-            end;
-			setOverlayColor(self.bigmap.IconAttachments.Icon.front.OverlayId, 1, 1, 1, 1);
-		end;
+            -- if g_currentMission.attachables[i].attacherVehicle == nil or g_currentMission.attachables[i].attacherVehicle == 0 then
+				-- if self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName] ~= nil then
+					-- renderOverlay(self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName],
+                                -- self.buttonX-self.bigmap.attachmentsTypes.width/2, 
+                                -- self.buttonZ-self.bigmap.attachmentsTypes.height/2,
+                                -- self.bigmap.attachmentsTypes.width,
+                                -- self.bigmap.attachmentsTypes.height);
+				-- else
+					-- renderOverlay(self.bigmap.attachmentsTypes.overlays["other"],
+                                -- self.buttonX-self.bigmap.attachmentsTypes.width/2, 
+                                -- self.buttonZ-self.bigmap.attachmentsTypes.height/2,
+                                -- self.bigmap.attachmentsTypes.width,
+                                -- self.bigmap.attachmentsTypes.height);
+				-- end;
+            -- else
+                -- renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
+                                -- self.buttonX-self.bigmap.IconAttachments.width/2, 
+                                -- self.buttonZ-self.bigmap.IconAttachments.height/2,
+                                -- self.bigmap.IconAttachments.width,
+                                -- self.bigmap.IconAttachments.height);
+            -- end;
+			-- setOverlayColor(self.bigmap.IconAttachments.Icon.front.OverlayId, 1, 1, 1, 1);
+		-- end;
 		----
 		
 		----
 		-- Milchtruck auf Karte Zeichnen
 		----
-		for i=1, table.getn(g_currentMission.trafficVehicles) do
-			if g_currentMission.trafficVehicles[i].typeName == "milktruck" then
-				self.currentVehicle = g_currentMission.trafficVehicles[i];
-				if self.bigmap.IconMilchtruck.OverlayId ~= nil and self.bigmap.IconMilchtruck.OverlayId ~= 0 then
-					self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-					self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-					self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		-- for i=1, table.getn(g_currentMission.trafficVehicles) do
+			-- if g_currentMission.trafficVehicles[i].typeName == "milktruck" then
+				-- self.currentVehicle = g_currentMission.trafficVehicles[i];
+				-- if self.bigmap.IconMilchtruck.OverlayId ~= nil and self.bigmap.IconMilchtruck.OverlayId ~= 0 then
+					-- self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+					-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+					-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 					
-					if self.bigmap.IconMilchtruck.OverlayId ~= nil then
-						renderOverlay(self.bigmap.IconMilchtruck.OverlayId,
-									self.buttonX-self.bigmap.IconMilchtruck.width/2, 
-									self.buttonZ-self.bigmap.IconMilchtruck.height/2,
-									self.bigmap.IconMilchtruck.width,
-									self.bigmap.IconMilchtruck.height);
+					-- if self.bigmap.IconMilchtruck.OverlayId ~= nil then
+						-- renderOverlay(self.bigmap.IconMilchtruck.OverlayId,
+									-- self.buttonX-self.bigmap.IconMilchtruck.width/2, 
+									-- self.buttonZ-self.bigmap.IconMilchtruck.height/2,
+									-- self.bigmap.IconMilchtruck.width,
+									-- self.bigmap.IconMilchtruck.height);
 					-- TODO: Milchtruckposition an Clients senden
-					end;
-				end;
-				break;
-			end;
-		end;
+					-- end;
+				-- end;
+				-- break;
+			-- end;
+		-- end;
 		----
 		
         ----
