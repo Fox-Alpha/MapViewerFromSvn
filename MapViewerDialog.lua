@@ -313,35 +313,35 @@ function MapViewerDialog:renderVehicle()
 	-----
 	-- Darstellen der Geräte auf der Karte
 	----
-	-- for i=1, table.getn(g_currentMission.attachables) do
-		-- self.currentVehicle = g_currentMission.attachables[i];
-		-- self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-		-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-		-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+	for i=1, table.getn(g_currentMission.attachables) do
+		self.currentVehicle = g_currentMission.attachables[i];
+		self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+		self.buttonX = ((((self.Map.mapDimensionX/2)+self.posX)/self.Map.mapDimensionX)*self.Map.width);
+		self.buttonZ = ((((self.Map.mapDimensionY/2)-self.posZ)/self.Map.mapDimensionY)*self.Map.height);
 
-		-- if g_currentMission.attachables[i].attacherVehicle == nil or g_currentMission.attachables[i].attacherVehicle == 0 then
-			-- if self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName] ~= nil then
-				-- renderOverlay(self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName],
-							-- self.buttonX-self.bigmap.attachmentsTypes.width/2, 
-							-- self.buttonZ-self.bigmap.attachmentsTypes.height/2,
-							-- self.bigmap.attachmentsTypes.width,
-							-- self.bigmap.attachmentsTypes.height);
-			-- else
-				-- renderOverlay(self.bigmap.attachmentsTypes.overlays["other"],
-							-- self.buttonX-self.bigmap.attachmentsTypes.width/2, 
-							-- self.buttonZ-self.bigmap.attachmentsTypes.height/2,
-							-- self.bigmap.attachmentsTypes.width,
-							-- self.bigmap.attachmentsTypes.height);
-			-- end;
-		-- else
-			-- renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
-							-- self.buttonX-self.bigmap.IconAttachments.width/2, 
-							-- self.buttonZ-self.bigmap.IconAttachments.height/2,
-							-- self.bigmap.IconAttachments.width,
-							-- self.bigmap.IconAttachments.height);
-		-- end;
-		-- setOverlayColor(self.bigmap.IconAttachments.Icon.front.OverlayId, 1, 1, 1, 1);
-	-- end;
+		if g_currentMission.attachables[i].attacherVehicle == nil or g_currentMission.attachables[i].attacherVehicle == 0 then
+			if self.Vehicle.Attachments.types.overlays[g_currentMission.attachables[i].typeName] ~= nil then
+				renderOverlay(self.Vehicle.Attachments.types.overlays[g_currentMission.attachables[i].typeName],
+							self.buttonX-self.Vehicle.Attachments.types.width/2, 
+							self.buttonZ-self.Vehicle.Attachments.types.height/2,
+							self.Vehicle.Attachments.types.width,
+							self.Vehicle.Attachments.typesheight);
+			else
+				renderOverlay(self.Vehicle.Attachments.types.overlays["other"],
+							self.buttonX-self.Vehicle.Attachments.types.width/2, 
+							self.buttonZ-self.Vehicle.Attachments.types.height/2,
+							self.Vehicle.Attachments.types.width,
+							self.Vehicle.Attachments.types.height);
+			end;
+		else
+			renderOverlay(self.Vehicle.Attachments.Icon.front.OverlayId,
+							self.buttonX-self.Vehicle.Attachments.width/2, 
+							self.buttonZ-self.Vehicle.Attachments.height/2,
+							self.Vehicle.Attachments.width,
+							self.Vehicle.Attachments.height);
+		end;
+		setOverlayColor(self.Vehicle.Attachments.Icon.front.OverlayId, 1, 1, 1, 1);
+	end;
 	----
 	
 	----
