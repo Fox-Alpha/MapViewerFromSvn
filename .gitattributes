@@ -1,5 +1,7 @@
 * text=auto !eol
 / svnc_tsvn_003aprojectlanguage=0x401
+/MapViewerDialog.lua svn_keywords=Author+Date+Id+Rev+URL
+/MapViewerGUI.xml svn_keywords=Author+Date+Id+Rev+URL
 /Panel svnc_tsvn_003aprojectlanguage=1025
 Panel/Bt_Close.dds -text
 Panel/Bt_Switch.dds -text

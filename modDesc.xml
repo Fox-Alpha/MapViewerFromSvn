@@ -115,7 +115,7 @@
 		</text>
 		<text name="MV_Mode1Name">
 			<en>HotSpots and Fieldstatus</en>
-			<de>HotSpots und Felderbesitzstatus</de>	
+			<de>HotSpots und Felderbesitz</de>	
 		</text>
 		<text name="MV_Mode2">
 			<en>MapViewer Overlay Mode 2</en>
@@ -123,7 +123,7 @@
 		</text>
 		<text name="MV_Mode2Name">
 			<en>Show Filednumber Overlay</en>
-			<de>Feldnummern Overlay anzeigen</de>	
+			<de>Feldnummern anzeigen</de>	
 		</text>
 		<text name="MV_Mode3">
 			<en>MapViewer Overlay Mode 3</en>
@@ -139,7 +139,7 @@
 		</text>
 		<text name="MV_Mode4Name">
 			<en>Fieldnumber and PoI Overlay</en>
-			<de>Feldnummern und PoI anzeigen</de>	
+			<de>Feld Nr. und PoI</de>	
 		</text>
 		<text name="MV_Mode5">
 			<en>MapViewer Overlay Mode 5</en>
@@ -147,7 +147,7 @@
 		</text>
 		<text name="MV_Mode5Name">
 			<en>Show open horseshoes on Map</en>
-			<de>Noch offene Hufeisen anzeigen</de>	
+			<de>Noch offene Hufeisen</de>	
 		</text>
 		<text name="MV_Mode6">
 			<en>MapViewer Overlay Mode 6</en>
@@ -155,7 +155,7 @@
 		</text>
 		<text name="MV_Mode6Name">
 			<en>Show active Courseplay Tracks</en>
-			<de>Alle aktiven CoursePlay Kurse anzeigen</de>	
+			<de>Aktive CoursePlay Kurse</de>	
 		</text>
 		
 		<!-- windrow Übersetzung -->

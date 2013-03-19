@@ -12,6 +12,10 @@
 mapviewer={};
 mapviewer.moddir=g_currentModDirectory;
 mapviewer.modName = g_currentModName;
+
+source(g_currentModDirectory.."MapViewerDialog.lua")
+g_mapViewerDialog = MapViewerDialog:new()
+g_gui:loadGui(g_currentModDirectory.."MapViewerGUI.xml", "MapViwerDialog", g_mapViewerDialog)
 ----
 -- Globale ToDos :
 ----
@@ -179,7 +183,7 @@ function mapviewer:initMapViewer()
     --
 	self.mapName = g_currentMission.missionInfo.map.title;
 	self.mapZipName = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
-
+	
 	local pdaPath = {};
 	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});					--[hauptverzeichnis]/
 	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map01/"});		--[hauptverzeichnis]/map01/ 
@@ -208,6 +212,12 @@ function mapviewer:initMapViewer()
 		end;
 		----
     end;
+	----
+	
+	----
+	-- Hintergrundbild in GUI setzen
+	----
+	g_mapViewerDialog:setMapImageFilename(self.bigmap.file);
 	----
 
 	----
@@ -809,13 +819,14 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 					----
 					-- Mouse Kontrolle wiederherstellen
 					----
-					g_mouseControlsHelp.active = true; 
-					InputBinding.setShowMouseCursor(false); 
-					InputBinding.wrapMousePositionEnabled = true; 
-					if (g_currentMission.player.isEntered) then
-						g_currentMission.player.isFrozen = false;
-					end;
-					g_currentMission.showHudEnv = true;
+					g_gui:showGui("");
+					-- g_mouseControlsHelp.active = true; 
+					-- InputBinding.setShowMouseCursor(false); 
+					-- InputBinding.wrapMousePositionEnabled = true; 
+					-- if (g_currentMission.player.isEntered) then
+						-- g_currentMission.player.isFrozen = false;
+					-- end;
+					-- g_currentMission.showHudEnv = true;
 					----
 				end;
 				----
@@ -1351,12 +1362,13 @@ end;
 ----
 function mapviewer:draw()
 	if self.mapvieweractive then
-		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
-			setOverlayColor(self.bigmap.OverlayId.ovid, 1,1,1,self.bigmap.mapTransp);
-			renderOverlay(self.bigmap.OverlayId.ovid, self.bigmap.mapPosX, self.bigmap.mapPosY, self.bigmap.mapWidth, self.bigmap.mapHeight);
-		else
-            self.mapvieweractive = false;
-		end;
+		-- g_gui:showGui(self.mv_GUI);
+		-- if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
+			-- setOverlayColor(self.bigmap.OverlayId.ovid, 1,1,1,self.bigmap.mapTransp);
+			-- renderOverlay(self.bigmap.OverlayId.ovid, self.bigmap.mapPosX, self.bigmap.mapPosY, self.bigmap.mapWidth, self.bigmap.mapHeight);
+		-- else
+            -- self.mapvieweractive = false;
+		-- end;
 	end;
 	if self.mv_Error then
 		g_currentMission:addWarning(g_i18n:getText("MV_ErrorCreateMV"), 0.018, 0.033);
@@ -1885,15 +1897,15 @@ function mapviewer:update(dt)
 		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
 			self.mapvieweractive=not self.mapvieweractive;
 			if not self.mapvieweractive then
-				g_mouseControlsHelp.active = true; 
-				InputBinding.setShowMouseCursor(false); 
-				InputBinding.wrapMousePositionEnabled = true; 
-				if (g_currentMission.player.isEntered) then
-					g_currentMission.player.isFrozen = false;
-				end;
-				g_currentMission.showHudEnv = true;
+				g_gui:showGui("");
+				-- g_mouseControlsHelp.active = true; 
+				-- InputBinding.setShowMouseCursor(false); 
+				-- InputBinding.wrapMousePositionEnabled = true; 
+				-- if (g_currentMission.player.isEntered) then
+					-- g_currentMission.player.isFrozen = false;
+				-- end;
 			else
-				g_currentMission.showHudEnv = false;
+				g_gui:showGui("MapViwerDialog");
 			end;
 		else
 			self.mv_Error = not self.mv_Error;
@@ -2024,23 +2036,23 @@ function mapviewer:update(dt)
 	-- ende Transparenz umschalten
 	----
 	
-	if self.mapvieweractive then 
-		if self.bigmap.mapTransp < 1 and g_mouseControlsHelp.active == false then 
-			g_mouseControlsHelp.active = true; 
-			InputBinding.setShowMouseCursor(false); 
-			InputBinding.wrapMousePositionEnabled = true; 
-			if (g_currentMission.player.isEntered) then
-				g_currentMission.player.isFrozen = false;
-			end;
-		elseif self.bigmap.mapTransp >= 1 and g_mouseControlsHelp.active == true then 
-			g_mouseControlsHelp.active = false; 
-			InputBinding.setShowMouseCursor(true); 
-			InputBinding.wrapMousePositionEnabled = false; 
-			if (g_currentMission.player.isEntered) then
-				g_currentMission.player.isFrozen = true;
-			end;
-		end;
-	end;	
+	-- if self.mapvieweractive then 
+		-- if self.bigmap.mapTransp < 1 and g_mouseControlsHelp.active == false then 
+			-- g_mouseControlsHelp.active = true; 
+			-- InputBinding.setShowMouseCursor(false); 
+			-- InputBinding.wrapMousePositionEnabled = true; 
+			-- if (g_currentMission.player.isEntered) then
+				-- g_currentMission.player.isFrozen = false;
+			-- end;
+		-- elseif self.bigmap.mapTransp >= 1 and g_mouseControlsHelp.active == true then 
+			-- g_mouseControlsHelp.active = false; 
+			-- InputBinding.setShowMouseCursor(true); 
+			-- InputBinding.wrapMousePositionEnabled = false; 
+			-- if (g_currentMission.player.isEntered) then
+				-- g_currentMission.player.isFrozen = true;
+			-- end;
+		-- end;
+	-- end;	
 	
 	----
 	-- Tasten Modofizierer für Teleport
