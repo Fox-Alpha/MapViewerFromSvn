@@ -293,21 +293,21 @@ function MapViewerDialog:renderVehicle()
 				end;
 			end;
 			setTextColor(1, 1, 1,0);
-		-- elseif g_currentMission.steerables[i].isBroken then
+		elseif g_currentMission.steerables[i].isBroken then
 		----
 		-- unbrauchbare Fahrzeuge mit weiterem Icon anzeigen
 		----
-			-- self.posX, self.posY, self.posZ = getWorldTranslation(g_currentMission.steerables[i].rootNode);
-			-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-			-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-			-- if self.bigmap.iconIsBroken.Icon.OverlayId ~= nil and self.bigmap.iconIsBroken.Icon.OverlayId ~= 0 then
-				-- renderOverlay(self.bigmap.iconIsBroken.Icon.OverlayId,
-							-- self.buttonX-self.bigmap.iconIsBroken.width/2, 
-							-- self.buttonZ-self.bigmap.iconIsBroken.height/2,
-							-- self.bigmap.iconIsBroken.width,
-							-- self.bigmap.iconIsBroken.height);
-				-- setOverlayColor(self.bigmap.iconIsBroken.Icon.OverlayId, 1, 1, 1, 1);
-			-- end;
+			self.posX, self.posY, self.posZ = getWorldTranslation(g_currentMission.steerables[i].rootNode);
+			self.buttonX = ((((self.Map.mapDimensionX/2)+self.posX)/self.Map.mapDimensionX)*self.Map.width);
+			self.buttonZ = ((((self.Map.mapDimensionY/2)-self.posZ)/self.Map.mapDimensionY)*self.Map.height);
+			if self.Vehicle.broken.Icon.OverlayId ~= nil and self.Vehicle.broken.Icon.OverlayId ~= 0 then
+				renderOverlay(self.Vehicle.broken.Icon.OverlayId,
+							self.buttonX-self.Vehicle.broken.width/2, 
+							self.buttonZ-self.Vehicle.broken.height/2,
+							self.Vehicle.broken.width,
+							self.Vehicle.broken.height);
+				setOverlayColor(self.Vehicle.broken.Icon.OverlayId, 1, 1, 1, 1);
+			end;
 		end;
 	end;
 	-----
