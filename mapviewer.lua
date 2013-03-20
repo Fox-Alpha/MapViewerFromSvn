@@ -655,7 +655,7 @@ function mapviewer:initMapViewer()
 	tblVehicle.Attachments = self.bigmap.IconAttachments;
 	tblVehicle.Attachments.types = self.bigmap.attachmentsTypes;
 	tblVehicle.Milchtruck = self.bigmap.IconMilchtruck;
-	tblVehicle.brocken = self.bigmap.iconIsBroken;
+	tblVehicle.broken = self.bigmap.iconIsBroken;
 	tblVehicle.CoursePlay = self.bigmap.IconCourseplay;
 	
 	-- tblVehicle. = {};

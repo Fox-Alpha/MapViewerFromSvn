@@ -347,26 +347,26 @@ function MapViewerDialog:renderVehicle()
 	----
 	-- Milchtruck auf Karte Zeichnen
 	----
-	-- for i=1, table.getn(g_currentMission.trafficVehicles) do
-		-- if g_currentMission.trafficVehicles[i].typeName == "milktruck" then
-			-- self.currentVehicle = g_currentMission.trafficVehicles[i];
-			-- if self.bigmap.IconMilchtruck.OverlayId ~= nil and self.bigmap.IconMilchtruck.OverlayId ~= 0 then
-				-- self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-				-- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-				-- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+	for i=1, table.getn(g_currentMission.trafficVehicles) do
+		if g_currentMission.trafficVehicles[i].typeName == "milktruck" then
+			self.currentVehicle = g_currentMission.trafficVehicles[i];
+			if self.Vehicle.Milchtruck.OverlayId ~= nil and self.Vehicle.Milchtruck.OverlayId ~= 0 then
+				self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+				self.buttonX = ((((self.Map.mapDimensionX/2)+self.posX)/self.Map.mapDimensionX)*self.Map.width);
+				self.buttonZ = ((((self.Map.mapDimensionY/2)-self.posZ)/self.Map.mapDimensionY)*self.Map.height);
 				
-				-- if self.bigmap.IconMilchtruck.OverlayId ~= nil then
-					-- renderOverlay(self.bigmap.IconMilchtruck.OverlayId,
-								-- self.buttonX-self.bigmap.IconMilchtruck.width/2, 
-								-- self.buttonZ-self.bigmap.IconMilchtruck.height/2,
-								-- self.bigmap.IconMilchtruck.width,
-								-- self.bigmap.IconMilchtruck.height);
+				if self.Vehicle.Milchtruck.OverlayId ~= nil then
+					renderOverlay(self.Vehicle.Milchtruck.OverlayId,
+								self.buttonX-self.Vehicle.Milchtruck.width/2, 
+								self.buttonZ-self.Vehicle.Milchtruck.height/2,
+								self.Vehicle.Milchtruck.width,
+								self.Vehicle.Milchtruck.height);
 				-- TODO: Milchtruckposition an Clients senden
-				-- end;
-			-- end;
-			-- break;
-		-- end;
-	-- end;
+				end;
+			end;
+			break;
+		end;
+	end;
 	----
 end;
 ----
