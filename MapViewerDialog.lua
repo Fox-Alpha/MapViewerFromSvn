@@ -1,5 +1,11 @@
 MapViewerDialog = {}
 local MapViewerDialog_mt = Class(MapViewerDialog)
+MapViewerDialog.MODE_VEHICLES = 1;
+MapViewerDialog.MODE_HOTSPOTS = 2;
+MapViewerDialog.MODE_POINTSOFINTEREST = 3;
+MapViewerDialog.MODE_HORSESHOES = 4;
+MapViewerDialog.MODE_COURSEPLAY = 5;
+MapViewerDialog.MODE_CUSTOMOVERLAY = 6;
 
 function MapViewerDialog:new()
 	local self = {}
@@ -19,10 +25,18 @@ function MapViewerDialog:new()
 	self.Player = {};
 	self.Map = {};
 	self.Vehicle = {};
+	self.HorseShoes = {};
+	----
+	
+	----
+	-- Overlays enabled ?
+	----
+	self.useHorseShoes = false;
 	----
 	
 	return self
 end
+
 function MapViewerDialog:onOpen(element)
 	g_currentMission.isPlayerFrozen = true;
 	InputBinding.setShowMouseCursor(true);
@@ -80,7 +94,7 @@ function MapViewerDialog:modeSelectionOnCreate(element)
 	element:setState(1)
 end
 
-function InGameMenu:modeSelectionOnClick(state)
+function MapViewerDialog:modeSelectionOnClick(state)
 	self.mode = state
 	self:updateGUI()
 end
@@ -95,6 +109,35 @@ end
 
 function MapViewerDialog:updateGUI()
 	-- TODO: bei wechsel des Overlays, GUI Elemente anpassen
+	if g_gui.currentGuiName ~= "MapViewerDialog" then
+		return
+	end
+	-- Alle nicht benötigten Elemente deaktivieren und nur nach Mode bedarf aktivieren
+	self.OverlayDesc:setText("");
+
+	if self.mode == MapViewerDialog.MODE_VEHICLES then
+		self.OverlayDesc:setText("Fahrzeuge und Attachments");
+	end;
+
+	if self.mode == MapViewerDialog.MODE_HOTSPOTS then
+		self.OverlayDesc:setText("Hotspots und Feldbesitz");
+	end;
+
+	if self.mode == MapViewerDialog.MODE_POINTSOFINTEREST then
+		self.OverlayDesc:setText("Points of interest");
+	end;
+
+	if self.mode == MapViewerDialog.MODE_HORSESHOES then
+		self.OverlayDesc:setText("Gesammelte Hufeisen");
+	end;
+
+	if self.mode == MapViewerDialog.MODE_COURSEPLAY then
+		self.OverlayDesc:setText("Alle aktiven Courseplay Kurse");
+	end;
+
+	if self.mode == MapViewerDialog.MODE_CUSTOMOVERLAY then
+		self.OverlayDesc:setText("Benutzerdefinierte Anzeige");
+	end;
 end
 
 function MapViewerDialog:updateDialog()
@@ -117,6 +160,7 @@ function MapViewerDialog:draw()
 		-- Darstellen der Spieler Position/en
 		self:renderPlayer();
 		self:renderVehicle();
+		self:renderHorseShoes();
 	end;
 end;
 ----
@@ -124,6 +168,8 @@ end;
 ----------------------------------
 --	Inizialisierung der Daten	--
 ----------------------------------
+-- TODO: Übergabe eines Wertes um ein deaktivieren einzelner Werte zu gewährleisten
+----
 
 ----
 --	Inizialisierung der Daten für die Spieler
@@ -167,9 +213,70 @@ function MapViewerDialog:initVehicle(_vehicle)
 end;
 ----
 
+----
+--	Inizialisierung der Daten für die Hufeisen
+----
+function MapViewerDialog:initHorseShoes(_horseshoes)
+	if type(_horseshoes) == "table" and table.count(_horseshoes) > 0 then
+		self.HorseShoes = _horseshoes;
+		self.useHorseShoes = true;
+		return true;
+	elseif _horseshoes == nil or table.count(_horseshoes) == 0 or _horseshoes == false then
+		self.useHorseShoes = false;
+		return false;
+	else
+		self.useHorseShoes = false;
+		return false;
+	end;
+end;
+----
+
 ----------------------------------------------------------
 --	Rendern der einzelnen Overlays und weiterer Daten	--
 ----------------------------------------------------------
+
+----
+-- Rendern der Hufeisen
+----
+function MapViewerDialog:renderHorseShoes()
+	----
+	-- Horseshoes
+	----
+	local countHorseShoesFound = 0;
+	if self.mode == MapViewerDialog.MODE_HORSESHOES and self.useHorseShoes then
+		local HShoes = {};
+		HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
+		if self.HorseShoes.Icon.OverlayId ~= nil and self.HorseShoes.Icon.OverlayId ~= 0 then
+			for i=1, table.getn(HShoes) do
+				local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
+				if bottleFound==48 then
+					self.posX, self.posY, self.posZ=getWorldTranslation(HShoes[i].horseshoeTriggerId);
+					self.buttonX = ((((self.Map.mapDimensionX/2)+self.posX)/self.Map.mapDimensionX)*self.Map.width);
+					self.buttonZ = ((((self.Map.mapDimensionY/2)-self.posZ)/self.Map.mapDimensionY)*self.Map.height);
+					
+					renderOverlay(self.HorseShoes.Icon.OverlayId,
+								self.buttonX-self.HorseShoes.width/2, 
+								self.buttonZ-self.HorseShoes.height/2, 
+								self.HorseShoes.width, 
+								self.HorseShoes.height);
+				else
+					countHorseShoesFound = countHorseShoesFound+1;
+				end;
+
+				-- if self.Debug.printHorseShoes then
+					-- print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | Index: %s | Count: %d", self.posX, self.posZ, self.buttonX, self.buttonZ, tostring(i), countHorseShoesFound));
+				-- end;
+			end;
+			-- if self.Debug.printHorseShoes then
+				-- self.Debug.printHorseShoes = false;
+			-- end;
+		else
+			print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
+			self.useHorseShoes = not self.useHorseShoes;
+		end;
+	end;
+	----
+end;
 
 ----
 -- Rendern der Spielerposition/en

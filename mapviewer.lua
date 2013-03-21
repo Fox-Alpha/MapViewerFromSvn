@@ -15,7 +15,7 @@ mapviewer.modName = g_currentModName;
 
 source(g_currentModDirectory.."MapViewerDialog.lua")
 g_mapViewerDialog = MapViewerDialog:new()
-g_gui:loadGui(g_currentModDirectory.."MapViewerGUI.xml", "MapViwerDialog", g_mapViewerDialog)
+g_gui:loadGui(g_currentModDirectory.."MapViewerGUI.xml", "MapViewerDialog", g_mapViewerDialog)
 ----
 -- Globale ToDos :
 ----
@@ -672,11 +672,21 @@ function mapviewer:initMapViewer()
 			errFunc = "initPlayer()";
 		end;
 		----
-		--Fahrzeugdaten
+		-- Fahrzeugdaten
 		----
 		init = g_mapViewerDialog:initVehicle(tblVehicle);
 		if not init then
 			errFunc = "initVehicle()";
+		end;
+		----
+		-- Hufeisendaten
+		if self.useHorseShoes then
+			init = g_mapViewerDialog:initHorseShoes(self.bigmap.iconHorseShoes);
+		else
+			init = g_mapViewerDialog:initHorseShoes(nil);
+		end;
+		if not init then
+			errFunc = "initHorseShoes()";
 		end;
 		----
 		if init == true then
@@ -1478,39 +1488,39 @@ function mapviewer:draw()
 		-- Horseshoes
 		----
 		----
-		local countHorseShoesFound = 0;
-		if self.showHorseShoes and self.useHorseShoes then
-			local HShoes = {};
-			HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
-			if self.bigmap.iconHorseShoes.Icon.OverlayId ~= nil and self.bigmap.iconHorseShoes.Icon.OverlayId ~= 0 then
-                for i=1, table.getn(HShoes) do
-                    local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
-                    if bottleFound==48 then
-                        self.posX, self.posY, self.posZ=getWorldTranslation(HShoes[i].horseshoeTriggerId);
-                        self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-                        self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		-- local countHorseShoesFound = 0;
+		-- if self.showHorseShoes and self.useHorseShoes then
+			-- local HShoes = {};
+			-- HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
+			-- if self.bigmap.iconHorseShoes.Icon.OverlayId ~= nil and self.bigmap.iconHorseShoes.Icon.OverlayId ~= 0 then
+                -- for i=1, table.getn(HShoes) do
+                    -- local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
+                    -- if bottleFound==48 then
+                        -- self.posX, self.posY, self.posZ=getWorldTranslation(HShoes[i].horseshoeTriggerId);
+                        -- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+                        -- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
                         
-                        renderOverlay(self.bigmap.iconHorseShoes.Icon.OverlayId,
-                                    self.buttonX-self.bigmap.iconHorseShoes.width/2, 
-                                    self.buttonZ-self.bigmap.iconHorseShoes.height/2, 
-                                    self.bigmap.iconHorseShoes.width, 
-                                    self.bigmap.iconHorseShoes.height);
-					else
-						countHorseShoesFound = countHorseShoesFound+1;
-                    end;
+                        -- renderOverlay(self.bigmap.iconHorseShoes.Icon.OverlayId,
+                                    -- self.buttonX-self.bigmap.iconHorseShoes.width/2, 
+                                    -- self.buttonZ-self.bigmap.iconHorseShoes.height/2, 
+                                    -- self.bigmap.iconHorseShoes.width, 
+                                    -- self.bigmap.iconHorseShoes.height);
+					-- else
+						-- countHorseShoesFound = countHorseShoesFound+1;
+                    -- end;
 
-					if self.Debug.printHorseShoes then
-						print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | Index: %s | Count: %d", self.posX, self.posZ, self.buttonX, self.buttonZ, tostring(i), countHorseShoesFound));
-					end;
-                end;
-				if self.Debug.printHorseShoes then
-					self.Debug.printHorseShoes = false;
-				end;
-			else
-                print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
-				self.useHorseShoes = not self.useHorseShoes;
-			end;
-		end;
+					-- if self.Debug.printHorseShoes then
+						-- print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | Index: %s | Count: %d", self.posX, self.posZ, self.buttonX, self.buttonZ, tostring(i), countHorseShoesFound));
+					-- end;
+                -- end;
+				-- if self.Debug.printHorseShoes then
+					-- self.Debug.printHorseShoes = false;
+				-- end;
+			-- else
+                -- print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
+				-- self.useHorseShoes = not self.useHorseShoes;
+			-- end;
+		-- end;
         ----
 		
 		--Maplegende anzeigen
@@ -1964,7 +1974,7 @@ function mapviewer:update(dt)
 					-- g_currentMission.player.isFrozen = false;
 				-- end;
 			else
-				g_gui:showGui("MapViwerDialog");
+				g_gui:showGui("MapViewerDialog");
 			end;
 		else
 			self.mv_Error = not self.mv_Error;

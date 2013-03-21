@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI onOpen="onOpen" onClose="onClose">
 	<GuiElement type="bitmap" id="mv_Main" position="0 0" size="1 1"><!--  imageColor="1 1 1 1"> -->
-		<!-- Selektions Auswahl OOverlay Modus -->
-		 <GuiElement type="bitmap" position="0.31715 0.9" size="0.3657 0.061" imageFilename="dataS2/menu/selectionField.png"><!--  imageColor="1 1 1 1" -->
-             <GuiElement type="multiTextOption" position="0 0" onClick="modeSelectionOnClick" onCreate="modeSelectionOnCreate">
-                <GuiElement type="button" profile="leftButton" position="0.015 0" focusId="4" focusChangeRight="5" focusChangeTop="3" focusChangeBottom="3" />
-                <GuiElement type="button" profile="rightButton" position="0.3055 0" focusId="5" focusChangeLeft="4" focusChangeTop="3" focusChangeBottom="3" focusChangeRight="6"/>
-                <GuiElement type="text" profile="defaultText" position="0.08 0.012" size="0.2 0.2" textSize="0.025" text2Size="0.025" alignment="center"/>
-            </GuiElement>
-        </GuiElement>
-	
+		<!-- Selektions Auswahl Overlay Modus -->
+        <!-- <GuiElement type="text" id="OverlayDesc" profile="defaultText" position="0.31715 0.92" textSize="0.025" text2Size="0.025" alignment="left" text="Overlay Beschreibung" onCreate="onCreateInfoText"/> -->
+		<GuiElement type="bitmap" position="0.31715 0.95" size="0.3657 0.061" imageFilename="dataS2/menu/selectionField.png"><!--  imageColor="1 1 1 1" -->
+			<GuiElement type="multiTextOption" position="0 0" onClick="modeSelectionOnClick" onCreate="modeSelectionOnCreate">
+				<GuiElement type="button" profile="leftButton" position="0.015 0" focusId="4" focusChangeRight="5" focusChangeTop="3" focusChangeBottom="3" />
+				<GuiElement type="button" profile="rightButton" position="0.3055 0" focusId="5" focusChangeLeft="4" focusChangeTop="3" focusChangeBottom="3" focusChangeRight="6"/>
+				<GuiElement type="text" profile="defaultText" position="0.08 0.012" size="0.2 0.2" textSize="0.025" text2Size="0.025" alignment="center"/>
+			</GuiElement>
+		</GuiElement>
 	</GuiElement> 
 </GUI>
