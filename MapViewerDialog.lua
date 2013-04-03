@@ -2,22 +2,25 @@ MapViewerDialog = {}
 local MapViewerDialog_mt = Class(MapViewerDialog)
 MapViewerDialog.MODE_VEHICLES = 1;
 MapViewerDialog.MODE_HOTSPOTS = 2;
-MapViewerDialog.MODE_POINTSOFINTEREST = 3;
-MapViewerDialog.MODE_HORSESHOES = 4;
-MapViewerDialog.MODE_COURSEPLAY = 5;
-MapViewerDialog.MODE_CUSTOMOVERLAY = 6;
+MapViewerDialog.MODE_TIPTRIGGERS = 3;
+MapViewerDialog.MODE_POINTSOFINTEREST = 4;
+MapViewerDialog.MODE_HORSESHOES = 5;
+MapViewerDialog.MODE_COURSEPLAY = 6;
+MapViewerDialog.MODE_CUSTOMOVERLAY = 7;
 
 function MapViewerDialog:new()
 	local self = {}
 	self = setmetatable(self, MapViewerDialog_mt)
 	
 	self.mode = 1;
+	self.prevMode = 0;
 	self.numberOfModes = 6;
 	self.dialogIsActive = false;
 	
 	self.plyname = {};
 	self.plyname.name = "";
-
+	
+	self.textTable = {};
 	
 	----
 	--	Daten Tables
@@ -26,12 +29,18 @@ function MapViewerDialog:new()
 	self.Map = {};
 	self.Vehicle = {};
 	self.HorseShoes = {};
+	self.TipTrigger = {};
 	----
 	
 	----
 	-- Overlays enabled ?
 	----
 	self.useHorseShoes = false;
+	self.useTipTrigger = false;
+	self.useDefaultMap = true;
+	self.useCoursePlay = false;
+	self.usePoI = false;
+	self.useCustomOverlay = false;
 	----
 	
 	return self
@@ -84,17 +93,22 @@ function MapViewerDialog:setMapImageFilename(filename)
 end;
 
 function MapViewerDialog:modeSelectionOnCreate(element)
+	print(string.format("|| Debug || modeSelectionOnCreate() ||"));
 	self.modeSelectionElement = element
 	self.modeSelectionElement.wrap = true
-	local tempTable = {}
+	self.textTable = {}
 	for i = 1, self.numberOfModes do
-		table.insert(tempTable, g_i18n:getText("MV_Mode" .. tostring(i) .. "Name"))
+		table.insert(self.textTable, g_i18n:getText("MV_Mode" .. tostring(i) .. "Name"))
 	end
-	element:setTexts(tempTable)
+
+	--table.show(self.textTable, "Komplettes Table");
+	element:setTexts(self.textTable)
 	element:setState(1)
 end
 
 function MapViewerDialog:modeSelectionOnClick(state)
+	print(string.format("|| Debug || modeSelectionOnClick() || mode:%s / state: %s", tostring(self.mode), tostring(state)));
+	self.prevMode = self.mode;
 	self.mode = state
 	self:updateGUI()
 end
@@ -108,40 +122,65 @@ function MapViewerDialog:update(dt)
 end
 
 function MapViewerDialog:updateGUI()
-	-- TODO: bei wechsel des Overlays, GUI Elemente anpassen
-	if g_gui.currentGuiName ~= "MapViewerDialog" then
-		return
-	end
 	-- Alle nicht benötigten Elemente deaktivieren und nur nach Mode bedarf aktivieren
 	self.OverlayDesc:setText("");
-
-	if self.mode == MapViewerDialog.MODE_VEHICLES then
-		self.OverlayDesc:setText("Fahrzeuge und Attachments");
-	end;
-
-	if self.mode == MapViewerDialog.MODE_HOTSPOTS then
-		self.OverlayDesc:setText("Hotspots und Feldbesitz");
-	end;
-
-	if self.mode == MapViewerDialog.MODE_POINTSOFINTEREST then
-		self.OverlayDesc:setText("Points of interest");
-	end;
-
-	if self.mode == MapViewerDialog.MODE_HORSESHOES then
-		self.OverlayDesc:setText("Gesammelte Hufeisen");
-	end;
-
-	if self.mode == MapViewerDialog.MODE_COURSEPLAY then
-		self.OverlayDesc:setText("Alle aktiven Courseplay Kurse");
-	end;
-
-	if self.mode == MapViewerDialog.MODE_CUSTOMOVERLAY then
-		self.OverlayDesc:setText("Benutzerdefinierte Anzeige");
-	end;
 end
 
 function MapViewerDialog:updateDialog()
-	self:updateFocusLinkageSystem()
+	if self.mode == MapViewerDialog.MODE_VEHICLES then
+		-- self.OverlayDesc:setText("Fahrzeuge und Attachments");
+	end;
+
+	if self.mode == MapViewerDialog.MODE_HOTSPOTS then
+		-- self.OverlayDesc:setText("Hotspots und Feldbesitz");
+	end;
+
+	if  MapViewerDialog.MODE_TIPTRIGGERS ~= 0 and self.mode == MapViewerDialog.MODE_TIPTRIGGERS then
+		-- if not self.useTipTrigger then
+			-- self.textTable[MapViewerDialog.MODE_CUSTOMOVERLAY] = "";
+			-- MapViewerDialog.MODE_TIPTRIGGERS = 0;
+		-- end;
+	end;
+	
+	if MapViewerDialog.MODE_POINTSOFINTEREST ~= 0 and self.mode == MapViewerDialog.MODE_POINTSOFINTEREST then
+		-- if not self.usePoI then
+			-- self.textTable[MapViewerDialog.MODE_CUSTOMOVERLAY] = "";
+			-- MapViewerDialog.MODE_POINTSOFINTEREST = 0;
+		-- end;
+	end;
+
+	if MapViewerDialog.MODE_HORSESHOES ~= 0 and self.mode == MapViewerDialog.MODE_HORSESHOES then
+		-- if not self.useHoreShoes then
+			-- self.textTable[MapViewerDialog.MODE_CUSTOMOVERLAY] = "";
+			-- MapViewerDialog.MODE_HORSESHOES = 0;
+		-- end;
+	end;
+
+	if MapViewerDialog.MODE_COURSEPLAY ~= 0 and self.mode == MapViewerDialog.MODE_COURSEPLAY then
+		-- if not self.useCoursePlay then
+			-- self.textTable[MapViewerDialog.MODE_CUSTOMOVERLAY] = "";
+			-- MapViewerDialog.MODE_COURSEPLAY = 0;
+		-- end;
+	end;
+
+	if MapViewerDialog.MODE_CUSTOMOVERLAY ~= 0 and self.mode == MapViewerDialog.MODE_CUSTOMOVERLAY then
+		-- if not self.useCustomOverlay then
+			-- self.textTable[MapViewerDialog.MODE_CUSTOMOVERLAY] = "";
+			-- MapViewerDialog.MODE_CUSTOMOVERLAY = 0;
+		-- end;
+	end;
+	
+	-- for _,t in pairs(self.textTable) do
+		-- if t == "" then
+			-- table.remove(self.textTable, _);
+		-- end;
+	-- end;
+	--table.show(textTable, "Aufgeräumtes Table");
+	
+	-- self.modeSelectionElement:setTexts(self.textTable);
+	-- self.numberOfModes = table.count(self.textTable);
+	-- self.modeSelectionElement:setState(1);
+	-- self:updateFocusLinkageSystem();
 end
 
 function MapViewerDialog:updateFocusLinkageSystem()
@@ -160,7 +199,33 @@ function MapViewerDialog:draw()
 		-- Darstellen der Spieler Position/en
 		self:renderPlayer();
 		self:renderVehicle();
-		self:renderHorseShoes();
+		----
+		--	Hufeisen
+		----
+		if self.mode == MapViewerDialog.MODE_HORSESHOES and self.useHorseShoes then
+			self:renderHorseShoes();
+		end;
+		----
+		--	Hotspots und Feldnummern
+		----
+		if self.mode == MapViewerDialog.MODE_HOTSPOTS then
+			self:renderHotspots();
+			self:renderFieldnumbers();
+		end;
+		----
+		--	TipTriggers und Feldnummern
+		----
+		if self.mode == MapViewerDialog.MODE_TIPTRIGGERS and self.useTipTrigger then
+			self:renderTipTrigger();
+			self:renderFieldnumbers();
+		end;
+		----
+		--	CoursePlay Kurse
+		----
+		if self.mode == MapViewerDialog.MODE_COURSEPLAY and self.useCoursePlay then
+			self:renderCoursePlay();
+		end;
+		----
 	end;
 end;
 ----
@@ -172,11 +237,14 @@ end;
 ----
 
 ----
---	Inizialisierung der Daten für die Spieler
+--	Inizialisierung der Daten für die Karte
 ----
-function MapViewerDialog:initPlayer(_player)
-	if type(_player) == "table" and table.count(_player) > 0 then
-		self.Player = _player;
+function MapViewerDialog:initMap(_map, isDefaultMap)
+	if type(_map) == "table" and table.count(_map) > 0 then
+		self.Map = _map;
+		-- TODO: Prüfen ob der Dateiname existiert und falls möglich übergebenes Overlay aus Map nutzen
+		self:setMapImageFilename(self.Map.file);
+		self.useDefaultMap = isDefaultMap;
 		return true;
 	else
 		return false;
@@ -185,13 +253,11 @@ end;
 ----
 
 ----
---	Inizialisierung der Daten für die Karte
+--	Inizialisierung der Daten für die Spieler
 ----
-function MapViewerDialog:initMap(_map)
-	if type(_map) == "table" and table.count(_map) > 0 then
-		self.Map = _map;
-		-- TODO: Prüfen ob der Dateiname existiert und falls möglich übergebenes Overlay aus Map nutzen
-		self:setMapImageFilename(self.Map.file);
+function MapViewerDialog:initPlayer(_player)
+	if type(_player) == "table" and table.count(_player) > 0 then
+		self.Player = _player;
 		return true;
 	else
 		return false;
@@ -231,9 +297,191 @@ function MapViewerDialog:initHorseShoes(_horseshoes)
 end;
 ----
 
+----
+--	Inizialisierung der Daten für die tipTrigger
+----
+function MapViewerDialog:initTipTrigger(_tiptrigger)
+	if type(_tiptrigger) == "table" and table.count(_tiptrigger) > 0 then
+	print("tippTrigger Daten OK");
+		self.TipTrigger = _tiptrigger;
+		self.useTipTrigger = true;
+		return true;
+	elseif _tiptrigger == nil or table.count(_tiptrigger) == 0 or _tiptrigger == false then
+		self.useTipTrigger = false;
+		print("tippTrigger Daten NOK1");
+		return false;
+	else
+		print("tippTrigger Daten NOK2");
+		self.useTipTrigger = false;
+		return false;
+	end;
+end;
+----
+
 ----------------------------------------------------------
 --	Rendern der einzelnen Overlays und weiterer Daten	--
 ----------------------------------------------------------
+
+----
+-- Rendern der tipTrigger
+----
+function MapViewerDialog:renderTipTrigger()
+	-- local t, z;
+	local ttX, ttY, ttZ;
+	-- local countFruits;
+	-- local fillType;
+	-- local fruitType;
+	
+	-- print("renderTipTrigger()");
+	
+	for k,v in pairs(g_currentMission.tipTriggers) do
+		-- ttX, ttY, ttZ = getWorldTranslation(g_currentMission.tipTriggers[k].rootNode)
+		-- self.ttPosX = ((((self.Map.mapDimensionX/2)+self.posX)/self.Map.mapDimensionX)*self.Map.width);
+		-- self.ttPosZ = ((((self.Map.mapDimensionY/2)-self.posZ)/self.Map.mapDimensionY)*self.Map.height);
+
+		ttX, ttY, ttZ = getWorldTranslation(g_currentMission.tipTriggers[k].rootNode)
+		self.ttPosX = ((((self.Map.mapDimensionX/2)+ttX)/self.Map.mapDimensionX)*self.Map.width);
+		self.ttPosZ = ((((self.Map.mapDimensionY/2)-ttZ)/self.Map.mapDimensionY)*self.Map.height);
+		
+		renderOverlay(self.TipTrigger.Icon.OverlayId,
+					self.ttPosX-self.TipTrigger.width/2, 
+					self.ttPosZ-self.TipTrigger.height/2, 
+					self.TipTrigger.width, 
+					self.TipTrigger.height);
+	end;
+end;
+----
+
+----
+-- Rendern der tipTrigger, integrierten Feldnummern und Feldstatus
+----
+function MapViewerDialog:renderFieldnumbers()
+	if self.mode == MapViewerDialog.MODE_HOTSPOTS or self.mode == MapViewerDialog.MODE_TIPTRIGGERS then
+		local hsPosX, hsPosY;
+		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
+			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
+			self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
+			----
+			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
+
+			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
+			
+			setTextColor(1, 1, 1, 1);
+			setTextAlignment(RenderText.ALIGN_CENTER);
+
+			----
+			-- Feldnummern ?
+			----
+			if g_currentMission.missionPDA.hotspots[j].showName then
+				if self.Map.quadsize then
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+2048;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+2048;
+				else
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+				end;
+				
+				self.hsPosX = (hsPosX/self.Map.mapDimensionX)-(self.hsWidth/2);
+				self.hsPosY = 1-(hsPosY/self.Map.mapDimensionY)-(self.hsHeight/2);
+
+				setTextColor(bc[1], bc[2], bc[3], bc[4]);
+				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+				renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
+			end;
+		end;
+	end;
+end;
+
+----
+-- Rendern der tipTrigger, integrierten Feldnummern und Feldstatus
+----
+function MapViewerDialog:renderCoursePlay()
+	if self.mode == MapViewerDialog.MODE_CoursePlay and self.useCoursePlay then
+		local hsPosX, hsPosY;
+		print("Debug: renderCoursePlay()");
+		-- for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
+			-- self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
+			-- self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
+			--
+			-- self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
+
+			-- local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
+			
+			-- setTextColor(1, 1, 1, 1);
+			-- setTextAlignment(RenderText.ALIGN_CENTER);
+
+			----
+			-- Feldnummern ?
+			----
+			-- if g_currentMission.missionPDA.hotspots[j].showName then
+				-- hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+				-- hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+				
+				-- self.hsPosX = (hsPosX/self.Map.mapDimensionX)-(self.hsWidth/2);
+				-- self.hsPosY = 1-(hsPosY/self.Map.mapDimensionY)-(self.hsHeight/2);
+
+				-- setTextColor(bc[1], bc[2], bc[3], bc[4]);
+				-- renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+				-- renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
+			-- end;
+		-- end;
+	end;
+end;
+
+----
+-- Rendern der Hotspots, integrierten Feldnummern und Feldstatus
+----
+function MapViewerDialog:renderHotspots()
+	-- if self.showHotSpots and self.useHotSpots then
+	if self.mode == MapViewerDialog.MODE_HOTSPOTS then
+		local hsPosX, hsPosY;
+		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
+			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
+			self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
+			----
+			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
+
+			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
+			
+			setTextColor(1, 1, 1, 1);
+			setTextAlignment(RenderText.ALIGN_CENTER);
+
+			if not g_currentMission.missionPDA.hotspots[j].showName then
+				if self.useDefaultMap then 
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+				elseif self.Map.quadsize then
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
+				else
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
+				end;
+				
+				self.hsPosX = (hsPosX/self.Map.mapDimensionX)-(self.hsWidth/2);
+				self.hsPosY = 1-(hsPosY/self.Map.mapDimensionY)-(self.hsHeight/2);
+
+				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+				if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
+					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
+				else
+					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
+				end;
+			end;
+			setTextAlignment(RenderText.ALIGN_LEFT);
+			setTextColor(1, 1, 1, 0);
+
+			-- if self.Debug.printHotSpots then
+				-- print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+			-- end;
+		end;
+		-- if self.Debug.printHotSpots then
+			-- self.Debug.printHotSpots = false;
+		-- end;
+		-- print("-- Hotspot Loop Ende --");
+	end;
+end;
+----
 
 ----
 -- Rendern der Hufeisen
@@ -274,6 +522,7 @@ function MapViewerDialog:renderHorseShoes()
 			print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
 			self.useHorseShoes = not self.useHorseShoes;
 		end;
+		self.OverlayDesc:setText(string.format("%s von %s bereits gesammelt", tostring(countHorseShoesFound), tostring(table.getn(HShoes))));
 	end;
 	----
 end;
@@ -327,11 +576,6 @@ end;
 --	Unbrauchbare Fahrzeuge
 -- Attachments
 -- Milchtruck
-----
---	Step1: Fahrzeuge
---	Step2: Attachments
---	Step3: Milchtruck
---	Step4: brocken Fz.
 ----
 function MapViewerDialog:renderVehicle()
 	self.plyname.name = g_currentMission.player.controllerName;

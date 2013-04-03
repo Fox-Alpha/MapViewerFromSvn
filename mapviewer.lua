@@ -98,6 +98,7 @@ function mapviewer:loadMap(name)
 	self.playerRotY=0;
 	self.plyname = {};
 	self.bigmap ={};
+	self.bigmap.quadsize = false;
 	self.mouseX = 0;
 	self.mouseY = 0;
 	
@@ -228,6 +229,7 @@ function mapviewer:initMapViewer()
 		g_currentMission.missionPDA.worldSizeZ = 4096;
 		g_currentMission.missionPDA.worldCenterOffsetX = g_currentMission.missionPDA.worldSizeX*0.5;
 		g_currentMission.missionPDA.worldCenterOffsetZ = g_currentMission.missionPDA.worldSizeZ*0.5;
+		self.bigmap.quadsize = true;
 	end;
 	
     self.bigmap.mapDimensionX = g_currentMission.missionPDA.worldSizeX;
@@ -637,6 +639,7 @@ function mapviewer:initMapViewer()
 	----
 	-- Map Daten
 	local tblTemp={
+					quadsize=self.bigmap.quadsize,
 					file=self.bigmap.file,
 					overlay=self.bigmap.OverlayId, 
 					width=self.bigmap.mapWidth,
@@ -661,10 +664,9 @@ function mapviewer:initMapViewer()
 	-- tblVehicle. = {};
 	-- tblVehicle. = {};
 	-- print(table.show(tblTemp, "mapViewer.tblTemp"));
-	if g_mapViewerDialog:initMap(tblTemp) then
+	if g_mapViewerDialog:initMap(tblTemp, self.useDefaultMap) then
 		local init = false;
 		local errFunc = "";
-		----
 		-- Spielerdaten
 		----
 		init = g_mapViewerDialog:initPlayer(self.bigmap.player);
@@ -680,6 +682,7 @@ function mapviewer:initMapViewer()
 		end;
 		----
 		-- Hufeisendaten
+		----
 		if self.useHorseShoes then
 			init = g_mapViewerDialog:initHorseShoes(self.bigmap.iconHorseShoes);
 		else
@@ -689,8 +692,21 @@ function mapviewer:initMapViewer()
 			errFunc = "initHorseShoes()";
 		end;
 		----
+		-- tipTrigger
+		----
+		if self.useTipTrigger then
+			init = g_mapViewerDialog:initTipTrigger(self.bigmap.iconTipTrigger);
+		else
+			init = g_mapViewerDialog:initTipTrigger(nil);
+		end;
+		----
+		if not init then
+			errFunc = "initTipTrigger()";
+		end;
+		----
 		if init == true then
 			print(string.format("|| %s || Initializing der Dialogdaten erfolgreich ||", g_i18n:getText("mapviewtxt")));
+			g_mapViewerDialog:updateDialog();
 		else
 			print(string.format("|| %s || ERROR: %s / Initializing der Dialogdaten fehlgeschlagen ||", g_i18n:getText("mapviewtxt"), errFunc));
 		end;

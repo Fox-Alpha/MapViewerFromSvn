@@ -126,30 +126,38 @@
 			<de>MapViewer Overlay Modus 3</de>	
 		</text>
 		<text name="MV_Mode3Name">
+			<en>tipTrigger and Fields</en>
+			<de>Abladen und Felder</de>	
+		</text>
+		<text name="MV_Mode4">
+			<en>MapViewer Overlay Mode 3</en>
+			<de>MapViewer Overlay Modus 3</de>	
+		</text>
+		<text name="MV_Mode4Name">
 			<en>Show Points of interests</en>
 			<de>PoI Overlay anzeigen</de>	
 		</text>
-		<text name="MV_Mode4">
+		<text name="MV_Mode5">
 			<en>MapViewer Overlay Mode 4</en>
 			<de>MapViewer Overlay Modus 4</de>	
 		</text>
-		<text name="MV_Mode4Name">
+		<text name="MV_Mode5Name">
 			<en>Show open horseshoes on Map</en>
 			<de>Noch offene Hufeisen</de>	
 		</text>
-		<text name="MV_Mode5">
+		<text name="MV_Mode6">
 			<en>MapViewer Overlay Mode 5</en>
 			<de>MapViewer Overlay Modus 5</de>	
 		</text>
-		<text name="MV_Mode5Name">
+		<text name="MV_Mode6Name">
 			<en>Show active Courseplay Tracks</en>
 			<de>Aktive CoursePlay Kurse</de>	
 		</text>
-		<text name="MV_Mode6">
+		<text name="MV_Mode7">
 			<en>MapViewer Overlay Mode 6</en>
 			<de>MapViewer Overlay Modus 6</de>	
 		</text>
-		<text name="MV_Mode6Name">
+		<text name="MV_Mode7Name">
 			<en>Custom Overlay</en>
 			<de>Benutzerdefiniertes Overlay</de>	
 		</text>
