@@ -349,6 +349,7 @@ function mapviewer:initMapViewer()
     -- Tabelle für Typen
     ----
     self.bigmap.vehicleTypes = {};
+	-- ToDo: Eigenes Icon für Helfer einfügen
     self.bigmap.vehicleTypes.names = {"tractor", "combine", "other"};
     self.bigmap.vehicleTypes.icons = {}
     for at=1, table.getn(self.bigmap.vehicleTypes.names) do
