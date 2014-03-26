@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log>
+<logentry
+   revision="140">
+<author>FoxAlpha</author>
+<date>2014-03-17T18:34:29.714790Z</date>
+<msg>TODO hinzugefügt</msg>
+</logentry>
+<logentry
+   revision="135">
+<author>FoxAlpha</author>
+<date>2013-04-03T00:55:18.652995Z</date>
+<msg>[TRUNK]
+- mapviewer.lua
+Add: Boolscher Wert für übergroße Karten hinzugefügt
+Add: Setzen des Boolschen Wertes für übergroße Karten
+Add: Übertragen des Boolschen Wertes an den Dialog
+Add: Übertragen eines boolschen Wertes ob es sich um die Standardkarte handelt an den Dialog
+Add: Übertragen notwendiger Daten für die tipTrigger an den Dialog
+- MapViewerDialog.lua
+Upd: Anpassen der Overlaymodi. TipTrigger als eigenes Overlay
+Add: Hinzufügen von boolschen Werte zum differenzieren ob ein Overlay verwendet werden soll oder nicht
+Fix: Korrekte Table für Overlaytitel
+Add: Vorbereiten einer Update Funktion um nicht benötigte Overlays zu überspringen
+Add: Aufrufe der einzelnen Funktionen zum zeichnen der Overlays anhand der boolschen Variablen.
+Add: Übernehmen ob es sich um die Standardkarte handelt
+Add: Funktion zum übernehmen der tipTrigger Daten
+Add: Funktion zum rendern der tipTrigger Daten
+Add: Funktion zum rendern der Hotspots
+Add: Funktion zum render des Courseplays
+Add: Funktion zum rendern der Feldnummern, in abhängigkeit ob es eine übergroße Karte ist
+
+- modDesc.xml
+Upd: Anpassen der Overlay Bezeichnungen
+- MapViewerGUI.xml
+Chg: Overlaylabel standard ohne Text
+</msg>
+</logentry>
+<logentry
+   revision="134">
+<author>FoxAlpha</author>
+<date>2013-03-21T21:59:52.059426Z</date>
+<msg>[TRUNK]
+- mapviewer.lua
+Fix: GUI Name
+Add: Übergabe der Hufeisendaten an den Dialog
+Rem: Rendern der Hufeisen
+- MapViewerDialog.lua
+Add: Numerische Bezeichner für OverlayModi für den Vergleich
+Add: Übernahme der Hufeisendaten
+Add: Übergabe von NIL bei Hufeisen wenn Anzeige deaktiviert werden soll. Z.B. wenn Karte diese nicht unterstützt
+Add: Wechseln der Overlay Anzeige per Selekt am oberen Bildschirmrand
+Add: Darstellen der Hufeisen auf der Karte bei Auswahl des entsprechenden Modus
+- modDesc.xml
+Upd: Bezeichnungen und Beschreibungen der Overlay Modi angepasst
+Fix: Meldung das eine Übersetzung bereits vorhanden ist.
+- MapViewerGUI.xml
+Rem: Textlement erstmal wieder entfernt</msg>
+</logentry>
+<logentry
+   revision="133">
+<author>FoxAlpha</author>
+<date>2013-03-20T20:50:06.695124Z</date>
+<msg>[TRUNK]
+Add: Darstellen unbrauchbarer Fahrzeuge mit eigenem Symbol
+Chg: Größe des Symbols angepasst</msg>
+</logentry>
+<logentry
+   revision="132">
+<author>FoxAlpha</author>
+<date>2013-03-20T20:29:17.961048Z</date>
+<msg>[TRUCK]
+Add: Darstellen der Milchtruck Position in den Dialog verschoben</msg>
+</logentry>
+<logentry
+   revision="131">
+<author>FoxAlpha</author>
+<date>2013-03-19T22:18:21.046308Z</date>
+<msg>[TRUNK]
+Add: Stepp2 Anzeigen der Attachments</msg>
+</logentry>
+<logentry
+   revision="130">
+<author>FoxAlpha</author>
+<date>2013-03-19T22:07:39.738581Z</date>
+<msg>[TRUNK]
+- mapviewer.lua
+Rem: Anzeigen der Steerable, Attachments, Milchtruck, Courseplay, Brooken
+Add: Übergabe der Vehicledaten an den Dialog
+- MapViewerDialog.lua
+Add: Übernahme der Vehicledaten
+-Step1
+Add: Anzeigen der Steerable</msg>
+</logentry>
+<logentry
+   revision="129">
+<author>FoxAlpha</author>
+<date>2013-03-19T21:05:10.173717Z</date>
+<msg>[TRUNK]
+- MapViewerDialog.lua 
+Add: Übergabe der Daten für die Map
+Add: Übergabe der Daten für Spieler
+Add: Anzeigen der Spielerposition auf der Karte
+- mapviewer.lua
+Rem: Direkte übergabe der PDA Datei
+Add: Übergabe der Mapdaten mit Fehlerprüfung
+Add: Übergabe der Spielerdaten mit Fehlerprüfung
+Rem: Anzeigen der Spielerposition</msg>
+</logentry>
+<logentry
+   revision="128">
+<author>FoxAlpha</author>
+<date>2013-03-19T12:16:55.199055Z</date>
+<msg>[TRUNK]
+- modDesc.xml
+Chg: Texte für Overlay Modi gekürtzt damit diese in das Selection Textfeld passen
+Add: MapViewerDialog.lua Script für GUI Elemente
+Add: MapViewerGUI.xml Definition der GUI Elemente
+- mapviewer.lua
+Rem: Aktivieren der Mouse auskommentiert. Dies wird im Dialog behandelt
+Rem: Rendern der Karte auf dem Bildschirm aus Draw entfernt. Wird im Dialog erstellt
+Add: Funktion zum übergeben der Karte an den Dialog
+Add: Ein und ausblenden des Dialogs
+- MapViewerDialog.lua, MapViewerGUI.xml
+Add: Multiselekt Emelent zur Auswahl des Overlaymodus hinzugefügt</msg>
+</logentry>
+<logentry
+   revision="127">
+<author>FoxAlpha</author>
+<date>2013-03-18T03:42:39.817914Z</date>
+<msg>[TRUNK]
+Add: Übersetzung für Schwad
+Rem: Unnötige Prints entfernt
+Add: Unterscheidung von Abladestationen und Hofsilos
+Add: Unterscheidung der Fruchtsorten nach Schwad
+Add: Übersetzungen der Fruchtsorten
+Fix: getVehicleAttachmentsFruitTypes() nicht im Namespace
+Fix: Aufruf vom getImplements() nicht im Namespace
+</msg>
+</logentry>
+<logentry
+   revision="126">
+<author>FoxAlpha</author>
+<date>2013-03-17T19:51:34.618893Z</date>
+<msg>[TRUNK]
+Add: Unterscheidung zwischen Verkaufsstelle und Silo
+- Verkaufen : Frucht und Preis
+- Silo/Lager : Frucht und Bestand</msg>
+</logentry>
+<logentry
+   revision="125">
+<author>FoxAlpha</author>
+<date>2013-03-13T04:11:04.585629Z</date>
+<msg>[TRUNK]
+Add: Klickevent für Feldtrigger mit Anzeige von Informationen zum Feld im Panel</msg>
+</logentry>
+<logentry
+   revision="124">
+<author>FoxAlpha</author>
+<date>2013-03-12T04:37:18.823434Z</date>
+<msg>[TRUNK]
+- Klickbare tipTrigger mit InfoPanel
+Add: InfoPanel für tipTrigger erweitert
+Add: MouseEvent für tipTrigger hinzugefügt
+Add: Funktion um tipTrigger in der Nähe des Mausklicks zu finden
+Add: Funktion zum Ermitteln der tipTrigger Informationen
+Add: Funktion zum Ermitteln der akzeptierten Fruchtsorten
+Rem: Anzeigen der Fruchtsorten als Text ohne Panel
+Upd: Optimierungen beim rendern des Panels vorgenommen
+- Unnötige Aufrufe entfernt
+Add: Fruchtsorten und Preis in abhängigkeit des Schwierigkeitsgrad im Panel anzeigen
+Add: tipTriggername im Panel anzeigen.
+</msg>
+</logentry>
+<logentry
+   revision="123">
+<author>FoxAlpha</author>
+<date>2013-03-11T22:34:53.885044Z</date>
+<msg>[TRUNK]
+Add: Meldung ob CoursePlay vorhanden ist, oder nicht hinzugefügt
+Chg: Meldung welche Overlays genutzt werden angepasst
+Chg: Umschalten der Overlays angepasst, wenn keine Hufeisen oder CP vorhanden sind.
+Upd: Meldung wenn keine Hufeisen vorhanden sind von Warnung in Hinweis geändert</msg>
+</logentry>
+<logentry
+   revision="122">
+<author>FoxAlpha</author>
+<date>2013-03-11T21:38:20.136712Z</date>
+<msg>[TRUNK]
+Chg: Anzeige des gewählten OverlayModus angepasst
+- Anzeige der bereits gesammelten Hufeisen
+Fix: Prüfung ob Hufeisen vorhanden während des Renderns
+Chg: Fehlermeldung, wenn keine Hufeisen auf der Karte vorhanden sind angepasst</msg>
+</logentry>
+<logentry
+   revision="121">
+<author>FoxAlpha</author>
+<date>2013-03-11T20:15:52.943369Z</date>
+<msg>[TRUNK]
+Fix: Prüfen ob Hufeisen in der Map vorhanden sind</msg>
+</logentry>
+<logentry
+   revision="120">
+<author>FoxAlpha</author>
+<date>2013-03-11T19:41:01.192712Z</date>
+<msg>[TRUNK]
+Add: Bezeichnung des Courseplay Overlays wieder hinzugefügt
+Add: Übersetzung für Kursnamen Anzeige im InfoPanel
+Add: Wieder implementierung der CoursePlay Anzeige als Overlay und Kurse des aktiven Fahrzeug, wenn dieses angeklickt wurde
+Add: Ermitteln ob CoursePlay als Mod vorhanden ist
+Upd: Überaqrbeitung der TODO Einträge
+Rem: Kursnamen im Overlay entfernt
+</msg>
+</logentry>
+<logentry
+   revision="119">
+<author>FoxAlpha</author>
+<date>2013-03-11T04:35:33.468803Z</date>
+<msg>[TRUNK]
+Fix: Meldungen beim inizialisieren der Hufeisen und TipTrigger
+Chg: Kleine QuellCode Formatierungen
+Del: Kommentare und nicht mehr benötigte Printausgaben
+Del: Nicht mehr benötigte Funktionen</msg>
+</logentry>
+<logentry
+   revision="118">
+<author>FoxAlpha</author>
+<date>2013-03-11T04:11:41.550799Z</date>
+<msg>[TRUNK]
+Add: Einblenden der Feldnummernhotspots und Stationhotspots wieder aktiviert
+Chg: Debug Table ein kleines bischen angepasst
+- Debug aktiv in Table verschoben, Abfragen angepasst
+Fix: prints im Debug Modus
+Fix: Laden der Overlays wenn die Standard Map verwendet wird und keine lokalen Dateien vorhanden sind
+Chg: Ausgabe einer Meldung wenn die beiliegenden Overlaydateien für die Standardmap verwendet werden
+Chg: aktivieren des Debug Modus per ALT+D
+Fix: position der Hotspots auf der Standardkarte (Schaafe, Kuhfarm, Banken, etc) korrigiert</msg>
+</logentry>
+<logentry
+   revision="117">
+<author>FoxAlpha</author>
+<date>2013-02-12T10:21:46.674010Z</date>
+<msg>[TRUNK]
+Fix: laden der Overlays aus der Map zip</msg>
+</logentry>
+<logentry
+   revision="116">
+<author>FoxAlpha</author>
+<date>2013-02-12T08:49:42.605022Z</date>
+<msg>[TRUNK]
+mapviewer.lua
+Chg: Benennung von Funktionen angepasst
+Add: Courseplay Kurse nur für aktuell gewähltes Fahrzeug auf Karte anzeigen
+modDesc.xml
+Chg: Subversion Header angepasst</msg>
+</logentry>
+<logentry
+   revision="115">
+<author>FoxAlpha</author>
+<date>2012-12-15T02:15:33.921796Z</date>
+<msg>[TRUNK]
+Add: Anzeigen der Akzeptierten Fruchtsorten
+- Vorbereitung für Panel für die Trigger</msg>
+</logentry>
+<logentry
+   revision="114">
+<author>FoxAlpha</author>
+<date>2012-12-15T00:25:09.270525Z</date>
+<msg>[TRUNK]
+Rem: Temporär die Anzeige der Hotspots entfernt
+Add: Anzeige der TipTrigger. Abladestationen. </msg>
+</logentry>
+<logentry
+   revision="113">
+<author>FoxAlpha</author>
+<date>2012-12-14T23:03:07.338400Z</date>
+<msg>[TRUNK]
+Fix: Fehler in Hufeisenanzeige, wenn nicht von der Karte unterstützt
+- TODO: Im Multiplayer testen
+Chg: Fehlerbehanldung für Hufeisen</msg>
+</logentry>
+<logentry
+   revision="112">
+<author>FoxAlpha</author>
+<date>2012-12-14T17:15:12.615894Z</date>
+<msg>[Trunk]
+- mapviewer.lua
+Fix: Anzeige der Hufeisen korrigiert
+- mapviewer.xml
+Chg: Größe des Hufeisen Symbols angepasst
+- modDesc.xml
+Add: Meldung für erfolgreiches vorbereiten für die Hufeisen eingefügt
+Add: Titel des Hufeisen Overlays angepasst
+Chg: Meldungen für Flaschen an Hufeisen angepasst.
+Fix: Fehlermeldung für Legende korrigiert</msg>
+</logentry>
+<logentry
+   revision="111">
+<author>FoxAlpha</author>
+<date>2012-12-14T15:42:16.530275Z</date>
+<msg>[TRUNK]
+Chg: Ermitteln der HotSpot Positionen angepasst.
+- Versuch um die Positionierung bei gemoddeden Maps zu korrigieren. Noch unvollständig.
+Add: Symbol für Hifeisen
+Add: Funktion zum anzeigen der Hifeisen auf der Karte. Erster Versuch.</msg>
+</logentry>
+<logentry
+   revision="108">
+<author>FoxAlpha</author>
+<date>2012-11-27T14:46:27.725684Z</date>
+<msg>[TRUNK]
+Upd: Text für Modbeschreibung etwas angepasst
+Upd: Neue standardtaste Numpad 0 zum aktivieren
+Del: readme_de.txt und readme_en.txt entfernt</msg>
+</logentry>
+<logentry
+   revision="106">
+<author>FoxAlpha</author>
+<date>2012-11-25T17:24:23.820217Z</date>
+<msg>[TRUNK]
+Fix: Laden der Overlaydateien aus dem MapViwer Zip für die standard Karte wenn keine Lokalen Dateien vorhanden sind. Zweiter Versuch</msg>
+</logentry>
+<logentry
+   revision="105">
+<author>FoxAlpha</author>
+<date>2012-11-25T16:51:14.091041Z</date>
+<msg>[TRUNK]
+Fix: Laden der Overlaydateien aus dem MapViwer Zip für die standard Karte wenn keine Lokalen Dateien vorhanden sind.</msg>
+</logentry>
+<logentry
+   revision="104">
+<author>FoxAlpha</author>
+<date>2012-11-08T20:10:08.558258Z</date>
+<msg>[TRUNK]
+- modDesc.xml
+Upd: Bezeichnung des Mods
+Upd: Versionsnummer
+- mapviewer.lua
+Chg: Funktion zum ermitteln des Vehicle Typs an LS2013 angepasst
+Add: Alternative Pfade in der Map Zip Für pda_map.dds prüfen
+Chg: Laden der pda Map aktualisiert. An alternative Pfade angepasst
+Fix: Wenn keine lokalen Pda bzw Overlay Dateien vorhanden sind, wird die PDA_map aus der zip verwendet. War vorher falscher Dateiname
+Upd: Ausgabe verschiedener Meldungen verbessert
+Chg: Teleporter: Ausblenden der Karte nach Teleport. Zurücksetzen der Mousecontrol
+</msg>
+</logentry>
+<logentry
+   revision="103">
+<author>FoxAlpha</author>
+<date>2012-10-31T23:33:32.250705Z</date>
+<msg>[TRUNK]
+Upd: mapviewer.dds für Modanzeige in der Übersicht</msg>
+</logentry>
+<logentry
+   revision="102">
+<author>FoxAlpha</author>
+<date>2012-10-31T23:15:18.855529Z</date>
+<msg>[TRUNK]
+- modDesc.xml
+Add: Weitere Übersetzungen für Log Meldungen hinzugefügt
+- mapviewer.lua
+Rem: Laden der PDA der alten Standardkarte entfernt
+Rem: nicht mehr benötigte Zeilen um die Kartengröße zu ermitteln entfernt
+Chg: Verhalten beim ermitteln ob lokale Overlay und PDA Dateien vorhanden sind
+- Weitere Meldungen und Fehlerausgaben hinzugefügt
+Upd: Funktionen checkLocalPDAFile(), checkLocalFnumFile(), checkLocalPoIFile(). Testen ob die Datei im Modordner existiert auf neue Funktion fileExists() umgestellt
+- Kommentierte Zeilen entfernt
+Rem: Fehlermeldung aus Update Funktion entfernt</msg>
+</logentry>
+<logentry
+   revision="101">
+<author>FoxAlpha</author>
+<date>2012-10-29T22:04:16.788994Z</date>
+<msg>[TRUNK]
+Fix: Overlay Übersetzungen für neue Reihenfolge angepasst</msg>
+</logentry>
+<logentry
+   revision="100">
+<author>FoxAlpha</author>
+<date>2012-10-29T21:55:43.991985Z</date>
+<msg>[TRUNK]
+Add: Anzeige der Hotspots wie Overlays ausblendbat gemacht
+</msg>
+</logentry>
+<logentry
+   revision="99">
+<author>FoxAlpha</author>
+<date>2012-10-29T21:13:53.906444Z</date>
+<msg>[TRUNK]
+Add: Übersetzungen für Hotspot Bezeichnungen
+Chg: Textfarbe und Größe angepasst
+Chg. Laden der Hotspotbezichnungen aus den Übersetzungen</msg>
+</logentry>
+<logentry
+   revision="98">
+<author>FoxAlpha</author>
+<date>2012-10-29T20:27:52.186379Z</date>
+<msg>[TRUNK]
+Rem: Anzeigen der Flaschen auf der Karte. Es gibt keine Flaschen mehr. 
+- Ersetzen durch Hufeisen
+Fix: Anzeigen der Originalen Feldnummern. 
+- Falsche Parameter übergeben
+Chg: Text der Feldnummern Zentriert, Farbe angepasst.
+Chg: Anzeigen der HotSpot namen bei den wichtigen Stellen(Tankstelle, abladen, ...)</msg>
+</logentry>
+<logentry
+   revision="97">
+<author>FoxAlpha</author>
+<date>2012-10-29T18:53:21.748348Z</date>
+<msg>[TRUNK]
+Add: Table für Debug ausgabe Steuerung. Speichern boolscher Variablen
+Rem: Ausgabe der TypeDescription beim laden
+Rem: Abschnitt zum LAden der Optionen aus der XML Datei
+Chg: Ausgabe der HotSpot Informationen über Debug-Taste
+- Einmalige Ausgabe über Debugtable gewährleisten
+Chg: Ermitteln des Füllstands und des Fruittypes bei Combine Fahrzeugen
+- Bisherige Funktion existiert nicht mehr
+Chg: Render der HotSpots auf der Karte angepasst. Im HotSpot Table werden auch die Felder gespeichert. Ausgabe der Feldnummern. Damit wird das fnum Overlay fast überflüssig.
+Test: Versuch ob sich das Hud ausblenden lässt.</msg>
+</logentry>
+<logentry
+   revision="96">
+<author>FoxAlpha</author>
+<date>2012-10-27T21:14:52.196708Z</date>
+<msg>[TRUNK]
+Upd: Karten und Overlay Grafiken in .dds konvertiert</msg>
+</logentry>
+<logentry
+   revision="95">
+<author>FoxAlpha</author>
+<date>2012-10-27T21:10:57.322210Z</date>
+<msg>[TRUNK]
+- mapviewer.xml
+Upd: Dateinamen auf .dds angepasst
+- mapviewer.lua
+Upd: Dateinamen auf .dds angepasst</msg>
+</logentry>
+<logentry
+   revision="94">
+<author>FoxAlpha</author>
+<date>2012-10-27T21:07:58.832141Z</date>
+<msg>[TRUNK]
+Chg: Benötigte Grafiken in DDS Format konvertiert</msg>
+</logentry>
+<logentry
+   revision="93">
+<author>FoxAlpha</author>
+<date>2012-10-27T21:05:59.263246Z</date>
+<msg>[TRUNK]
+Del: Nicht mehr benötigte Grafikdateien entfernt</msg>
+</logentry>
+<logentry
+   revision="92">
+<author>FoxAlpha</author>
+<date>2012-10-27T21:00:56.919916Z</date>
+<msg>[TRUNK]
+Version vom 26.10.2012 LS2013 RC1
+Add: Overlay und Map Grafiken. Standardmap heisst jetzt anders
+- modDesc.xml
+Ups: Anpassung an neue Version
+Chg: Funktion zum prüfen ob eine Datei vorhanden ist funktioniert nicht mehr. erstmal Hardcode auf png für lokale Overlay Dateien gesetzt
+Chg: Funktionen zum speichern und Laden ersteinmal ohne Funktion
+Upd: Darstellen der Hotspots auf der Karte. Positionierung angepasst. Koordinaten werden nun anders verwendet
+Rem: Overlay für Flaschen und Courseplay ohne Funktion. Flaschen gibt es nicht mehr und CP noch nicht auf LS2013 konvertiert
+Rem: Zugriff auf io.open und OS Funktionen nicht mehr möglich</msg>
+</logentry>
+<logentry
+   revision="88">
+<author>FoxAlpha</author>
+<date>2012-10-27T20:26:25.557752Z</date>
+<msg>[TRUNK]
+Version vom 04.10.2012 11:52
+- modDesc.xml
+Add: Übersetzungen für Teleporter Tasten hinzugefügt
+Add: Fehlende Übersetzung für Vehicletypes hinzugefügt
+Fix: Übersetzungen
+Fix: Tastenbelegung für Teleporter korrigiert
+- mapviewer.lua
+Chg: Funtion zum laden der Vehicletypes erweitert
+Chg: Wenn Transparent genutzt wird, Mauscursor ausblenden/einblenden
+Del: Ausgabe der Teleportertasten aus Hilfebox entfernt
+Add: UpdateTick() Auskommentiert
+Chg: draw()
+- Sicherstellen das die Maus immer angezeigt wird verbessert
+Upd: Tastenerkennung für Teleporter</msg>
+</logentry>
+<logentry
+   revision="87">
+<author>FoxAlpha</author>
+<date>2012-10-27T20:16:42.047105Z</date>
+<msg>[TRUNK]
+Version vom 29.09.2012 08:12
+Del: Log Ausgabe entfernt</msg>
+</logentry>
+<logentry
+   revision="86">
+<author>FoxAlpha</author>
+<date>2012-10-27T20:15:36.228664Z</date>
+<msg>[TRUNK]
+Version vom 29.09.2012 07:38
+Add: Grafik für Container hinzugefügt</msg>
+</logentry>
+<logentry
+   revision="85">
+<author>FoxAlpha</author>
+<date>2012-10-27T20:13:27.450596Z</date>
+<msg>[TRUNK]
+Version vom 29.09.2012 07:38
+Chg: Synchronisierung des Teleporters für Multiplayer
+</msg>
+</logentry>
+<logentry
+   revision="84">
+<author>FoxAlpha</author>
+<date>2012-10-27T20:11:54.809990Z</date>
+<msg>[TRUNK]
+Version vom 29.09.2012 07:24
+Chg: Synchronisierung des Teleporters für Multiplayer
+Chg: Prüfung des Vehicle/Combine Füllstand verbessert
+</msg>
+</logentry>
+<logentry
+   revision="83">
+<author>FoxAlpha</author>
+<date>2012-10-27T19:59:36.321219Z</date>
+<msg>[TRUNK]
+Version vom 29.09.2012 07:07
+- mapviewer.xml
+Add: Icon für den milktruck hinzufügen
+- modDesc.xml
+Fix: Übersetzung MV_AttachTypebaleloader
+Chg: Übersetzung MV_AttachTypetedder
+Add: Übersetzung für Fehlermeldung wenn Panel nicht erzeugt werden konnte
+- mapviewer.lua
+Add/Upd: Liste für ToDos und Liste für fehlende Übersetzungen, Bekannte Fehler
+Add: einbinden des Icons für den milktruck
+Add: Einbinden das der milktruck auf auf der Karte angezeigt wird
+Add: Prüfung ob das Panel vorhanden ist (Erezeugt werden konnte)
+- Steuerung über boolsche Variable
+Chg: Anzeige des Panels abhängig von der Steuerungsvariablen
+Fix: Prüfen ob die Rootnode des Fahrzeugs noch gültig ist. Zum Beispiel wenn es verkauft wurde. </msg>
+</logentry>
+<logentry
+   revision="82">
+<author>FoxAlpha</author>
+<date>2012-10-27T19:07:58.003040Z</date>
+<msg>[TRUNK]
+Version vom 29.09.2012
+Chg: Einige Bezeichnungen in den Übersetzungen angepasst
+Add: Weitere Bezeichnungen und Übersetzungen für das InfoPanel hinzugefügt
+Fix: Tastenbezeichnung für Teleport Taste
+Chg: Reihenfolge der Funktionen aufgeräumt und übersichtlicher angeordnet. Kommentare hinzugefügt
+- Helper Funktionen am Ende
+- Netzwerkfunktionen am Ende
+- Nicht verwendete oder gesicherte Funktionen am Ende
+Fix/Upd: MouseEvent()
+- Prüfung auf Multiplayer angepasst/Korrigiert
+Upd: GetVehicleInfo()
+- Add: Kommentare hinzugefügt
+- Chg: Speichern/Erstellen der Texte für das Panel als Indizierte Tabelle gestaltet: Chg: Texte aus Übersetzungen verwendet
+Chg: Anzeige der Paneltexte an neues Speicherformat angepasst, Ausgabe unabhängiger vom Inhalt
+Add: Ausgabe der Teleporttaste im Hilfe Fenster</msg>
+</logentry>
+<logentry
+   revision="81">
+<author>FoxAlpha</author>
+<date>2012-10-27T18:54:05.640049Z</date>
+<msg>[TRUNK]
+Version vom 26.09.2012
+Add: Übersetzungen für Treibstoff im InfoPanel
+Add: Tastensteuerung für Teleport in der modDesc.xml
+Del: imagesize</msg>
+</logentry>
+<logentry
+   revision="80">
+<author>FoxAlpha</author>
+<date>2012-10-19T19:58:27.803722Z</date>
+<msg>[TRUNK]
+Version vom 26.09.2012 05:12
+Chg: Teleportation mit vorhandener BroadCast Funktion und vorhandenem PlayerTeleportEvent
+Chg: Broadcast in abhängigkeit von Server, Client und Single Spiel
+Add: Text für Tankfüllstand (Diesel) in InfoPanel hinzugefügt
+Chg: KeyEvent für Teleport entfernt und mit InputBinding ersetzt
+</msg>
+</logentry>
+<logentry
+   revision="79">
+<author>FoxAlpha</author>
+<date>2012-10-19T17:46:16.811743Z</date>
+<msg>[TRUNK]
+Version vom 24.09.2012 20:30
+Upd: entfernen von unnötigen Zeilen aus der Teleportfunktion im MouseEvent()
+</msg>
+</logentry>
+<logentry
+   revision="78">
+<author>FoxAlpha</author>
+<date>2012-10-19T17:42:33.111452Z</date>
+<msg>[TRUNK]
+Version vom 24.09.2012. 20:11
+Add: Versuch das Teleportieren über ein MultiplayerEvent MP tauglich zu machen</msg>
+</logentry>
+<logentry
+   revision="77">
+<author>FoxAlpha</author>
+<date>2012-10-19T17:31:34.036895Z</date>
+<msg>[TRUNK]
+Version vom 24.09.2012 03:05
+Add: Funktion für Teleport über die Karte
+Add: Tastenkombination für Teleport (ALT Taste)
+Chg: Einstellen der PDA MapGröße in Abhängigkeit der ermittelten Grafikgröße
+Upd: Anpassen der Panel X Position
+Chg: MouseEvent() - Unterscheiden ob Teleportieren oder InfoPanel
+Chg: Texte im Panel nur bei vorhandensein rendern
+Chg: Reihenfolge der Event Funktionen aufgeräumt
+Chg: InputBinding Events in Update() nur wenn Karte aktiv ist
+</msg>
+</logentry>
+<logentry
+   revision="76">
+<author>FoxAlpha</author>
+<date>2012-10-19T16:51:02.105351Z</date>
+<msg>[TRUNK]
+Version vom 16.09.2012 23:05
+Del: Implementieren der Imagesize Bibliothek zum ermitteln der Kartengröße
+Add: Ändern der Kartengröße in der Standard PDA Ansicht</msg>
+</logentry>
+<logentry
+   revision="75">
+<author>FoxAlpha</author>
+<date>2012-10-19T16:21:14.905315Z</date>
+<msg>[TRUNK]
+Add: Externe LUA Funktion um Grafikgröße zu ermitteln</msg>
+</logentry>
+<logentry
+   revision="74">
+<author>FoxAlpha</author>
+<date>2012-10-19T16:11:04.201335Z</date>
+<msg>[TRUNK]
+Add: InfoPanel Dateien für dynamische Darstellung</msg>
+</logentry>
+<logentry
+   revision="73">
+<author>FoxAlpha</author>
+<date>2012-10-19T16:10:30.743469Z</date>
+<msg>[TRUNK]
+Fix: Feldnummern, Feld 14/15 korrigiert</msg>
+</logentry>
+<logentry
+   revision="72">
+<author>FoxAlpha</author>
+<date>2012-10-19T16:07:06.787429Z</date>
+<msg>[TRUNK]
+Version vom 12.09.2012 00:37
+Fix: Rechtschreibfehler in Übersetzungen
+Chg: Format der Ausgabe verschiedener Fehlermeldung beim erzeugen des MapViewers angepasst/korrigiert
+Chg: Behandlung der MapViewer Tastenereignisse durch weitere Abfragen sicherer gemacht
+Add: Dialog mit Fehlermeldung wenn der MapViewer nicht erzeugt werden konnte
+Chg: Bessere Fehlerbehandlung bei der Anzeige der PoI und FNum </msg>
+</logentry>
+<logentry
+   revision="71">
+<author>FoxAlpha</author>
+<date>2012-10-18T19:41:10.776073Z</date>
+<msg>[TRUNK]
+Version vom 01.09.2012
+Chg: Tastenkombination für Mapgrösse auskommentiert
+Fix: Speichern der Einstellungen bei Tastendruck, nur wenn Server- oder Singlespiel
+</msg>
+</logentry>
+<logentry
+   revision="70">
+<author>FoxAlpha</author>
+<date>2012-10-18T19:28:36.506506Z</date>
+<msg>[TRUNK]
+Weitere Version vom 31.08.2012
+Add: Weitere Übersetzungen in der modDesc.xml für Meldungen im Log
+Add: Funktionen für Lokale Overlaydateien
+- mv_pda_
+- mv_poi_
+- mv_fnum_
+- Laden der Lokalen Dateien erst am Ende der Initialisierung. Lokale Dateien haben Vorrang vor integrierten MV Dateien
+Chg: Meldung für Mapgröße mir Übversetzung für Logausgabe umformartiert
+Upd: Format der Ausgabe für Fehlertexte vereinheitlicht
+Chg: Speichern des Map Zipnamens statt des Kartennamens
+Chg: Kleine Änderungen in der Behandlkung der Vehicleinfo Table
+Chg: Quelltext aufgeräumt und Lesbarer gestaltet
+</msg>
+</logentry>
+<logentry
+   revision="69">
+<author>FoxAlpha</author>
+<date>2012-10-18T19:20:38.139322Z</date>
+<msg>[TRUNK]
+Version vom 31.08.2012
+Add: Anzeige des Namens der aktuell geladenenen Karte
+Add: Anzeige der ermittelten Mapgröße
+Chg: Speichern des Mapnamens in lokaler XML
+Del: Alte Funktion zum zeichnen der Legende entfernt</msg>
+</logentry>
+<logentry
+   revision="68">
+<author>FoxAlpha</author>
+<date>2012-10-18T19:16:26.564668Z</date>
+<msg>[TRUNK]
+Version vom 30.08.2012
+Chg: Ermitteln der Implements
+- Auch nicht befüllbare Impolements ermitteln und anzeigen
+Chg: Weitere Optimierung der Funktion zum ermitteln der Füllstände
+Fix: Fehlerausgabe für MapLegende
+Chg: Zusätzliche Infos im Panel per Schleife anzeigen
+</msg>
+</logentry>
+<logentry
+   revision="67">
+<author>FoxAlpha</author>
+<date>2012-10-18T19:09:59.702061Z</date>
+<msg>[TRUNK]
+Version vom 29.08.2012
+Chg: Übersetzung für Ballenpreese und Ballensammler
+- Trennung der Icons
+Chg: Trennung der InfoPanel Grafik in 3 Teile für dynamische größe
+Upd: Ändern der Infopanel Table für dynamischen Hintergrund
+Add: Funktion zum Ermitteln aller Attachments
+Chg: weiteres vereinfachen der Funktion zum ermitteln der Vehicle Infos 
+Chg: Anpassen der Funktionen zum darstellen des InfoPanels
+</msg>
+</logentry>
+<logentry
+   revision="66">
+<author>FoxAlpha</author>
+<date>2012-10-18T18:00:20.281797Z</date>
+<msg>[TRUNK]
+Version vom 27.08.2012
+Add: Steuern der Infopanel Anzeige über boolsche Variable
+Fix: Position der MapLegende
+Chg: Trennen der Ermittlung für den FillType für Fahrzeuge und Attachments
+Fix: Abfrage für Vehicles mit GrainTankCapacity
+</msg>
+</logentry>
+<logentry
+   revision="65">
+<author>FoxAlpha</author>
+<date>2012-10-18T17:52:50.252909Z</date>
+<msg>[TRUNK]
+-- Hinzufügen der Version vom 23.08.2012
+Add: Workaround um den Vehiclenamen mit in die Infos einzubinden (Steerable und attachments)
+Chg: Rework der Legenden Funktionen
+Fix: Namenskorrektur in iunterner Attachmentsliste
+Fix: Unterscheiden zwischen Server und Client Spiel
+- MapViewer Optionen aus XML nur dann laden wenn es sich um ein Server oder Single Spiel handelt
+Chg: Anpassen der Optionen speichern Funktion SaveToFile()
+- Parameter übergeben ob es sich um eine ältere Version handelt und die Datei neugeschrieben werden muss.
+Chg: MV Versionsnummer in lokaler mapviewer.xml speichern
+Chg: Lokale XML neuschreiben, wenn Versionsnummer älter oder nicht vorhanden ist.
+Kein speichern mehr der Mapgröße in lokaler XML Datei
+Chg: Anpassen der Optionen Load Funktion
+- Lesen und vergleichen der Versionsnummer, bei bedarf mit SaveFunktion lokale XML neuschreiben.
+Add: Netzwerkfunktionen um einige Standard Einträge erweitert
+Add: Erweitern der MouseEvent() um Vehicle INformationen zusammen
+Add: Vereinfachen der Funktion zum ermitteln der Vehicle Infos
+- Sichern der alten Funktion 
+Chg. Vereinfachen der Funktion um die MapLegende anzuzeigen
+- Vereinfachte Schleife durch Table
+Fix: Darstellen der Hilfetastentexte
+
+
+</msg>
+</logentry>
+<logentry
+   revision="64">
+<author>FoxAlpha</author>
+<date>2012-10-18T17:23:19.557674Z</date>
+<msg>[TRUNK]
+Chg: Wechseln des Docs Ordners auf Version 0.6.0</msg>
+</logentry>
+<logentry
+   revision="63">
+<author>FoxAlpha</author>
+<date>2012-10-18T17:21:37.093371Z</date>
+<msg>[TRUNK]
+Add: Grafikldateien für Panel</msg>
+</logentry>
+<logentry
+   revision="62">
+<author>FoxAlpha</author>
+<date>2012-10-18T17:20:40.983435Z</date>
+<msg>[TRUNK]
+Add: Infopanel Erweiterung vom 21.08.2012
+- InfoPanel anzeige per Mouseclick in der aktiven Karte
+- Anzeige der rudimentären Fahrzeug Informationen
+</msg>
+</logentry>
+<logentry
+   revision="59">
+<author>FoxAlpha</author>
+<date>2011-08-23T17:22:38.315421Z</date>
+<msg>[TRUNK]
+Trunk wieder mit der letzten Entwicklung auf einen Stand gebarcht</msg>
+</logentry>
+<logentry
+   revision="8">
+<author>MapViewer</author>
+<date>2011-06-10T00:33:54.826235Z</date>
+<msg>[TRUNK]
+ADD: Readmeas und Changelog von v0.4.0</msg>
+</logentry>
+<logentry
+   revision="7">
+<author>MapViewer</author>
+<date>2011-06-10T00:33:13.250703Z</date>
+<msg>[TRUNK]
+ADD: Aktuellen Source von v0.4.0</msg>
+</logentry>
+<logentry
+   revision="6">
+<author>MapViewer</author>
+<date>2011-06-10T00:32:14.226098Z</date>
+<msg>[TRUNK]
+ADD: Icons v0.4.0
+- Symbole zur Darstellung
+</msg>
+</logentry>
+<logentry
+   revision="5">
+<author>MapViewer</author>
+<date>2011-06-10T00:30:31.328401Z</date>
+<msg>[TRUNK]
+ADD: gfx Ordner v0.4.0
+-Benötigte Grafiken zur Darstellung</msg>
+</logentry>
+<logentry
+   revision="4">
+<author>MapViewer</author>
+<date>2011-06-10T00:28:31.033664Z</date>
+<msg>[Projekt]
+CHG: Sprache eingestellt</msg>
+</logentry>
+<logentry
+   revision="1">
+<author>MapViewer</author>
+<date>2011-06-08T22:50:10.159813Z</date>
+<msg>Projektimport</msg>
+</logentry>
+</log>

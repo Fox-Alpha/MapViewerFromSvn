@@ -177,13 +177,14 @@ function mapviewer:initMapViewer()
 	--
 	-- Wenn keine vorgegebene Datei als Karte verwendet werden soll
 	--
-	self.mapPath = g_currentMission.missionInfo.map.baseDirectory;
+	--self.mapPath = g_currentMission.missionInfo.map.baseDirectory;
+	self.mapPath = g_currentMission.loadingMapBaseDirectory;
 
     --
     -- Prüfen ob es sich um die Standard Karte handelt
     --
 	self.mapName = g_currentMission.missionInfo.map.title;
-	self.mapZipName = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+	self.mapZipName = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	
 	local pdaPath = {};
 	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});					--[hauptverzeichnis]/
@@ -751,10 +752,10 @@ function mapviewer:checkLocalPDAFile()
 	fileName = "mv_pda_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
@@ -777,10 +778,10 @@ function mapviewer:checkLocalFnumFile()
 	fileName = "mv_fnum_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
@@ -802,10 +803,10 @@ function mapviewer:checkLocalPoIFile()
 	fileName = "mv_poi_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);

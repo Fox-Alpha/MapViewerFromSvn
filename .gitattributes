@@ -44,3 +44,5 @@ icons/tractorctrl.dds -text
 /mv_fnum_hagenstedt.dds -text
 /mv_pda_hagenstedt.dds -text
 /mv_poi_hagenstedt.dds -text
+/subversion.xml -text svn_keywords=Author+Date+Id+Rev+URL
+/xmllog.bat svneol=CRLF#text/plain eol=crlf
