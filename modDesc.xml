@@ -1,11 +1,9 @@
-<!--
--- Revision der letzten Änderung :     $Rev$
--- Author der letzten Änderung   :     $Author$
--- Date der letzten Änderung     :     $Date$
--- $URL$
--->
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="9">
+<!-- Revision der letzten Änderung :     $Rev$ -->
+<!-- Author der letzten Änderung   :     $Author$ -->
+<!-- Date der letzten Änderung     :     $Date$ -->
+<!-- $URL$ -->
     <author>Fox-Alpha</author>
     <version>V0.7 LS2013</version>
 	<iconFilename>gfx/mapviewer.dds</iconFilename>
@@ -101,6 +99,14 @@
 			<en>Checking for locale FNum and PoI overlay files</en>
 			<de>%s Datei erfolgreich geladen</de>	
 		</text>
+		<text name="MV_InitHorseShoesSuccess">
+			<en>Preparing horseshoes successfull</en>
+			<de>Vorbereiten der Hufeisen erfolgreich</de>	
+		</text>
+		<text name="MV_LocaleFileSuccess">
+			<en>Checking for locale FNum and PoI overlay files</en>
+			<de>%s Datei erfolgreich geladen</de>	
+		</text>
 		
         <!-- Aktiver Overlay Modus -->
 		<text name="MV_Mode1">
@@ -109,7 +115,7 @@
 		</text>
 		<text name="MV_Mode1Name">
 			<en>HotSpots and Fieldstatus</en>
-			<de>HotSpots und Felderstatus</de>	
+			<de>HotSpots und Felderbesitzstatus</de>	
 		</text>
 		<text name="MV_Mode2">
 			<en>MapViewer Overlay Mode 2</en>
@@ -140,16 +146,22 @@
 			<de>MapViewer Overlay Modus 5</de>	
 		</text>
 		<text name="MV_Mode5Name">
-			<en>Show active Courseplay Tracks</en>
-			<de>Aktive CoursePlay Kurse anzeigen</de>	
+			<en>Show open horseshoes on Map</en>
+			<de>Noch offene Hufeisen anzeigen</de>	
 		</text>
 		<text name="MV_Mode6">
 			<en>MapViewer Overlay Mode 6</en>
 			<de>MapViewer Overlay Modus 6</de>	
 		</text>
 		<text name="MV_Mode6Name">
-			<en>Show horseshoes on Map</en>
-			<de>Noch offene Hufeisen anzeigen</de>	
+			<en>Show active Courseplay Tracks</en>
+			<de>Alle aktiven CoursePlay Kurse anzeigen</de>	
+		</text>
+		
+		<!-- windrow Übersetzung -->
+		<text name="MV_Windrow">
+			<en> windrow</en>
+			<de> Schwad</de>	
 		</text>
 		
         <!-- Maplegende Bezeichnung -->
@@ -285,6 +297,10 @@
 			<en>-- Hired --</en>
 			<de>-- Helfer --</de>	
 		</text>
+		<text name="MV_ActiveCPCourse">
+			<en>Active CP Course</en>
+			<de>Aktiver CP Kurs</de>	
+		</text>
 		
 		<!-- HotSpot Übersetungen -->
 							  
@@ -381,24 +397,24 @@
 			<de>Hinweis: Keine lokale FNum Datei im  Modordner vorhanden</de>	
 		</text>
 		
-		<!-- Fehlermeldungen für Flaschen -->
-		<text name="MV_ErrorInitBottles">
-			<en>Warning: Could not load 'Bottlefinder Overlay' file. Bottlefinder are disabled. This Map doesn't support Bottles</en>
-			<de>Warnung: Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
+		<!-- Fehlermeldungen für Hufeisen -->
+		<text name="MV_ErrorInitHorseShoes">
+			<en>Hint: Horseshoefinder are disabled. This Map doesn't support horseshoes</en>
+			<de>Hinweis: Hufeisenanzeige wird deaktiviert. Diese Karte unterstützt kein Hufeisen sammeln</de>	
 		</text>
-		<text name="MV_ErrorBottlesCreateOverlay">
-			<en>Error: Could not create 'Bottlefinder Overlay'. Bottlefinder Overlay are disabled. </en>
-			<de>Fehler: Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
+		<text name="MV_ErrorHorseShoesCreateOverlay">
+			<en>Error: Could not create 'Horseshoefinder Overlay'. Horseshoefinder Overlay are disabled. </en>
+			<de>Fehler: Kann 'Hufeisen Overlay' nicht erzeugen. Hufeisen Overlay wird deaktiviert.</de>
 		</text>
 		
 		<!-- Fehlermeldungen für Legende -->
 		<text name="MV_ErrorInitLegend">
 			<en>Could not load 'Legend Overlay' file. Legend are disabled. This Map doesn't support Bottles</en>
-			<de>Kann 'Flaschen Overlay' Datei nicht finden, Flaschenanzeige wird deaktiviert. Diese Karte unterstützt kein Flaschensammeln</de>	
+			<de>Kann 'Legenden Overlay' Datei nicht finden, Legendenanzeige wird deaktiviert.</de>	
 		</text>
 		<text name="MV_ErrorLegendCreateOverlay">
 			<en>Warning: Could not create 'Legend Overlay'. Legend Overlay are disabled. </en>
-			<de>Warnung: Kann 'Flaschen Overlay' nicht erzeugen. Flaschen Overlay wird deaktiviert.</de>
+			<de>Warnung: Kann 'Legenden Overlay' nicht erzeugen. Legenden Overlay wird deaktiviert.</de>
 		</text>
 		
 		

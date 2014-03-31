@@ -12,48 +12,36 @@
 mapviewer={};
 mapviewer.moddir=g_currentModDirectory;
 mapviewer.modName = g_currentModName;
--- source(mapviewer.moddir.."MapViewerTeleportEvent.lua");
-
--- Pfad und Dateiname für PDA Map für Mod Karten
--- Versuchen über missionPDA.pdaMapOverlay auf ganzen Bildschirm anzuzeigen
-
--- Verschiedene Pfade für Modkarten vorgeben und schauen ob Pda Datrei vorhanden ist.
-
 ----
--- Globale ToDo's :
+-- Globale ToDos :
 ----
 -- GetNoNil aus den Aufrufen von getText entfernen oder gegen eigene Funktion ersetzten
 -- Übersetzungen prüfen
 -- Panel position anpassen wenn am Bildschirmrand (Oben und rechts)
--- DONE: Kapazitäten gegen 0 prüfen, Zeile bei 0 ausblenden (Ballentransporthänger, Häcksler)
--- DONE: Panelanzeige auf rootNode testen
--- DONE: Michtruck auf Karte mit anzeigen, eigenes Symbol mit Farbe weiss g_currentMission.trafficVehicles[]   rootNode, ["typeName"] = "milktruck";, 
 -- Tastenhilfe
 -- Alle renderOverlay() auf gültigkeit Prüfen
--- Alle Spieler auf PDA anzeigen, Position des Spielernamens auf PDA korrigieren
 -- Globale Tastenbelegung korriigieren.Zwei m<l InputBinding in Moddesc
 ----
 -- Testen:
 ----
--- DONE: Client Teleport im MP Modus
--- Bei Fahrzeugen mit fillKapazität und nicht Combine
 -- 
 ----
 -- Übersetzungen :
 ----
--- Selbstfahrspritze ist selfpropeleredsprayer / de fehlt || Filtype fehlt
--- typ Implement, dann Typ=Name, Optional Typ vergleichen (Gewicht, Schild, Ballengabel, Palettengabel)
--- saat in Maschine, Ausgewählte Saat !
--- Miststreuer ist manuresprayder
--- Ladewagen (Gras) ist foragewagon
--- Güllefass ist Sprayer_animated
--- Hecksler und Maisgebiss ist cutter_animated
--- Mähwerk ist mower
--- Ballensammler ist Name=automatic Baleloader, Typ baleLoader
--- Schaufel Name=shovel
--- Palletengabel angehängt ist Implement
--- Type combine_cilyndered
--- cultivator_animated muss grubber
+-- TODO: Selbstfahrspritze ist selfpropeleredsprayer / de fehlt || Filtype fehlt
+-- TODO: typ Implement, dann Typ=Name, Optional Typ vergleichen (Gewicht, Schild, Ballengabel, Palettengabel)
+-- TODO: saat in Maschine, Ausgewählte Saat !
+-- TODO: Miststreuer ist manuresprayder
+-- TODO: Ladewagen (Gras) ist foragewagon
+-- TODO: Güllefass ist Sprayer_animated
+-- TODO: Hecksler und Maisgebiss ist cutter_animated
+-- TODO: Mähwerk ist mower
+-- TODO: Ballensammler ist Name=automatic Baleloader, Typ baleLoader
+-- TODO: Schaufel Name=shovel
+-- TODO: Palletengabel angehängt ist Implement
+-- TODO: Type combine_cilyndered
+-- TODO: cultivator_animated muss grubber
+-- TODO: auf weitere LS2013 Fahrzeugtypen für Legende prüfen
 ----
 
 ----
@@ -64,8 +52,6 @@ function mapviewer:loadMap(name)
 	local userXMLPath = Utils.getFilename("mapviewer.xml", mapviewer.moddir);
 	self.xmlFile = loadXMLFile("xmlFile", userXMLPath);
 	
-	-- dofile = myapp.import;
-
 	self.mapvieweractive=false;
 	self.maplegende = false;
 	self.activePlayerNode=0;
@@ -73,13 +59,17 @@ function mapviewer:loadMap(name)
 	self.showFNum = false;
 	self.showPoi = false;
     self.showCP = false;
-    self.showBottles = false;
+    self.showHorseShoes = false;
     self.showInfoPanel = false;
 	self.showHotSpots = false;
+	self.showTipTrigger = true;
     
-    self.useBottles = true;
+    self.useHorseShoes = true;
     self.useLegend = true;
 	self.useTeleport = false;
+	self.useHotSpots = true;
+	self.useTipTrigger = true;
+    self.useCoursePlay = false;
 	
 	self.setNewPlyPosition = false;
     
@@ -89,7 +79,6 @@ function mapviewer:loadMap(name)
 	self.useDefaultMap = false;
 	self.mapName = "";
     
-    self.courseplay = true;
 	
 	self.printInfo = false;
 	
@@ -108,14 +97,15 @@ function mapviewer:loadMap(name)
 	self.mouseX = 0;
 	self.mouseY = 0;
 	
-	self.debug = {};
-	self.debug.printHotSpots = false;
 	
 	
 	----
 	-- Debug Modus
 	----
-	self.Debug = false;
+	self.Debug = {};
+	self.Debug.active = true;
+	self.Debug.printHotSpots = false;
+	self.Debug.printHorseShoes = false;
 	----
 	
 	self.mv_Error = false;
@@ -123,7 +113,6 @@ function mapviewer:loadMap(name)
 	----
 	-- Workaround um in den Steerable den Namen als .name einzubinden
 	----
-	-- local aNameSearch = {"vehicle.typeDesc", "vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle.name", "vehicle#type"};
 	local aNameSearch = {"vehicle.name." .. g_languageShort, "vehicle.name.en", "vehicle#type"};
 	
 	if Steerable.load ~= nil then
@@ -137,11 +126,6 @@ function mapviewer:loadMap(name)
 				if self.name ~= nil then break; end;
 			end;
 			if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
-			-- self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
-			-- if g_i18n:hasText(self.name) then
-			-- self.name = g_i18n:getText(self.name);
-			-- print(tostring(self.name));
-			-- end;
 		end;
 	end;
 	
@@ -156,13 +140,6 @@ function mapviewer:loadMap(name)
 				if self.name ~= nil then break; end;
 			end;
 			if self.name == nil then self.name = g_i18n:getText("UNKNOWN") end;
-			-- print(tostring(self.name));
-			-- if g_i18n:hasText(self.name) then
-				-- self.name = g_i18n:getText(self.name);
-			-- end;
-			-- self.name = Utils.getXMLI18N(xmlFile, "vehicle.typeDesc", "", "TypeDescription"); --, instance.customEnvironment);
-			-- self.name = g_i18n:getText(self.name);
-			-- print(tostring(self.name));
 		end
 	end;
 	----
@@ -173,7 +150,7 @@ end;
 -- Grundwerte des Mods setzen
 -- Laden und erstellen der Overlays, usw.
 ----
-function mapviewer:InitMapViewer()
+function mapviewer:initMapViewer()
     print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
     
 	----
@@ -186,8 +163,6 @@ function mapviewer:InitMapViewer()
     self.bigmap.PoI = {};
     self.bigmap.FNum = {};
 
-	-- self.bigmap.mapDimensionX = 2048;
-	-- self.bigmap.mapDimensionY = 2048;
 	self.bigmap.mapWidth = 1;
 	self.bigmap.mapHeight = 1;
 	self.bigmap.mapPosX = 0.5-(self.bigmap.mapWidth/2);
@@ -274,15 +249,15 @@ function mapviewer:InitMapViewer()
 	self.bigmap.mapTransp = 1;
 	----
 	
-	if self.Debug then
+	if self.Debug.active then
 		print("Debug: ");
 		print(string.format("self.useMapFile: %s", tostring(self.useMapFile)));
 		print(string.format("self.bigmap.file: %s", self.bigmap.file));
-		print(string.format("self.bigmap.OverlayId.ovid: %d", self.bigmap.OverlayId.ovid));
+		print(string.format("self.bigmap.OverlayId.ovid: %s", tostring(self.bigmap.OverlayId.ovid)));
 		print("LoadMap()");
 		print(string.format("Map Pfad : %s", self.mapPath));
 
-		print(string.format("Overlay  : %d", self.bigmap.OverlayId.ovid));
+		print(string.format("Overlay  : %s", tostring(self.bigmap.OverlayId.ovid)));
 	end;
 		
     
@@ -337,30 +312,25 @@ function mapviewer:InitMapViewer()
 	self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
 	-- Informationen die angezeigt werden
 	self.bigmap.InfoPanel.Info = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+	--- Fahrzeug Informationen
 	self.bigmap.InfoPanel.vehicleIndex = 0;
 	self.bigmap.InfoPanel.isVehicle = false;
 	self.bigmap.InfoPanel.lastVehicle = {};
-	
-	-- Buttons im Panel
-	-- self.bigmap.InfoPanel.buttons =	{};
-	-- self.bigmap.InfoPanel.buttons =	{switch = {file = "", OverlayId = nil}, close = {file = "", OverlayId = nil}};
-		-- Switch Button
-		-- self.bigmap.InfoPanel.buttons.switch.file =	Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonSwitch#file"), ".png"), self.moddir);
-		-- self.bigmap.InfoPanel.buttons.switch.OverlayID = createImageOverlay(self.bigmap.InfoPanel.buttons.switch.file);
-		-- self.bigmap.InfoPanel.buttons.switch.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonSwitch#width"), 0.0078125);
-		-- self.bigmap.InfoPanel.buttons.switch.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonSwitch#height"), 0.0078125);
-		-- self.bigmap.InfoPanel.buttons.switch.x = 0;
-		-- self.bigmap.InfoPanel.buttons.switch.y = 0;
-		--
-		-- Close Button
-		-- self.bigmap.InfoPanel.buttons.close.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonClose#file"), ".png"), self.moddir);	
-		-- self.bigmap.InfoPanel.buttons.close.OverlayID =	createImageOverlay(self.bigmap.InfoPanel.buttons.close.file);
-		-- self.bigmap.InfoPanel.buttons.close.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonClose#width"), 0.0078125);
-		-- self.bigmap.InfoPanel.buttons.close.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanesl.Buttons.ButtonClose#height"), 0.0078125);
-		-- self.bigmap.InfoPanel.buttons.close.x = 0;
-		-- self.bigmap.InfoPanel.buttons.close.y = 0;
-		----
-	-- Ende Infopanel Buttons
+	--- Trigger Informationen
+	self.bigmap.InfoPanel.triggerIndex = 0;
+	self.bigmap.InfoPanel.isTrigger = false;
+	self.bigmap.InfoPanel.lastTrigger = {};
+	self.bigmap.InfoPanel.triggerType = {	
+											"StationTrigger",	-- Verkaufsstellen
+											"FarmTrigger", 		-- HofSilos
+											"BGA", 				-- BGA Lager ?
+											"GAS", 				-- Tankstellen	
+											"FieldTrigger",		-- Feldnummern
+											"Other",			-- Alles andere
+										};
+	self.bigmap.InfoPanel.isField = false;
+	self.bigmap.InfoPanel.lastField = {};
+	self.bigmap.InfoPanel.fieldIndex = 0;
 	----
 	
     ----
@@ -375,6 +345,7 @@ function mapviewer:InitMapViewer()
     self.bigmap.vehicleTypes.width = 0.01;
     self.bigmap.vehicleTypes.height = 0.01;
     
+	-- TODO: Typen an LS 2013 anpassen
     self.bigmap.attachmentsTypes = {};
     self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingMachine", "plough", "sprayer", "baler", "baleLoader", "cultivator", "tedder", "windrower", "shovel", "mower", "cultivator_animated", "selfPropelledSprayer", "cutter_animated", "sprayer_animated", "manureSpreader", "forageWagon", "other"};
     self.bigmap.attachmentsTypes.icons = {}
@@ -383,7 +354,6 @@ function mapviewer:InitMapViewer()
     for at=1, table.getn(self.bigmap.attachmentsTypes.names) do
         local tempIcon = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"), "icons/feldgeraet.dds"), self.moddir);
         table.insert(self.bigmap.attachmentsTypes.icons,tempIcon); 
-        --getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"));
         self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[at]] = createImageOverlay(self.bigmap.attachmentsTypes.icons[at]);
     end;
     self.bigmap.attachmentsTypes.width = 0.01;
@@ -391,12 +361,26 @@ function mapviewer:InitMapViewer()
     ----
 
 	--Array für CourseplayIcon
-	self.bigmap.IconCourseplay = {};
-	self.bigmap.IconCourseplay.Icon = {};
-    self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
-	self.bigmap.IconCourseplay.Icon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.Icon.file);
-	self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
-	self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
+	local mods = g_currentMission.missionDynamicInfo.mods;
+	local beg, ende = 0, 0;
+	for i=1, table.getn(mods) do
+		beg, ende = string.find(string.lower(mods[i].modName), "courseplay");
+		if beg ~= nil and ende ~= nil then
+			self.useCoursePlay = true;
+			break;
+		end;
+	end;
+	if self.useCoursePlay then
+		print(string.format("|| %s || CoursePlay vorhanden ||", g_i18n:getText("mapviewtxt")));
+		self.bigmap.IconCourseplay = {};
+		self.bigmap.IconCourseplay.Icon = {};
+		self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
+		self.bigmap.IconCourseplay.Icon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.Icon.file);
+		self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
+		self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
+	else
+		print(string.format("|| %s || Kein CoursePlay vorhanden ||", g_i18n:getText("mapviewtxt")));
+	end;
 	----
 
 	--Array für isBrokenIcon
@@ -408,19 +392,42 @@ function mapviewer:InitMapViewer()
 	self.bigmap.iconIsBroken.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconIsBroken#height"), 0.0078125);
 	----
 
-	--Array für Bottle anzeige
-    self.useBottles = true;
-	self.bigmap.iconBottle = {};
-	self.bigmap.iconBottle.Icon = {};
-    self.bigmap.iconBottle.Icon.OverlayId = nil;
-    self.bigmap.iconBottle.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconBottle#file"), "icons/Bottle.dds"), self.moddir);
-	self.bigmap.iconBottle.Icon.OverlayId = createImageOverlay(self.bigmap.iconBottle.Icon.file);
-    if self.bigmap.iconBottle.Icon.OverlayId == nil or self.bigmap.iconBottle.Icon.OverlayId == 0 then
-        self.useBottles = false;
-		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitBottles")));
+	--Array für HorseShoes anzeige
+    self.useHorseShoes = true;
+	self.bigmap.iconHorseShoes = {};
+	self.bigmap.iconHorseShoes.Icon = {};
+    self.bigmap.iconHorseShoes.Icon.OverlayId = nil;
+    self.bigmap.iconHorseShoes.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#file"), "icons/hufeisen.dds"), self.moddir);
+	self.bigmap.iconHorseShoes.Icon.OverlayId = createImageOverlay(self.bigmap.iconHorseShoes.Icon.file);
+	self.bigmap.iconHorseShoes.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#width"), 0.0078125);
+	self.bigmap.iconHorseShoes.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#height"), 0.0156250);
+    if self.bigmap.iconHorseShoes.Icon.OverlayId == nil or self.bigmap.iconHorseShoes.Icon.OverlayId == 0 then
+        self.useHorseShoes = false;
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
+    elseif g_currentMission.collectableHorseshoesObject == nil or g_currentMission.collectableHorseshoesObject == 0 then
+        self.useHorseShoes = false;
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
+	else
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InitHorseShoesSuccess")));
     end;
-	self.bigmap.iconBottle.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#width"), 0.0078125);
-	self.bigmap.iconBottle.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconBottle#height"), 0.0156250);
+	----
+    
+	--Array für TipTrigger anzeige
+    self.useTipTrigger = true;
+	self.bigmap.iconTipTrigger = {};
+	self.bigmap.iconTipTrigger.Icon = {};
+    self.bigmap.iconTipTrigger.Icon.OverlayId = nil;
+    self.bigmap.iconTipTrigger.Icon.file = Utils.getFilename("$dataS2/missions/hud_pda_spot_tipPlace.png", self.baseDirectory); -- Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#file"), "icons/hufeisen.dds"), self.moddir);
+	self.bigmap.iconTipTrigger.Icon.OverlayId = createImageOverlay(self.bigmap.iconTipTrigger.Icon.file);
+	self.bigmap.iconTipTrigger.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#width"), 0.0078125);
+	self.bigmap.iconTipTrigger.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#height"), 0.0156250);
+    if self.bigmap.iconTipTrigger.Icon.OverlayId == nil or self.bigmap.iconTipTrigger.Icon.OverlayId == 0 then
+        self.useTipTrigger = false;
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
+	else
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), "TipTrigger vorbereiten erfolgreich"));	-- TODO: Übersetzen
+		print(table.show(self.bigmap.iconTipTrigger, "TipTrigger"));
+    end;
 	----
     
 	--Array für Spielerinfos
@@ -459,11 +466,10 @@ function mapviewer:InitMapViewer()
 		----
 		local _lx, _ly, _tx, _ty;
 		_tx = self.bigmap.Legende.legPosX + 0.029297;
-		-- _lx = _tx + 0.007324;
 		_lx = self.bigmap.Legende.legPosX + 0.007324;
 		_ly = 1-0.02441 - 0.007324 - 0.015625;
 		_ty = _ly;
-		--self.bigmap.Legende.Content, {l_PosX, l_PosY, OverlayID, l_Txt, Txt, TxtSize}
+
 		--Eigener Spieler Icon
 		table.insert(self.bigmap.Legende.Content, {l_PosX = _lx, l_PosY = _ly, 		 OverlayID = createImageOverlay(self.bigmap.player.file), l_Txt = _tx, Txt = g_i18n:getText("MV_LegendeLocalPlayer"), TxtSize = 0.016});
 		--Andere Spieler Icon
@@ -477,27 +483,6 @@ function mapviewer:InitMapViewer()
 		----	
 	----
 
-    ----
-	-- Nur Laden und speichern, wenn Singleplayer oder nicht client im Multiplayer
-	-- print("Nur Laden und speichern, wenn Singleplayer oder nicht client im Multiplayer");
-	----
-	-- print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
-	-- print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
-	-- print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
-	----
-	-- if g_currentMission:getIsServer() then
-		-- print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LoadOptions")));
-		-- local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/mapviewer.xml";
-
-		-- if mapviewer:file_exists(path) then
-			-- mapviewer:LoadFromFile();
-		-- else
-			-- mapviewer:SaveToFile();
-		-- end;
-		-- print(string.format("|| %s || %s complete ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LoadOptions")));
-	-- end;
-	----
-	
     ----
 	-- Prüfen auf lokale PDA Datei
 	----
@@ -535,7 +520,11 @@ function mapviewer:InitMapViewer()
 	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForLocaleOverlay")));
 
 	local bpoi, lfpoi = self:checkLocalPoIFile();
-    self.bigmap.PoI.file = Utils.getFilename("mv_poi_hagenstedt.dds", self.mapPath);
+	if self.useDefaultMap then
+		self.bigmap.PoI.file = Utils.getFilename("mv_poi_" .. string.gsub(g_currentMission.missionInfo.map.title, " ", "_") .. ".dds", self.mapPath);
+	else
+		self.bigmap.PoI.file = Utils.getFilename("mv_poi_" .. self:getModName(self.mapPath) .. ".dds", self.mapPath);
+	end
 	
 	if bpoi and lfpoi ~= nil then
         self.bigmap.PoI.file = lfpoi;
@@ -544,10 +533,12 @@ function mapviewer:InitMapViewer()
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFromLocalPoI")));
     end;
 
+	print(string.format("|| Debug || PoIFile : %s ||", tostring(self.bigmap.PoI.file)));
+	
 	if fileExists(self.bigmap.PoI.file) then 
 		self.bigmap.PoI.OverlayId = createImageOverlay(self.bigmap.PoI.file);
 	else
-		self.bigmap.FNum.file = 0;
+		self.bigmap.PoI.file = 0;
 	end;
 	
     if self.bigmap.PoI.OverlayId == nil or self.bigmap.PoI.OverlayId == 0 then
@@ -559,6 +550,13 @@ function mapviewer:InitMapViewer()
     end;
 	
 	if self.usePoi then
+		if not bpoi and not self.useDefaultMap then 
+			print(string.format("|| %s || PoI Overlay in Map vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		elseif not bpoi and self.useDefaultMap then 
+			print(string.format("|| %s || Nutze MapViewer PoI Overlay ", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		else
+			print(string.format("|| %s || Nutze lokale PoI Overlay Datei", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		end;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapPoISuccess")));
 	end;
 	----
@@ -572,9 +570,15 @@ function mapviewer:InitMapViewer()
 	self.bigmap.FNum.FNumPosX = 0.5-(self.bigmap.FNum.width/2);
 	self.bigmap.FNum.FNumPosY = 0.5-(self.bigmap.FNum.height/2);
 	
-	self.bigmap.FNum.file = Utils.getNoNil(Utils.getFilename("mv_fnum_hagenstedt.dds", self.mapPath), "");
-
 	local bfnum, lfnum = self:checkLocalFnumFile();
+
+	print(string.format("|| Debug || bfnum : %s | lfnum : %s ||", tostring(bfnum), tostring(lfnum)));
+
+	if self.useDefaultMap then
+		self.bigmap.FNum.file = Utils.getFilename("mv_fnum_" .. string.gsub(g_currentMission.missionInfo.map.title, " ", "_") .. ".dds", self.mapPath);
+	else
+		self.bigmap.FNum.file = Utils.getFilename("mv_fnum_" .. self:getModName(self.mapPath) .. ".dds", self.mapPath);
+	end;
 	
 	if bfnum and lfnum ~= nil then
 		self.bigmap.FNum.file = lfnum;
@@ -582,6 +586,8 @@ function mapviewer:InitMapViewer()
 	else
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFromLocalFNum")));
 	end;
+	
+	print(string.format("|| Debug || FnumFile : %s ||", tostring(self.bigmap.FNum.file)));
 	
 	if fileExists(self.bigmap.FNum.file) then 
 		self.bigmap.FNum.OverlayId = createImageOverlay(self.bigmap.FNum.file);
@@ -594,27 +600,19 @@ function mapviewer:InitMapViewer()
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitFNum")));
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateFNumFileNotFound")));
 	end;
-
+	print(string.format("|| Debug || useFnum : %s ||", tostring(self.useFNum)));
 	if self.useFNum then
+		if not bfnum and not self.useDefaultMap then 
+			print(string.format("|| %s || Feldnummern Overlay in Map vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		elseif not bfnum and self.useDefaultMap then 
+			print(string.format("|| %s || Nutze MapViewer Feldnummern Overlay ", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		else
+			print(string.format("|| %s || Nutze lokale Feldnummern Overlay Datei", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		end;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapFNumSuccess")));
 	end;
 	
 	print(string.format("|| %s || %s complete ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForLocaleOverlay")));
-	-- print("--Datein im Mod--");
-	-- print("Mod PDA:    " .. self.bigmap.file .. " || " .. tostring(fileExists(self.bigmap.file)));
-	-- print("Mod PoI:    " .. self.bigmap.PoI.file .. " || " .. tostring(fileExists(self.bigmap.PoI.file)));
-	-- print("Mod FNum:   " .. self.bigmap.FNum.file .. " || " .. tostring(fileExists(self.bigmap.FNum.file)));
-	-- print("--Dateien im Modordner--");
-	-- print("Lokal PDA:  " .. lf .. " || " .. tostring(fileExists(lf)));
-	-- print("Lokal PoI:  " .. lfpoi .. " || " .. tostring(fileExists(lfpoi)));
-	-- print("Lokal FNum: " .. lfnum .. " || " .. tostring(fileExists(lfnum)));
-	-- print("----");
-	----
-	
-	----
-	-- Hotspots printen
-	----
-	-- print(table.show(g_currentMission.missionPDA.hotspots, "Hotspots"));
 	----
 	
 	----
@@ -630,7 +628,7 @@ end;
 -- Namen der Datei eines Mods ermitteln
 -- Ermittelt aus dem Pfad den Namen ohne Dateiendung
 ----
-function mapviewer:getModName(s)
+function mapviewer:getModName(s) 
 	local temp;
 	local PathToModDir;
 	
@@ -724,122 +722,6 @@ end;
 ----
 
 ----
--- Speichern der Einstellungen im Savegame Ordner
-----
-function mapviewer:SaveToFile(mv_old)
-    local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/";
-    local mvxml = nil;
-
-	return;	
-end;
-
-function mapviewer:oldSaveToFile(mv_old)
-    if not mapviewer:file_exists(path .. "MapViewer.xml") or mv_old then
-        -- XML Datei im Savegame Ordner erstellen
-        mvxml = createXMLFile("MapViewerXML", path .. "MapViewer.xml", "MapViewer");
-    else
-        mvxml = loadXMLFile("MapViewerXML", path .. "MapViewer.xml"); 
-    end;
-    
-    -- Einstellungen in XML speichern
-    if mvxml ~= nil then
-        -- int
-        setXMLInt(mvxml, "mapviewer.map.mapSize#DimX", self.bigmap.mapDimensionX);
-        setXMLInt(mvxml, "mapviewer.map.mapSize#DimY", self.bigmap.mapDimensionY);
-        
-        setXMLInt(mvxml, "mapviewer.overlay#Index", self.numOverlay);
-        -- Float
-        setXMLFloat(mvxml, "mapviewer.map#transparenz", self.bigmap.mapTransp);
-        -- string
-		setXMLString(mvxml, "mapviewer#ver", "v0.60");
-		setXMLString(mvxml, "mapviewer#mapName", self.mapZipName);
-        -- bool
-        setXMLBool(mvxml, "mapviewer.map.default#use", self.useDefaultMap);
-        
-        setXMLBool(mvxml, "mapviewer.overlay.legende#use", self.useLegend);
-        setXMLBool(mvxml, "mapviewer.overlay.legende#show", self.maplegende);
-        
-        setXMLBool(mvxml, "mapviewer.overlay.fnum#use", self.useFNum);
-        setXMLBool(mvxml, "mapviewer.overlay.fnum#show", self.showFNum);
-
-        setXMLBool(mvxml, "mapviewer.overlay.poi#use", self.usePoi);
-        setXMLBool(mvxml, "mapviewer.overlay.poi#show", self.showPoi);
-
-        setXMLBool(mvxml, "mapviewer.overlay.bottles#use", self.useBottles);
-        setXMLBool(mvxml, "mapviewer.overlay.bottles#show", self.showBottles);
-
-        -- self.courseplay = true;
-        setXMLBool(mvxml, "mapviewer.overlay.courseplay#show", self.showCP);
-
-        setXMLBool(mvxml, "mapviewer.debug#use", self.Debug);
-        
-        saveXMLFile(mvxml);
-   else
-        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorSaveOptions"));
-    end;    
-end;
-----
-
-----
--- Laden der gespeicherten Einstellungen
-----
-function mapviewer:LoadFromFile()
-    local path = getUserProfileAppPath() .. "savegame" .. g_careerScreen.selectedIndex .. "/";
-    local mvxml = nil; 
-	local mv_ver = "v0.60"
-	
-	return;
-end;
-function mapviewer:oldLoadFromFile()
-    mvxml = loadXMLFile("MapViewerXML", path .. "MapViewer.xml"); 
-    
-    if mvxml ~= nil then
-		----
-		-- ToDo: Auslesen der MV Version und Vergleichen
-		-- Bei alten Versionen mit neuester ersetzen
-		----
-		if Utils.getNoNil(getXMLString(mvxml, "mapviewer#ver"), "MV_OLD") == mv_ver and getXMLString(mvxml, "mapviewer#mapName") ~= nil and getXMLString(mvxml, "mapviewer#mapName") == self.mapZipName then
-		----
-			-- int
-			-- self.bigmap.mapDimensionX = getXMLInt(mvxml, "mapviewer.map.mapSize#DimX");
-			-- self.bigmap.mapDimensionY = getXMLInt(mvxml, "mapviewer.map.mapSize#DimY");
-			
-			self.numOverlay = getXMLInt(mvxml, "mapviewer.overlay#Index");
-			-- Float
-			self.bigmap.mapTransp = getXMLFloat(mvxml, "mapviewer.map#transparenz");
-			-- string
-			-- bool
-			self.useDefaultMap = getXMLBool(mvxml, "mapviewer.map.default#use");
-			
-			self.useLegend = getXMLBool(mvxml, "mapviewer.overlay.legende#use");
-			self.maplegende = getXMLBool(mvxml, "mapviewer.overlay.legende#show");
-			
-			self.useFNum = getXMLBool(mvxml, "mapviewer.overlay.fnum#use");
-			self.showFNum = getXMLBool(mvxml, "mapviewer.overlay.fnum#show");
-
-			self.usePoi = getXMLBool(mvxml, "mapviewer.overlay.poi#use");
-			self.showPoi = getXMLBool(mvxml, "mapviewer.overlay.poi#show");
-
-			self.useBottles = getXMLBool(mvxml, "mapviewer.overlay.bottles#use");
-			self.showBottles = getXMLBool(mvxml, "mapviewer.overlay.bottles#show");
-
-			-- self.courseplay = true;
-			self.showCP = getXMLBool(mvxml, "mapviewer.overlay.courseplay#show");
-
-			self.Debug = getXMLBool(mvxml, "mapviewer.debug#use");
-			
-			saveXMLFile(mvxml);
-		else
-			self:SaveToFile(true);
-			print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorLoadOptionsOldXML"));
-		end;
-    else
-        print(g_i18n:getText("mapviewtxt") .. " : " .. g_i18n:getText("MV_ErrorLoadOptions"));
-    end;
-end;
-----
-
-----
 --
 ----
 function mapviewer:deleteMap()
@@ -855,23 +737,11 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
 	-- ALT+d
     ----
 	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
-		-- print("---- MapViwer Debug aktiviert ----");
-		-- print(table.show(g_currentMission,  "g_CurrentMission"));
-		self.debug.printHotSpots = true;
+		print("---- MapViwer Debug aktiviert ----");
+		self.Debug.active = not self.Debug.active;
+		print("------");
 	end;
 	----
-	
-	----
-	-- Tasten Modofizierer für Teleport
-	----
-	-- if isDown and bitAND(modifier, Input.MOD_ALT) > 0  then
-	-- if bitAND(modifier, Input.MOD_ALT) > 0 then 
-		-- print("---- ALT Taste ist gedrückt ----");
-		-- self.useTeleport= not self.useTeleport;
-	-- else
-	    -- self.useTeleport = false;
-	-- end;
-    ----
 end;
 ----
 
@@ -892,23 +762,31 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 			self.bigmap.InfoPanel.vehicleIndex = nil;
 			self.bigmap.InfoPanel.isVehicle = nil;
 			
+			self.bigmap.InfoPanel.lastTrigger = nil;
+			self.bigmap.InfoPanel.Info = nil;
+			self.bigmap.InfoPanel.triggerIndex = nil;
+			self.bigmap.InfoPanel.isTrigger = nil;
+			
+			self.bigmap.InfoPanel.lastField = nil;
+			self.bigmap.InfoPanel.Info = nil;
+			self.bigmap.InfoPanel.fieldIndex = nil;
+			self.bigmap.InfoPanel.isField = nil;
+			
 			if not self.useTeleport then
 				self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
-				-- print(self:vehicleInMouseRange());
+				self.bigmap.InfoPanel.triggerIndex, self.bigmap.InfoPanel.isTrigger, self.bigmap.InfoPanel.lastTrigger = self:triggerInMouseRange();
+				self.bigmap.InfoPanel.fieldIndex, self.bigmap.InfoPanel.isField, self.bigmap.InfoPanel.lastField = self:fieldInMouseRange();
 				if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
-					-- print(string.format("vehicleInMouseRange() - Fahrzeug in der Nähe : %d / isVehicle : %s", self.bigmap.InfoPanel.vehicleIndex, tostring(self.bigmap.InfoPanel.isVehicle), tostring(self.bigmap.InfoPanel.lastVehicle.name)));
 					self.showInfoPanel = true;
-					panelX, panelY, panelZ = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
-					self.bigmap.InfoPanel.background.Pos.x = posX-0.0078125-0.0078125;
-					self.bigmap.InfoPanel.background.Pos.y = posY;
-					-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || Node : %d ", panelX, panelY, panelZ, self.bigmap.InfoPanel.lastVehicle.rootNode));
 					self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
-					-- print(table.show(self.bigmap.InfoPanel.Info, "vehicleInfo."));
-					-- print(table.show(self.bigmap.InfoPanel.lastVehicle, "vehicle."));
-					-- print("mouseEvent() - showPanel = " .. tostring(self.showInfoPanel));
+				elseif self.bigmap.InfoPanel.lastTrigger ~= nil and type(self.bigmap.InfoPanel.lastTrigger) == "table" and self.bigmap.InfoPanel.triggerIndex > 0 then
+					self.bigmap.InfoPanel.Info = self:GetTriggerInfo(self.bigmap.InfoPanel.lastTrigger);
+					self.showInfoPanel = true;
+				elseif self.bigmap.InfoPanel.lastField ~= nil and type(self.bigmap.InfoPanel.lastField) == "table" and self.bigmap.InfoPanel.fieldIndex > 0 then
+					self.bigmap.InfoPanel.Info = self:GetFieldInfo(self.bigmap.InfoPanel.lastField);
+					self.showInfoPanel = true;
 				else
 					self.showInfoPanel = false;
-					-- print("mouseEvent() - showPanel = " .. tostring(self.showInfoPanel));
 				end;
 			else
 				----
@@ -916,10 +794,6 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				----
 				local tpX, tpY, tpZ;
 				
-				-- print("isClient : " .. tostring(g_currentMission.missionDynamicInfo.isClient));
-				-- print("isMultiplayer : " .. tostring(g_currentMission.missionDynamicInfo.isMultiplayer));
-				-- print("getIsServer() : " .. tostring(g_currentMission:getIsServer()));
-
 				tpX = self.mouseX/self.bigmap.mapWidth*self.bigmap.mapDimensionX-(self.bigmap.mapDimensionX/2);
 				tpZ = -self.mouseY/self.bigmap.mapHeight*self.bigmap.mapDimensionY+(self.bigmap.mapDimensionY/2);
 				tpY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tpX, 0, tpZ) + 10;
@@ -956,6 +830,206 @@ end;
 ----
 
 ----
+-- Feld Trigger in der Nähe des Mausklicks finden
+----
+function mapviewer:fieldInMouseRange()
+	-- print("mapviewer:fieldInMouseRange()");
+	local currFT = nil;
+	local isField = false;
+	local index = 0;
+	local fieldIndex = 0;
+	
+	local nearestDistance = 0.005;
+	local tmpDistance = 0.006;
+	local distance = 0.006;
+	local sDistance = 0.006
+	local aDistance = 0.006;
+	local vDistance = 0.006;
+
+	
+	-- for j=1, table.getn(g_currentMission.tipTriggers) do
+	for i=1, g_currentMission.fieldDefinitionBase.numberOfFields do
+		local currF = g_currentMission.fieldDefinitionBase.fieldDefsByFieldNumber[i];
+		
+		local posX1, posY1, posZ1 = getWorldTranslation(currF.fieldBuyTrigger);
+		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+		
+		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
+		-- print(string.format("Trigger Nr. %s - x:%s - y:%s - z:%s - distance:%s ", tostring(i), tostring(posX1), tostring(posY1), tostring(posZ1), tostring(tmpDistance)));
+		
+		if tmpDistance < nearestDistance then
+			sDistance = tmpDistance;
+			if sDistance < distance then 
+				distance = sDistance;
+				index = i;
+				isField = true;
+				currFT = currF;
+			end;
+		end;
+	end;
+	-- print("index " .. tostring(index));
+	-- print("isField " .. tostring(isField));
+	-- print("currFT " .. tostring(currFT));
+	
+	return index, isField, currFT;	
+end;
+----
+
+----
+-- Trigger in der Nähe des Mausklicks finden
+----
+function mapviewer:triggerInMouseRange()
+	-- print("mapviewer:triggerInMouseRange()");
+	local currTT = nil;
+	local isTrigger = false;
+	local index = 0;
+	local triggerIndex = 0;
+	
+	local nearestDistance = 0.005;
+	local tmpDistance = 0.006;
+	local distance = 0.006;
+	local sDistance = 0.006
+	local aDistance = 0.006;
+	local vDistance = 0.006;
+
+	
+	-- for j=1, table.getn(g_currentMission.tipTriggers) do
+	for i,j in pairs(g_currentMission.tipTriggers) do
+		triggerIndex = triggerIndex +1;
+		local currT = j;-- g_currentMission.tipTriggers[j];
+		
+		local posX1, posY1, posZ1 = getWorldTranslation(currT.rootNode);
+		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+		
+		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
+		-- print(string.format("Trigger Nr. %s - x:%s - y:%s - z:%s - distance:%s ", tostring(i), tostring(posX1), tostring(posY1), tostring(posZ1), tostring(tmpDistance)));
+		
+		if tmpDistance < nearestDistance then
+			sDistance = tmpDistance;
+			if sDistance < distance then 
+				distance = sDistance;
+				index = triggerIndex;
+				isTrigger = true;
+				currTT = currT;
+			end;
+		end;
+	end;
+	-- print("index " .. tostring(index));
+	-- print("isTrigger " .. tostring(isTrigger));
+	-- print("currTT " .. tostring(currTT));
+	
+	return index, isTrigger, currTT;	
+end;
+----
+
+----
+-- Ermitteln der Felder Informationen
+----
+function mapviewer:GetFieldInfo(field)
+	local fieldInfo = {};
+	
+	print("GetFieldInfo() : " .. tostring(field));
+	
+	-- TODO: Texte Übersetzen
+	if field ~= nil and type(field) == "table" then
+		table.insert(fieldInfo, string.format("Feld Nr.: %s", tostring(field.fieldNumber)));
+		table.insert(fieldInfo,string.format("Feldgröße: %0.2f ha",field.fieldArea));		
+		if not field.ownedByPlayer and not field.fieldAuctionActive then
+			table.insert(fieldInfo, string.format("Kaufpreis: %s€", field.fieldPrice));
+		elseif not field.ownedByPlayer and field.fieldAuctionActive then
+			table.insert(fieldInfo,string.format("Aktuelles Gebot: %s",tostring(field.fieldCurrentBid)));
+			table.insert(fieldInfo,string.format("Höchstrer Bieter: %s",tostring(field.fieldHighestBidder)));
+			table.insert(fieldInfo,string.format("Nächstes Gebot: %s",tostring(field.fieldPrice+field.fieldBidStep)));			
+		end;
+	end;
+	
+	return fieldInfo;
+end;
+----
+
+----
+-- Ermitteln der Trigger Informationen
+----
+function mapviewer:GetTriggerInfo(trigger)
+	local triggerInfo = {};
+	local fruits = {};
+	local prices = {};
+	local amounts = {};
+	
+	-- print("GetTriggerInfo() : " .. tostring(trigger));
+	
+	if trigger ~= nil and type(trigger) == "table" then
+		
+		----
+		-- Aktzeptierte Waren und Preise ermitteln
+		----
+		fruits, prices = self:getTriggerFruitTypesAndPrices(trigger);
+		table.insert(triggerInfo, string.format("Name: %s", trigger.stationName));
+		for fillType, _ in pairs (trigger.acceptedFillTypes) do
+			table.insert(amounts, math.ceil(g_currentMission.missionStats.farmSiloAmounts[fillType]));
+		end;
+
+		for i=1, table.getn(fruits) do
+			local Frucht;
+			
+			-- if g_i18n.hasText(fruits[i]) then
+				-- Frucht = Utils.getNoNil(g_i18n:getText(fruits[i]), fruits[i]);
+			-- else
+				-- Frucht = fruits[i];
+			-- end;
+			if trigger.isFarmTrigger then
+				table.insert(triggerInfo, string.format("%s : %s", fruits[i], amounts[i]));
+				-- table.insert(triggerInfo, string.format("%s : %s", Frucht, amounts[i]));
+			else
+				table.insert(triggerInfo, string.format("%s (%s€)", fruits[i], prices[i]));
+				-- table.insert(triggerInfo, string.format("%s (%s€)", Frucht, prices[i]));
+				--print(string.format("%s (%s€)", fruits[i], prices[i]));
+			end;
+		end;
+		----
+	end;
+	
+	return triggerInfo;
+end;
+----
+
+----
+--
+----
+function mapviewer:getTriggerFruitTypesAndPrices(trigger)
+	local fruits = {};
+	local prices = {};
+	local missionStats = g_currentMission.missionStats;
+	
+	-- print("getTriggerFruitTypesAndPrices() : " .. tostring(trigger));
+	
+	for fillType, _ in pairs (trigger.acceptedFillTypes) do
+		local difficultyMultiplier = math.max(2 * (3 - missionStats.difficulty), 1)
+		local greatDemandMultiplier = 1
+		local greatDemand = g_currentMission.economyManager:getCurrentGreatDemand(trigger.stationName, fillType)
+		if greatDemand ~= nil then
+			greatDemandMultiplier = greatDemand.demandMultiplier
+		end
+		local price = math.ceil(Fillable.fillTypeIndexToDesc[fillType].pricePerLiter * 1000 * trigger.priceMultipliers[fillType] * difficultyMultiplier * greatDemandMultiplier);
+		table.insert(prices, price);
+		
+		-- print("acceptedFillTypes:" .. tostring(fillType));
+		if not FruitUtil.fillTypeIsWindrow[fillType] then
+			table.insert(fruits, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fillType].name)), g_i18n:getText("MV_Unknown")));
+		else
+			-- table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name);
+			table.insert(fruits, tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[FruitUtil.fillTypeToFruitType[fillType]].name) .. g_i18n:getText("MV_Windrow")));
+			-- print(g_i18n:getText(Fillable.fillTypeIndexToDesc[fillType].name));
+		end;
+	end;
+	
+	return fruits, prices;
+end;
+----
+
+----
 -- Fahrzeug in der Nähe des Mausklicks finden
 ----
 function mapviewer:vehicleInMouseRange()
@@ -971,8 +1045,6 @@ function mapviewer:vehicleInMouseRange()
 	local aDistance = 0.006;
 	local vDistance = 0.006;
 
-	-- print("--vehicleInMouseRange()--");
-	-- print("--Steerables--");
 	for j=1, table.getn(g_currentMission.steerables) do
 
 		local currS = g_currentMission.steerables[j];
@@ -980,8 +1052,6 @@ function mapviewer:vehicleInMouseRange()
 		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
 		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
 		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
-		-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || X-Y auf Karte : %.3f, %.3f || Maus X-Y : %.3f, %.3f || Distanz: %.3f || Node: %d || Index : %d", 
-										-- posX1, posY1, posZ1, distancePosX, distancePosZ, self.mouseX, self.mouseY, tmpDistance, currS.rootNode, j));
 
 		if tmpDistance < nearestDistance then
 			sDistance = tmpDistance;
@@ -992,14 +1062,12 @@ function mapviewer:vehicleInMouseRange()
 				currV = currS;
 			end;
 		end;
-		-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, sDistance, distance));
 	end;
 	
 	tmpDistance = 0.006;
 	aDistance = 0.006;
 	vDistance = 0.006;
 	--Attachables
-	-- print("--Attachables--");
 	for a=1, table.getn(g_currentMission.attachables) do
 		if g_currentMission.attachables[a].attacherVehicle == nil or g_currentMission.attachables[a].attacherVehicle == 0 then
 			local currA = g_currentMission.attachables[a];
@@ -1007,8 +1075,6 @@ function mapviewer:vehicleInMouseRange()
 			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
 			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
 			tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
-			-- print(string.format("VehiclePos : %.3f, %.3f, %.3f || X-Y auf Karte : %.3f, %.3f || Maus X-Y : %.3f, %.3f || Distanz: %.3f || Node: %d || Index : %d", 
-											-- posX1, posY1, posZ1, distancePosX, distancePosZ, self.mouseX, self.mouseY, tmpDistance, currA.rootNode, a));
 
 			if tmpDistance < nearestDistance then
 				aDistance = tmpDistance;
@@ -1019,15 +1085,8 @@ function mapviewer:vehicleInMouseRange()
 					currV = currA;
 				end;
 			end;
-			-- print(string.format("Distanzen : %.3f, %.3f, %.3f ", tmpDistance, aDistance, distance));
 		end;
 	end;
-	-- print("--vehicleInMouseRange()--");
-	-- print("vehicleInMouseRange() - showPanel = " .. tostring(self.showInfoPanel));
-	-- print("vehicleInMouseRange() - index = " .. tostring(index));
-	-- print("vehicleInMouseRange() - isVehicle = " .. tostring(isVehicle));
-	-- print("vehicleInMouseRange() - showPanel = " .. tostring(currV ~= nil));
-	-- print("--ENDE--");
 	return index, isVehicle, currV;	
 end;
 ----
@@ -1035,7 +1094,7 @@ end;
 ----
 -- Ermitteln ob Attachments vorhanden sind
 ----
-function getVehicleAttachmentsFruitTypes(object)
+function mapviewer:getVehicleAttachmentsFruitTypes(object)
 	local fruits = {};
 	local Attaches = {}; --name, fillLevel, fillType, capacity, fillName
 	local FruitNames;
@@ -1047,7 +1106,7 @@ function getVehicleAttachmentsFruitTypes(object)
 			table.insert(oImplements, object.attachedImplements[a].object);
 		end;
 		for z=1, table.getn(oImplements) do
-			getImplements(oImplements[z], oImplements);
+			self:getImplements(oImplements[z], oImplements);
 		end;
 
 		for a=1, table.getn(oImplements) do
@@ -1084,15 +1143,12 @@ function getVehicleAttachmentsFruitTypes(object)
 			end;
 		end;
 		Fruitnames = table.concat(fruits, " | ");
-		-- print("----");
-		-- print(table.show(Attaches, "Attaches : getVehicleAttachmentsFruitTypes()"));
-		-- print("----");
 		return Fruitnames, Attaches;
 	end;
 	return nil;
 end;
 
-function getImplements(object, o)
+function mapviewer:getImplements(object, o)
 	if table.getn(object.attachedImplements) > 0 then
 		for a=1, table.getn(object.attachedImplements) do
 			table.insert(o, object.attachedImplements[a].object);
@@ -1108,10 +1164,8 @@ end;
 ----
 function mapviewer:GetVehicleInfo(vehicle)
 	----
-	-- TODO's
-	----
-	-- getNoNil aufrufe entfernen
-	-- getText aufrufe durch eigene Funktion ersetzen
+	-- TODO: getNoNil aufrufe entfernen
+	-- TODO: getText aufrufe durch eigene Funktion ersetzen
 	----
 	local vehicleInfo = {}; --{Type = "", Ply= "", Tank = 0, Fruit = ""};
 	local percent = 0;
@@ -1190,21 +1244,17 @@ function mapviewer:GetVehicleInfo(vehicle)
 				----
 				-- Füllstand bei Combine ermitteln
 				----
-				-- if vehicle:getFruitTypeAndFillLevelToUnload() then
 				if vehicle.grainTankCapacity ~= nil and vehicle.grainTankCapacity > 0 then
-					-- fruitType, f, useGrainTank = vehicle:getFruitTypeAndFillLevelToUnload();
 					fruitType = vehicle.currentGrainTankFruitType; 
 					fruitFillLevel = vehicle.grainTankFillLevel; 
 					f = fruitFillLevel;
 					useGrainTank = true;
-					-- print(string.format("Fruittype %s, FillLevel % s, useGrainTank %s",tostring(fruitType), tostring(f), tostring(useGrainTank)));
 					if useGrainTank and f ~= nil then
 						c = vehicle.grainTankCapacity;
 						if c > 0 then
 							p = f / c * 100;
 							table.insert(vehicleInfo, string.format("%s %d / %d | %.2f%%", g_i18n:getText("MV_FillLevel"), f, c, p));
 						end;
-						--print(string.format("Combine - Füllstand / Kapazität : %.2f / %.2f | Name : %s | TankInfo : %s", f, c, tostring(vehicle.name), vehicleInfo.Tank));
 					end;
 					----
 					-- Fruchtbezeichnung ermitteln
@@ -1221,7 +1271,7 @@ function mapviewer:GetVehicleInfo(vehicle)
 			----
 		end;
 		--attachList = {name, fillLevel, fillType, capacity, fillName}
-		fruitNames, attachList = getVehicleAttachmentsFruitTypes(vehicle);
+		fruitNames, attachList = self:getVehicleAttachmentsFruitTypes(vehicle);
 		
 		----
 		-- Attachment Infos. Name und Füllstand und Ladungsname
@@ -1244,11 +1294,6 @@ function mapviewer:GetVehicleInfo(vehicle)
 			end;
 		end;
 		----
-		-- print("----");
-		-- print(table.show(attachList, "attachList : GetVehicleInfo()"));
-		-- print("----");
-		-- print(table.show(vehicleInfo, "vehicleInfo : GetVehicleInfo()"));
-		-- print("----");
 	end;
 	---- Ende Füllstand ermitteln neu ----		
 	return vehicleInfo;
@@ -1259,7 +1304,7 @@ end;
 -- Panel anzeigen
 ----
 function mapviewer:ShowPanelonMap()
-	if self.showInfoPanel then
+	if self.showInfoPanel and self.bigmap.InfoPanel.Info ~=nil then
 		local tX, tY, tLeft, tRight, tTop;
 		
 		----
@@ -1270,31 +1315,26 @@ function mapviewer:ShowPanelonMap()
 		----
 		
 		----
-		-- ToDo : Position anpassen wenn Panel zuweit oben oder zu weit rechts ist.
+		-- TODO: Position anpassen wenn Panel zuweit oben oder zu weit rechts ist.
 		----		
 		tX = self.bigmap.InfoPanel.background.Pos.x;
 		tY = self.bigmap.InfoPanel.background.Pos.y;
-		--tTop = tY + self.bigmap.InfoPanel.background.height - 0.020;
 		tTop = tY + self.bigmap.InfoPanel.background.height; -- - 0.035;
 		tLeft = tX + 0.005; 
 		
+		-- TODO: prüfen ob an dieser Stelle ein rendern erfolgen muss
 		renderOverlay(self.bigmap.InfoPanel.top.OverlayId, self.bigmap.InfoPanel.top.Pos.x, self.bigmap.InfoPanel.top.Pos.y, self.bigmap.InfoPanel.top.width, self.bigmap.InfoPanel.top.height);
 		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
 		renderOverlay(self.bigmap.InfoPanel.bottom.OverlayId, self.bigmap.InfoPanel.bottom.Pos.x, self.bigmap.InfoPanel.bottom.Pos.y, self.bigmap.InfoPanel.bottom.width, self.bigmap.InfoPanel.bottom.height);
 		----
 
 		----
-		--
-		----
-		-- print(table.show(self.bigmap.InfoPanel.Info, "self.bigmap.InfoPanel.Info"));
-		----
-		
-		----
 		-- Ausgabe des InfoPanel Text
 		----
 		setTextBold(true);
 		setTextColor(0, 0, 0, 1);
-		if self.bigmap.InfoPanel.lastVehicle ~= nil then
+		-- print("RenderPanel() Anzahl in Info : " .. tostring(table.getn(self.bigmap.InfoPanel.Info)));
+		if self.bigmap.InfoPanel.lastVehicle ~= nil or self.bigmap.InfoPanel.lastTrigger ~= nil or self.bigmap.InfoPanel.lastField ~= nil then
 			for r=1, table.getn(self.bigmap.InfoPanel.Info) do
 				--renderText(tLeft, tTop-r*0.015+0.015, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
 				renderText(tLeft, tTop-r*0.015, 0.012, string.format("%s", Utils.getNoNil(self.bigmap.InfoPanel.Info[r], g_i18n:getText("MV_Unknown"))));
@@ -1329,39 +1369,7 @@ function mapviewer:draw()
 		setTextColor(1, 1, 1, 0);
         ----
 
-		----
-		--	TODO: Sichergehen das die Maus nicht ausgeblendet wird, wenn keine Transparenz eingestellt ist
-		----
-		-- if self.bigmap.mapTransp == 1 then
-			-- g_mouseControlsHelp.active = false;
-			-- InputBinding.setShowMouseCursor(true);
-			-- InputBinding.wrapMousePositionEnabled = false;
-			-- if (g_currentMission.player.isEntered) then
-				-- g_currentMission.player.isFrozen = true;
-			-- end;
-		-- elseif self.bigmap.mapTransp < 1 then
-			-- g_mouseControlsHelp.active = true;
-			-- InputBinding.setShowMouseCursor(false);
-			-- InputBinding.wrapMousePositionEnabled = true;
-			-- if (g_currentMission.player.isEntered) then
-				-- g_currentMission.player.isFrozen = false;
-			-- end;
-		-- end;
-		----
-
-        ----
-        -- Anzeigen des aktuell gewählten Modus
-        ----
-        if self.numOverlay > 0 then
-            setTextColor(1, 1, 1, 1);
-            renderText(0.5-0.0273, 1-0.05, 0.020, g_i18n:getText(string.format("MV_Mode%d", self.numOverlay)));
-            renderText(0.5-0.0273, 1-0.065, 0.020, g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)));
-            setTextColor(1, 1, 1, 0);
-        end;
-        ----
-
 		--Points of Interessts
-		-- if self.usePoi and self.showPoi then
 		if self.showPoi then
 			if self.bigmap.PoI.OverlayId ~= nil and self.bigmap.PoI.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.PoI.OverlayId, self.bigmap.PoI.poiPosX, self.bigmap.PoI.poiPosY, self.bigmap.PoI.width, self.bigmap.PoI.height);
@@ -1373,60 +1381,74 @@ function mapviewer:draw()
         ----
 		
 		--Fieldnumbers
-		-- if self.useFNum and self.showFNum then
 		if self.showFNum then
 			if self.bigmap.FNum.OverlayId ~= nil and self.bigmap.FNum.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.FNum.OverlayId, self.bigmap.FNum.FNumPosX, self.bigmap.FNum.FNumPosY, self.bigmap.FNum.width, self.bigmap.FNum.height);
 			else
-                -- string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorFNumCreateOverlay"))
                 g_currentMission:addWarning(g_i18n:getText("MV_ErrorFNumCreateOverlay"), 0.018, 0.033);
-				self.useFNum = false; -- not self.useFNum;
+				self.useFNum = false; 
 			end;
 		end;
         ----
 
-		--Bottles
-		-- local countBottlesFound = 0;
-		-- if self.showBottles and self.useBottles then
-			-- if self.bigmap.iconBottle.Icon.OverlayId ~= nil and self.bigmap.iconBottle.Icon.OverlayId ~= 0 then
-                -- for i=1, table.getn(g_currentMission.missionMapBottleTriggers) do
-                    -- local bottleFound=string.byte(g_currentMission.foundBottles, i);
-                    -- if bottleFound==48 then
-                        -- self.posX, self.posY, self.posZ=getWorldTranslation(g_currentMission.missionMapBottleTriggers[i]);
-                        -- self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-                        -- self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		----
+		-- Trigger
+		----
+		if self.showTipTrigger and self.useTipTrigger then
+			self:showTipTriggerHotSpot();
+			--self.showTipTriggers = false;
+		end;
+		-- self.missionPDA:createMapHotspot("TipPlace", Utils.getFilename("$dataS2/missions/hud_pda_spot_tipPlace.png", self.baseDirectory), 
+					-- 1024 + 43.5, 1024 - 128.3, 
+					-- iconSize, iconSize * (4 / 3), 
+					-- false, false, false, 0, true);
+		
+		----
+		-- Horseshoes
+		----
+		----
+		local countHorseShoesFound = 0;
+		if self.showHorseShoes and self.useHorseShoes then
+			local HShoes = {};
+			HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
+			if self.bigmap.iconHorseShoes.Icon.OverlayId ~= nil and self.bigmap.iconHorseShoes.Icon.OverlayId ~= 0 then
+                for i=1, table.getn(HShoes) do
+                    local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
+                    if bottleFound==48 then
+                        self.posX, self.posY, self.posZ=getWorldTranslation(HShoes[i].horseshoeTriggerId);
+                        self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+                        self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
                         
-                        -- renderOverlay(self.bigmap.iconBottle.Icon.OverlayId,
-                                    -- self.buttonX-self.bigmap.iconBottle.width/2, 
-                                    -- self.buttonZ-self.bigmap.iconBottle.height/2, 
-                                    -- self.bigmap.iconBottle.width, 
-                                    -- self.bigmap.iconBottle.height);
-					-- else
-						-- countBottlesFound = countBottlesFound+1;
-                    -- end;
-                -- end;
-				----
-				-- TODO: Container Positionen anzeigen
-				----
-				-- missionMapGlassContainerTriggers
-				----
-			-- else
-                -- print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorBottlesCreateOverlay")));
-				-- self.useBottles = not self.useBottles;
-			-- end;
-		-- end;
+                        renderOverlay(self.bigmap.iconHorseShoes.Icon.OverlayId,
+                                    self.buttonX-self.bigmap.iconHorseShoes.width/2, 
+                                    self.buttonZ-self.bigmap.iconHorseShoes.height/2, 
+                                    self.bigmap.iconHorseShoes.width, 
+                                    self.bigmap.iconHorseShoes.height);
+					else
+						countHorseShoesFound = countHorseShoesFound+1;
+                    end;
+
+					if self.Debug.printHorseShoes then
+						print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | Index: %s | Count: %d", self.posX, self.posZ, self.buttonX, self.buttonZ, tostring(i), countHorseShoesFound));
+					end;
+                end;
+				if self.Debug.printHorseShoes then
+					self.Debug.printHorseShoes = false;
+				end;
+			else
+                print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
+				self.useHorseShoes = not self.useHorseShoes;
+			end;
+		end;
         ----
 		
 		--Maplegende anzeigen
 		if self.maplegende and self.useLegend then
 			if self.bigmap.Legende.OverlayId ~=nil then
-				-- renderOverlay(self.bigmap.Legende.OverlayId, self.bigmap.Legende.legPosX, self.bigmap.Legende.legPosY, self.bigmap.Legende.width, self.bigmap.Legende.height);
-				-- setTextColor(0, 0, 0, 1);
 				setTextColor(0, 1, 0, 1);
                 ----
                 -- Legende der Fahrzeuge Typen anzeigen
                 ----
-				--self.bigmap.Legende.Content, {l_PosX, l_PosY, OverlayID, l_Txt, Txt, TxtSize}
 				local c = self.bigmap.Legende.Content;
 				for i=1, table.getn(c) do
 					if c[i].OverlayID ~= nil and c[i].OverlayID ~= 0 then
@@ -1436,9 +1458,6 @@ function mapviewer:draw()
 										0.015625, 
 										0.015625);
 						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, c[i].Txt);
-						-- if self.printInfo then
-							-- print(table.show(c[i], string.format("Content %d : ", i)));
-						-- end;
 					else
 						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, "Legenden Icon nicht vorhanden");
 					end;
@@ -1446,12 +1465,6 @@ function mapviewer:draw()
 				self.printInfo = false;
 
                 self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
-				-- print("----");
-				-- print(string.format("attachmentsTypes.names %d", table.getn(self.bigmap.attachmentsTypes.names)));
-				-- print(string.format(table.show(self.bigmap.attachmentsTypes.names, "attachmentsTypes.names")));
-				-- print(string.format("attachmentsTypes.overlays %d", table.getn(self.bigmap.attachmentsTypes.overlays)));
-				-- print(string.format(table.show(self.bigmap.attachmentsTypes.overlays, "attachmentsTypes.overlays")));
-				-- print("----");
 				
                 for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
 					if self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]] ~= nil then 
@@ -1479,9 +1492,6 @@ function mapviewer:draw()
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransPlus"), InputBinding.BIGMAP_TransPlus);
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransMinus"), InputBinding.BIGMAP_TransMinus);
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_SwitchOverlay"), InputBinding.BIGMAP_SwitchOverlay);
-			-- unterscheiden wenn gedrückt dann info wechseln das maus geklickt werden muss
-			-- g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Teleport"), InputBinding.BIGMAP_Teleport);
-			-- g_currentMission:addHelpButtonText("Teportation :" .. g_i18n:getText("BIGMAP_TPKey1") .. g_i18n:getText("BIGMAP_TPKey2") .. g_i18n:getText("BIGMAP_TPMouse"), "");
 		end;
 
 		mplayer = {};
@@ -1519,21 +1529,14 @@ function mapviewer:draw()
 		end;
 		
 		----
-		-- ToDo : Hotsspots ausblendbar machen
-		-- Hotspots auf grosse Karte
+		-- Hotspots auf grosse Karte, zusammen mit den Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
 		----
-		if self.showHotSpots then
+		if self.showHotSpots and self.useHotSpots then
 			local hsPosX, hsPosY;
-			-- print("-- Hotspot Loop --");
 			for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
 				self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
 				self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
 				----
-				hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
-				hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
-				
-				self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-				self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
 				self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
 
 				local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
@@ -1541,29 +1544,47 @@ function mapviewer:draw()
 				setTextColor(1, 1, 1, 1);
 				setTextAlignment(RenderText.ALIGN_CENTER);
 
+				----
+				-- Feldnummern ?
+				----
 				if g_currentMission.missionPDA.hotspots[j].showName then
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+					
+					self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+					self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+
 					setTextColor(bc[1], bc[2], bc[3], bc[4]);
-					-- setTextColor(0, 1, 0, 1);
-					-- print("--- showName() ---");
+					renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
 					renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 				else
+					if self.useDefaultMap then 
+						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+					else
+						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
+						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
+					end;
+					
+					self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+					self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+
 					renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
 					if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
 						renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
 					else
 						renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
-						-- print("Fehelende Übersetzung: " .. "MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name);
 					end;
 				end;
 				setTextAlignment(RenderText.ALIGN_LEFT);
 				setTextColor(1, 1, 1, 0);
 
-				if self.debug.printHotSpots then
+				if self.Debug.printHotSpots then
 					print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
 				end;
 			end;
-			if self.debug.printHotSpots then
-				self.debug.printHotSpots = false;
+			if self.Debug.printHotSpots then
+				self.Debug.printHotSpots = false;
 			end;
 			-- print("-- Hotspot Loop Ende --");
 		end;
@@ -1572,7 +1593,6 @@ function mapviewer:draw()
 		-- Fahrzeuge auf grosse Karte
 		----
 		for i=1, table.getn(g_currentMission.steerables) do
-            local Courseplayname = "";
 			if not g_currentMission.steerables[i].isBroken then
 				self.currentVehicle = g_currentMission.steerables[i];
 				self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
@@ -1582,26 +1602,25 @@ function mapviewer:draw()
                 ----
                 -- Auslesen der Kurse wenn CoursePlay vorhanden ist
                 ----
-                if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
-                    if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
-                        if self.currentVehicle.current_course_name ~=nil then
-                            Courseplayname = self.currentVehicle.current_course_name;
-                        end;
-                        for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
-                            local wx = g_currentMission.steerables[i].Waypoints[w].cx;
-                            local wz = g_currentMission.steerables[i].Waypoints[w].cz;
-                            wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-                            wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+				if self.useCoursePlay then
+					if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
+						if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+							for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
+								local wx = g_currentMission.steerables[i].Waypoints[w].cx;
+								local wz = g_currentMission.steerables[i].Waypoints[w].cz;
+								wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+								wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 
-                            renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
-                                        wx-self.bigmap.IconCourseplay.width/2, 
-                                        wz-self.bigmap.IconCourseplay.height/2,
-                                        self.bigmap.IconCourseplay.width,
-                                        self.bigmap.IconCourseplay.height);
-                        end;
-                        setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
-                    end;
-                end;
+								renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+											wx-self.bigmap.IconCourseplay.width/2, 
+											wz-self.bigmap.IconCourseplay.height/2,
+											self.bigmap.IconCourseplay.width,
+											self.bigmap.IconCourseplay.height);
+							end;
+							setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+						end;
+					end;
+				end;
                 ----
 				
 				setTextColor(0, 1, 0, 1);
@@ -1616,11 +1635,6 @@ function mapviewer:draw()
 					end;
 					
 					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.plyname.name));
-                    -- Kursnamen am Fahrzeug anzeigen
-                    if Courseplayname ~= "" then
-                        renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.020, 0.015, string.format("CoursePlay : %s", Courseplayname));
-                    end;
-                    --
 					renderText(0.020, 0.020, 0.015, string.format("Koordinaten : x=%.1f / y=%.1f",self.buttonX * 1000,self.buttonZ * 1000));
 				elseif self.currentVehicle.isControlled then
 					if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
@@ -1632,13 +1646,7 @@ function mapviewer:draw()
 						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
 					end;
 					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.currentVehicle.controllerName));
-                    
-                    -- Kursnamen am Fahrzeug anzeigen
-                    if Courseplayname ~= "" then
-                        renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.020, 0.015, string.format("CoursePlay : %s", Courseplayname));
-                    end;
-                    --
-				else
+                else
 					if self.bigmap.IconSteerable.OverlayId ~= nil and self.bigmap.IconSteerable.OverlayId ~= 0 then
 						renderOverlay(self.bigmap.IconSteerable.OverlayId,
 									self.buttonX-self.bigmap.IconSteerable.width/2, 
@@ -1646,11 +1654,6 @@ function mapviewer:draw()
 									self.bigmap.IconSteerable.width,
 									self.bigmap.IconSteerable.height);
 						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
-                        -- Kursnamen am Fahrzeug anzeigen
-                        if Courseplayname ~= "" then
-                            renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("CoursePlay : %s", Courseplayname));
-                        end;
-                        --
 					end;
 				end;
 				setTextColor(1, 1, 1,0);
@@ -1717,13 +1720,13 @@ function mapviewer:draw()
 					self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
 					self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 					
-					--self.bigmap.IconMilchtruck = {}; --file, OverlayId, width, height
 					if self.bigmap.IconMilchtruck.OverlayId ~= nil then
 						renderOverlay(self.bigmap.IconMilchtruck.OverlayId,
 									self.buttonX-self.bigmap.IconMilchtruck.width/2, 
 									self.buttonZ-self.bigmap.IconMilchtruck.height/2,
 									self.bigmap.IconMilchtruck.width,
 									self.bigmap.IconMilchtruck.height);
+					-- TODO: Milchtruckposition an Clients senden
 					end;
 				end;
 				break;
@@ -1731,6 +1734,21 @@ function mapviewer:draw()
 		end;
 		----
 		
+        ----
+        -- Anzeigen des aktuell gewählten Modus
+        ----
+        if self.numOverlay > 0 then
+            setTextColor(1, 1, 1, 1);
+            renderText(0.5-0.0273, 1-0.05, 0.020, g_i18n:getText(string.format("MV_Mode%d", self.numOverlay)));
+			if self.showHorseShoes then
+				renderText(0.5-0.0273, 1-0.065, 0.020, string.format("%s (%s/%s)", g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)), tostring(countHorseShoesFound), tostring(table.getn(g_currentMission.collectableHorseshoesObject.horseshoes))));
+			else
+				renderText(0.5-0.0273, 1-0.065, 0.020, g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)));
+			end;
+            setTextColor(1, 1, 1, 0);
+        end;
+        ----
+
 		----
 		-- InfoPanel anzeigen
 		----
@@ -1739,14 +1757,53 @@ function mapviewer:draw()
 		setTextColor(1, 1, 1, 0);
 		if self.showInfoPanel then
 			self.bigmap.InfoPanel.Info = {};
-			-- print("draw() - showPanel = " .. tostring(self.showInfoPanel));
-			-- print("draw() - self.bigmap.InfoPanel.vehicleIndex" .. tostring(self.bigmap.InfoPanel.vehicleIndex));
-			-- if self.bigmap.InfoPanel.vehicleIndex ~= nil and self.bigmap.InfoPanel.vehicleIndex ~= 0 then
+			if self.bigmap.InfoPanel.lastVehicle ~= nil then
 				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
+			elseif self.bigmap.InfoPanel.lastTrigger ~= nil then
+				self.bigmap.InfoPanel.Info = self:GetTriggerInfo(self.bigmap.InfoPanel.lastTrigger); -- self.bigmap.InfoPanel.vehicleIndex
+			elseif self.bigmap.InfoPanel.lastField ~= nil then
+				self.bigmap.InfoPanel.Info = self:GetFieldInfo(self.bigmap.InfoPanel.lastField); -- self.bigmap.InfoPanel.vehicleIndex
+			else
+				self.showInfoPanel = false;
+			end;
+		
+			----
+			-- CoursePlayKurse für gewähltes Fahrzeug
+			----
+			if self.bigmap.InfoPanel.lastVehicle ~= nil then
+				local Courseplayname = nil;
+				self.currentVehicle = self.bigmap.InfoPanel.lastVehicle;
+				if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) then
+					if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+						if self.currentVehicle.current_course_name ~=nil then
+							Courseplayname = self.currentVehicle.current_course_name;
+						else
+							Courseplayname = nil;
+						end;
+						
+						for w=1, table.getn(self.currentVehicle.Waypoints) do
+							local wx = self.currentVehicle.Waypoints[w].cx;
+							local wz = self.currentVehicle.Waypoints[w].cz;
+							wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+							wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+
+							renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+										wx-self.bigmap.IconCourseplay.width/2, 
+										wz-self.bigmap.IconCourseplay.height/2,
+										self.bigmap.IconCourseplay.width,
+										self.bigmap.IconCourseplay.height);
+						end;
+						setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+						if Courseplayname ~= nil then
+							table.insert(self.bigmap.InfoPanel.Info, 2, string.format("%s: %s",g_i18n:getText("MV_ActiveCPCourse"), Courseplayname));
+						end;
+					end;
+				end;
+			end;
+			----
+			if self.showInfoPanel then
 				self:ShowPanelonMap();
-			-- else
-				-- self.showInfoPanel = false;
-			-- end;
+			end;
 		end;
 		----
 	else
@@ -1759,16 +1816,40 @@ function mapviewer:draw()
     ----
     -- TODO: Alle Spieler auf PDA anzeigen, Position des Namens korrigieren
     ----
-		self.plyname.name = g_currentMission.player.controllerName;
-		self.plyname.yPos = g_currentMission.missionPDA.pdaPlayerMapArrow.y - 0.003;
-		self.plyname.xPos = g_currentMission.missionPDA.pdaPlayerMapArrow.x;
+	self.plyname.name = g_currentMission.player.controllerName;
+	self.plyname.yPos = g_currentMission.missionPDA.pdaPlayerMapArrow.y - 0.003;
+	self.plyname.xPos = g_currentMission.missionPDA.pdaPlayerMapArrow.x;
 	if g_currentMission.missionPDA.showPDA == true and g_currentMission.missionPDA.screen==1 then
 		setTextColor(256,256,256,1);
 		setTextAlignment(RenderText.ALIGN_CENTER);
 		renderText(self.plyname.xPos, self.plyname.yPos, 0.02, self.plyname.name);
 		setTextAlignment(RenderText.ALIGN_LEFT);
 	end;
-	---------------------------
+	----
+end;
+----
+
+----
+-- Funktion um einen HotSpot für jeden TipTrigger anzuzeigen
+----
+function mapviewer:showTipTriggerHotSpot()
+	local t, z;
+	local ttX, ttY, ttZ;
+	local countFruits;
+	local fillType;
+	local fruitType;
+	
+	for k,v in pairs(g_currentMission.tipTriggers) do
+		ttX, ttY, ttZ = getWorldTranslation(g_currentMission.tipTriggers[k].rootNode)
+		self.ttPosX = ((((self.bigmap.mapDimensionX/2)+ttX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+		self.ttPosZ = ((((self.bigmap.mapDimensionY/2)-ttZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		
+		renderOverlay(self.bigmap.iconTipTrigger.Icon.OverlayId,
+					self.ttPosX-self.bigmap.iconTipTrigger.width/2, 
+					self.ttPosZ-self.bigmap.iconTipTrigger.height/2, 
+					self.bigmap.iconTipTrigger.width, 
+					self.bigmap.iconTipTrigger.height);
+	end;
 end;
 ----
 
@@ -1776,60 +1857,6 @@ end;
 --
 ----
 function mapviewer:updateTick(dt)
-	----
-	-- Mousesteuerung nach Transparenz prüfen
-	----
-
-	-- if self.mapvieweractive then 
-		-- if self.bigmap.mapTransp < 1 then --and g_mouseControlsHelp.active == true then 
-			-- print("Transparenz ist < 1: " .. tostring(self.bigmap.mapTransp));
-			-- g_mouseControlsHelp.active = true; 
-			-- InputBinding.setShowMouseCursor(false); 
-			-- InputBinding.wrapMousePositionEnabled = true; 
-			-- if (g_currentMission.player.isEntered) then
-				-- g_currentMission.player.isFrozen = false;
-			-- end;
-		-- elseif self.bigmap.mapTransp >= 1 then -- and g_mouseControlsHelp.active == false then 
-			-- print("Transparenz ist >= 1: " .. tostring(self.bigmap.mapTransp));
-			-- g_mouseControlsHelp.active = false; 
-			-- InputBinding.setShowMouseCursor(true); 
-			-- InputBinding.wrapMousePositionEnabled = false; 
-			-- if (g_currentMission.player.isEntered) then
-				-- g_currentMission.player.isFrozen = true;
-			-- end;
-		-- end; 
-	-- end;
-	
-	  -- if (self.bigmap.mapTransp < 1 or not self.mapvieweractive) and g_mouseControlsHelp.active == false then 
-          -- g_mouseControlsHelp.active = true; 
-          -- InputBinding.setShowMouseCursor(false); 
-          -- InputBinding.wrapMousePositionEnabled = true; 
-     -- elseif self.bigmap.mapTransp >= 1 and self.mapvieweractive == true and g_mouseControlsHelp.active == true then 
-          -- g_mouseControlsHelp.active = false; 
-          -- InputBinding.setShowMouseCursor(true); 
-          -- InputBinding.wrapMousePositionEnabled = false; 
-     -- end;  
-	
-	-- if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) or InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
-		-- if self.bigmap.mapTransp >= 1.0 then
-			-- g_mouseControlsHelp.active = false;
-			-- InputBinding.setShowMouseCursor(true);
-			-- InputBinding.wrapMousePositionEnabled = false;
-			-- if (g_currentMission.player.isEntered) then
-				-- g_currentMission.player.isFrozen = true;
-			-- end;
-		-- end;
-		-- if self.bigmap.mapTransp < 1 then
-			-- g_mouseControlsHelp.active = true;
-			-- InputBinding.setShowMouseCursor(false);
-			-- InputBinding.wrapMousePositionEnabled = true;		
-			-- if (g_currentMission.player.isEntered) then
-				-- g_currentMission.player.isFrozen = false;
-			-- end;
-		-- end;
-	-- end;
-	----
-
 end;
 ----
 
@@ -1844,7 +1871,7 @@ function mapviewer:update(dt)
 			-- Eigene Player.ID merken
 			self.activePlayerNode=g_currentMission.player.rootNode;
 			-- Variablen initialisieren
-			mapviewer:InitMapViewer();
+			mapviewer:initMapViewer();
 		end;
 	end;
 	
@@ -1857,7 +1884,6 @@ function mapviewer:update(dt)
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
 		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
 			self.mapvieweractive=not self.mapvieweractive;
-			-- g_currentMission.showHudEnv = not self.mapvieweractive;
 			if not self.mapvieweractive then
 				g_mouseControlsHelp.active = true; 
 				InputBinding.setShowMouseCursor(false); 
@@ -1869,37 +1895,17 @@ function mapviewer:update(dt)
 			else
 				g_currentMission.showHudEnv = false;
 			end;
-			
-			-- if self.mapvieweractive and self.bigmap.mapTransp == 1 then
-				-- g_mouseControlsHelp.active = false;
-				-- InputBinding.setShowMouseCursor(true);
-				-- InputBinding.wrapMousePositionEnabled = false;
-				-- if (g_currentMission.player.isEntered) then
-					-- g_currentMission.player.isFrozen = true;
-				-- end;
-			-- else
-				-- g_mouseControlsHelp.active = true;
-				-- InputBinding.setShowMouseCursor(false);
-				-- InputBinding.wrapMousePositionEnabled = true;
-				-- if (g_currentMission.player.isEntered) then
-					-- g_currentMission.player.isFrozen = false;
-				-- end;
-			-- end;
 		else
 			self.mv_Error = not self.mv_Error;
-			--print(string.format("|| Update() - %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMV")));
 		end;
 	end;
 
 	--Taste für Legende einblenden
-	if InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
+	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
 		if self.mapvieweractive and self.useLegend then
 			--Legende einblenden
 			self.maplegende = not self.maplegende;
 			self.printInfo = self.maplegende;
-			if g_currentMission:getIsServer() then
-				mapviewer:SaveToFile();
-			end;
 		end;
 	end;
 
@@ -1908,63 +1914,60 @@ function mapviewer:update(dt)
 		self.numOverlay = self.numOverlay+1;
 
         ----
-        -- Überprüfen ob Feldnummern und PoI benutz werden können
-        ----
-        -- if not self.useFNum or not self.usePoi or not self.useBottles then
-            -- if self.numOverlay == 1 and not self.useFNum then
-                -- self.numOverlay = self.numOverlay+1;
-            -- end;
-            -- if self.numOverlay == 2 and not self.usePoi then
-                -- self.numOverlay = self.numOverlay+1;
-            -- end;
-            -- if self.numOverlay == 3 and (not self.usePoi or not self.useFNum) then
-                -- self.numOverlay = self.numOverlay+1;
-            -- end;
-            -- if self.numOverlay == 5 and not self.useBottles then
-                -- self.numOverlay = self.numOverlay+1;
-            -- end;
-        -- end;
-        ----
-        ----
         -- Alle Overlays deaktivieren
         ----
         self.showPoi = false;
         self.showFNum = false;
         self.showCP = false;
-        self.showBottles = false;
+        self.showHorseShoes = false;
+		self.showHotSpots = false;
         ----
 
-		if self.numOverlay == 1 then	--nur Feldnummern
+		if self.numOverlay == 1 then	--nur Feldnummernhotspots und Besitzstatus
 			self.showHotSpots = true;
-		elseif self.numOverlay == 2 then	--nur Feldnummern
+			self.showTipTrigger = true;
+		end;
+		
+		if self.numOverlay == 2 then	--nur Feldnummern
 			self.showFNum = true;
 			self.showHotSpots = false;
-		elseif self.numOverlay == 3 then	--nur PoI
+		end;
+		
+		if self.numOverlay == 3 then	--nur PoI
             self.showPoi = true;
 			self.showHotSpots = false;
-		elseif self.numOverlay == 4 then	--Poi und Nummern
+		end;
+		
+		if self.numOverlay == 4 then	--Poi und Nummern
 			self.showHotSpots = false;
 			self.showPoi = true;
 			self.showFNum = true;
-		-- elseif self.numOverlay == 4 then	--Courseplay Kurse anzeigen
-			-- self.showCP = true;
-		-- elseif self.numOverlay == 5 then	--Bottlefinder anzeigen
-            -- self.showBottles = true;
-		else
+		end;
+		
+		if self.numOverlay == 5 and self.useHorseShoes then	--HorseShoes anzeigen
+            self.showHorseShoes = true;
+		elseif self.numOverlay == 5 and not self.useHorseShoes then
+			self.numOverlay = self.numOverlay +1;
+		end;
+		
+		if self.numOverlay == 6 and self.useCoursePlay then	--Courseplay vorhanden, dann anzeigen
+            self.showCP = true;
+		elseif self.numOverlay == 6 and not self.useCoursePlay then
+			self.numOverlay = self.numOverlay +1;
+		end;
+		
+		if self.numOverlay > 6 then
 			self.numOverlay = 0;		--Alles aus
 			self.showPoi = false;
 			self.showFNum = false;
             self.showCP = false;
-            self.showBottles = false;
+            self.showHorseShoes = false;
 			self.showHotSpots = false;
 		end;
 
-		if self.Debug then
+		if self.Debug.active and self.numOverlay > 0 then
 			print("Debug Key BIGMAP_SwitchOverlay: ");
-            print(string.format("|| $s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
-		end;
-		if g_currentMission:getIsServer() then
-			mapviewer:SaveToFile();
+            print(string.format("|| %s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
 		end;
 	end;
 	
@@ -1972,48 +1975,43 @@ function mapviewer:update(dt)
 	-- Panel Position an Fahrzeug anpassen
 	----
 	if self.mapvieweractive and self.showInfoPanel then 
-		-- print(" ---- update() - Panel Position an Fahrzeug anpassen ----");
-		-- print("showInfoPanel = " .. tostring(self.showInfoPanel));
-		-- print("InfoPanel.vehicleIndex = " .. tostring(self.bigmap.InfoPanel.vehicleIndex));
-		-- print("self.bigmap.InfoPanel.lastVehicle.rootNode = " .. tostring(self.bigmap.InfoPanel.lastVehicle.rootNode));
-		-- print("nodeToVehicle[self.bigmap.InfoPanel.lastVehicle.rootNode] = Gültig ? " .. tostring(g_currentMission.nodeToVehicle[self.bigmap.InfoPanel.lastVehicle.rootNode]~=nil));
-		-- print("-- InfoPanel.lastVehicle Gültig ? -- " .. tostring(self.bigmap.InfoPanel.lastVehicle ~= nil));
-		-- print("-- InfoPanel.lastVehicle type() -- " .. tostring(type(self.bigmap.InfoPanel.lastVehicle)));
-		
+		local obj = nil;
 		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then	--nodeToVehicle
-			-- if g_currentMission.vehicles[self.bigmap.InfoPanel.vehicleIndex].rootNode == self.bigmap.InfoPanel.lastVehicle.rootNode then
 			if g_currentMission.nodeToVehicle[self.bigmap.InfoPanel.lastVehicle.rootNode] ~= nil then
-				local posX1, posY1, posZ1 = getWorldTranslation(self.bigmap.InfoPanel.lastVehicle.rootNode);
-				local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
-				local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
-				
-				self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
-				self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
-				self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
-				self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
-				self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
-				self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+				obj = self.bigmap.InfoPanel.lastVehicle.rootNode;
 			else
 				self.showInfoPanel = false;
 			end;
+		elseif self.bigmap.InfoPanel.lastTrigger ~= nil and type(self.bigmap.InfoPanel.lastTrigger) == "table" then
+			obj = self.bigmap.InfoPanel.lastTrigger.rootNode;
+		elseif self.bigmap.InfoPanel.lastField ~= nil and type(self.bigmap.InfoPanel.lastField) == "table" then
+			obj = self.bigmap.InfoPanel.lastField.fieldBuyTrigger;
 		else
 			self.showInfoPanel = false;
-			print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateInfoPanel")));
-			-- print("-- InfoPanel.lastVehicle type() -- " .. tostring(type(self.bigmap.InfoPanel.lastVehicle)));
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateInfoPanel")));
 		end;	
-		-- print(" ---- update() - Panel Position ENDE ----");
+		
+		if self.showInfoPanel and obj ~= nil then
+			local posX1, posY1, posZ1 = getWorldTranslation(obj);
+			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
+			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+			
+			self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
+			self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
+			self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+		end;
 	end;	
 	----
 	
 	----
 	--BigMap Transparenz erhöhen und verringern
+	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
 		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
-		end;
-			print("Transparenz ist < 1: " .. tostring(self.bigmap.mapTransp));
-		if g_currentMission:getIsServer() then
-			mapviewer:SaveToFile();
 		end;
 	end;
 	----
@@ -2021,11 +2019,8 @@ function mapviewer:update(dt)
 		if self.bigmap.mapTransp > 0.1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
 		end;
-			print("Transparenz ist >= 1: " .. tostring(self.bigmap.mapTransp));
-		if g_currentMission:getIsServer() then
-			mapviewer:SaveToFile();
-		end;
 	end;
+	----
 	-- ende Transparenz umschalten
 	----
 	
@@ -2045,21 +2040,13 @@ function mapviewer:update(dt)
 				g_currentMission.player.isFrozen = true;
 			end;
 		end;
-	-- else
-		-- g_mouseControlsHelp.active = true; 
-		-- InputBinding.setShowMouseCursor(false); 
-		-- InputBinding.wrapMousePositionEnabled = true; 
-		-- if (g_currentMission.player.isEntered) then
-			-- g_currentMission.player.isFrozen = false;
-		-- end;
 	end;	
 	
 	----
 	-- Tasten Modofizierer für Teleport
 	----
 	if InputBinding.isPressed(InputBinding.BIGMAP_TPKey1) and InputBinding.isPressed(InputBinding.BIGMAP_TPKey2) then -- and InputBinding.isPressed(InputBinding.BIGMAP_TPMouse) then
-		-- print("---- ALT Taste ist gedrückt ----");
-		self.useTeleport= true; -- not self.useTeleport;
+		self.useTeleport= true; 
 	else
 		self.useTeleport = false;
 	end;
@@ -2095,20 +2082,6 @@ end;
 
 function mapviewer:writeUpdateStream(streamId, timestamp, connection)	
 	self:writeStream(streamId, connection);
-end;
-----
-
-----
--- Neue Position an Server/Clients senden
-----
-function mapviewer:setNewPlayerPos(setNewPlyPosition, noEventSend)
-	-- if noEventSend == nil or noEventSend == false then
-		-- if g_server ~= nil then
-			-- g_server:broadcastEvent(MapViewerTeleportEvent:new(self, setNewPlyPosition), nil, nil, self);
-		-- else
-			-- g_client:getServerConnection():sendEvent(MapViewerTeleportEvent:new(self, setNewPlyPosition));
-		-- end;
-	-- end;
 end;
 ----
 
@@ -2260,7 +2233,7 @@ function mapviewer:listTipTriggers()
 			print(tostring(i).."("..type(j)..")="..tostring(j));
 		end;
 	end;
-	print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
+	--print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
 end;
 ----
 
@@ -2283,7 +2256,7 @@ function mapviewer:tablecopy(tab, parent)
 	end;
 	
     for key, value in pairs(tab) do
-		if  self.Debug then
+		if  self.Debug.active then
 			if parent ~= nil and type ~= "table" then 
 				print(string.format("%s.%s=%s (%s)", parent, tostring(key), tostring(value), type(value)));
 			elseif type ~= "table" then 
