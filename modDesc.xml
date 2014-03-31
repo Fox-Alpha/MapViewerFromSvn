@@ -299,8 +299,8 @@
 			<de>-- Helfer --</de>	
 		</text>
 		<text name="MV_ActiveCPCourse">
-			<en>Active CP Course</en>
-			<de>Aktiver CP Kurs</de>	
+			<en>Courseplay </en>
+			<de>Courseplay </de>	
 		</text>
 		<text name="MV_Farmsilo">
 			<en>Farmsilo</en>

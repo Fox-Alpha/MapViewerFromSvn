@@ -1818,8 +1818,10 @@ function mapviewer:draw()
 				self.currentVehicle = self.bigmap.InfoPanel.lastVehicle;
 				if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) then
 					if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
-						if self.currentVehicle.current_course_name ~=nil then
-							Courseplayname = self.currentVehicle.current_course_name;
+						--if self.currentVehicle.current_course_name ~=nil then
+						if self.currentVehicle.cp.currentCourseName ~=nil then
+							-- Courseplayname = self.currentVehicle.current_course_name;
+							Courseplayname = self.currentVehicle.cp.currentCourseName;
 						else
 							Courseplayname = nil;
 						end;
