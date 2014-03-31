@@ -43,6 +43,31 @@ mapviewer.modName = g_currentModName;
 -- TODO: cultivator_animated muss grubber
 -- TODO: auf weitere LS2013 Fahrzeugtypen für Legende prüfen
 ----
+----
+-- Globale Fix für Relea<se 0.8
+----
+-- Draw Reihenfolge ändern. Panels sollten zuletzt erstellt werden.
+-- Aktive CoursePlay Course Namen im Fahrzeugpanel anzeigen
+-- Bunkersilo für Panel übersetzen
+-- Anpassen der Panels
+-- -- OVL 1: z.B. Abladetrigger entfernen
+-- Besitzstatus im Feldpanel. Wenn im Besitzt den Feld-/Kaufwert anzeigen.
+-- Beste Verkaufsstelle und besten Preis ermitteln für Hofsilos
+-- Panelposition fixen. Am oberen und rechten Bildrand
+-- Grasabladestelle, Station übersetzen
+-- -- Wenn nur Gras und Heuschwad im Verkauf sind, dann ist es eine Grasstelle
+-- Feature: Overlay Anzeigen per XML Konfigurieren
+-- Miclhtruck Position im MP anzeigen. Wird vom Server gesteuert
+----
+-- Overlay Bezeichnungen
+----
+-- 1. FZ + FN + HotSpots + Abladestellen
+-- 2. Fnum + FZ + Abladen
+-- 3. PoI + FZ + Abl
+-- 4. Wie 3 + FNum
+-- 5. Hufeisen + FZ + Abladen
+-- 6. Courseplay Kurse
+----
 
 ----
 -- Hauptfunktion zum Laden des Mods
@@ -172,14 +197,15 @@ function mapviewer:initMapViewer()
 	--
 	-- Wenn keine vorgegebene Datei als Karte verwendet werden soll
 	--
-	self.mapPath = g_currentMission.missionInfo.map.baseDirectory;
+	--self.mapPath = g_currentMission.missionInfo.map.baseDirectory;
+	self.mapPath = g_currentMission.loadingMapBaseDirectory;
 
     --
     -- Prüfen ob es sich um die Standard Karte handelt
     --
 	self.mapName = g_currentMission.missionInfo.map.title;
-	self.mapZipName = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
-
+	self.mapZipName = self:getModName(g_currentMission.loadingMapBaseDirectory);
+	
 	local pdaPath = {};
 	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});					--[hauptverzeichnis]/
 	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map01/"});		--[hauptverzeichnis]/map01/ 
@@ -655,10 +681,10 @@ function mapviewer:checkLocalPDAFile()
 	fileName = "mv_pda_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
@@ -681,10 +707,10 @@ function mapviewer:checkLocalFnumFile()
 	fileName = "mv_fnum_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
@@ -706,10 +732,10 @@ function mapviewer:checkLocalPoIFile()
 	fileName = "mv_poi_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
-	if g_currentMission.missionInfo.map.baseDirectory == "" then	--Standard Karte
+	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.missionInfo.map.baseDirectory);
+		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
@@ -930,7 +956,7 @@ end;
 function mapviewer:GetFieldInfo(field)
 	local fieldInfo = {};
 	
-	print("GetFieldInfo() : " .. tostring(field));
+	--print("GetFieldInfo() : " .. tostring(field.fieldNumber));
 	
 	-- TODO: Texte Übersetzen
 	if field ~= nil and type(field) == "table" then
@@ -957,6 +983,7 @@ function mapviewer:GetTriggerInfo(trigger)
 	local fruits = {};
 	local prices = {};
 	local amounts = {};
+	local fsa = 0;
 	
 	-- print("GetTriggerInfo() : " .. tostring(trigger));
 	
@@ -966,10 +993,23 @@ function mapviewer:GetTriggerInfo(trigger)
 		-- Aktzeptierte Waren und Preise ermitteln
 		----
 		fruits, prices = self:getTriggerFruitTypesAndPrices(trigger);
-		table.insert(triggerInfo, string.format("Name: %s", trigger.stationName));
-		for fillType, _ in pairs (trigger.acceptedFillTypes) do
-			table.insert(amounts, math.ceil(g_currentMission.missionStats.farmSiloAmounts[fillType]));
+		if trigger.isFarmTrigger then
+			table.insert(triggerInfo, string.format("Name: %s", g_i18n:getText("MV_Farmsilo")));
+		else
+			table.insert(triggerInfo, string.format("Name: %s", tostring(Utils.getNoNil(g_i18n:getText(trigger.stationName), g_i18n:getText("MV_Unknown")))));
 		end;
+		
+		for fillType, _ in pairs (trigger.acceptedFillTypes) do
+			fsa = g_currentMission.missionStats.farmSiloAmounts[fillType];
+			if fsa ~= nil then
+				table.insert(amounts, math.ceil(fsa));
+			else
+				table.insert(amounts, 0);
+			end;
+			--print("GetTriggerInfo() : fillType: " .. tostring(fillType));
+		end;
+		
+		--print(table.show(g_currentMission.missionStats.farmSiloAmounts, "farmSiloAmounts"));
 
 		for i=1, table.getn(fruits) do
 			local Frucht;
@@ -980,10 +1020,10 @@ function mapviewer:GetTriggerInfo(trigger)
 				-- Frucht = fruits[i];
 			-- end;
 			if trigger.isFarmTrigger then
-				table.insert(triggerInfo, string.format("%s : %s", fruits[i], amounts[i]));
+				table.insert(triggerInfo, string.format("%s : %s", tostring(fruits[i]), tostring(amounts[i])));
 				-- table.insert(triggerInfo, string.format("%s : %s", Frucht, amounts[i]));
 			else
-				table.insert(triggerInfo, string.format("%s (%s€)", fruits[i], prices[i]));
+				table.insert(triggerInfo, string.format("%s (%s€)", tostring(fruits[i]), tostring(prices[i])));
 				-- table.insert(triggerInfo, string.format("%s (%s€)", Frucht, prices[i]));
 				--print(string.format("%s (%s€)", fruits[i], prices[i]));
 			end;
@@ -1017,10 +1057,13 @@ function mapviewer:getTriggerFruitTypesAndPrices(trigger)
 		
 		-- print("acceptedFillTypes:" .. tostring(fillType));
 		if not FruitUtil.fillTypeIsWindrow[fillType] then
-			table.insert(fruits, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fillType].name)), g_i18n:getText("MV_Unknown")));
+			--table.insert(fruits, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fillType].name)), g_i18n:getText("MV_Unknown")));
+			--table.insert(fruits, tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[FruitUtil.fillTypeToFruitType[fillType]].name) .. g_i18n:getText("MV_Unknown")));
+			--table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name .. "/" .. Fillable.fillTypeIndexToDesc[fillType].nameI18N);
+			table.insert(fruits, tostring(Utils.getNoNil(g_i18n:getText(Fillable.fillTypeIndexToDesc[fillType].name),g_i18n:getText("MV_Unknown"))));
 		else
 			-- table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name);
-			table.insert(fruits, tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[FruitUtil.fillTypeToFruitType[fillType]].name) .. g_i18n:getText("MV_Windrow")));
+			table.insert(fruits, tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[FruitUtil.fillTypeToFruitType[fillType]].name)) .. " " .. g_i18n:getText("MV_Windrow"));
 			-- print(g_i18n:getText(Fillable.fillTypeIndexToDesc[fillType].name));
 		end;
 	end;
