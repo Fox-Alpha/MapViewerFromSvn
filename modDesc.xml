@@ -6,7 +6,7 @@
 <!-- Date der letzten Änderung     :     $Date$ -->
 <!-- $URL$ -->
     <author>Fox-Alpha</author>
-    <version>V0.7 LS2013</version>
+    <version>V0.8 LS2013</version>
 	<iconFilename>gfx/mapviewer.dds</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
@@ -25,17 +25,18 @@
 		<de>
 		<![CDATA[Zeigt die PDA Map als Vollbild an. 
 			Zeigt die Karte auf dem gesamten Bildschirm an. Mit aktuellen Positionen aller Fahrzeuge und Anbaugeräte.
-			Neu: - Infopanel. Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.
-					Das Panel zeigt die Ladung und den Ladestand und weitere Informationen an.
-				 - Automatisches ermitteln der Kartengroesse.]]>		
+			Fix für den LS Patch 2.0
+			Neu: - Weitere Infopanel. Felder, Hofsilos, Verkaufsstationen. Eigenes Overlay zum Hufeisen sammeln.
+			Wieder drinne: Courseplay Anzeige
+			Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.]]>		
 		</de>
 	</description>
     <multiplayer supported="true"/>
 	<l10n>
         <!-- Copyright Meldung -->
         <text name="mapviewtxt">
-            <en>Mapviewer V0.7 $Rev$ Copyright (C) Fox-Alpha</en>
-            <de>Mapviewer V0.7 $Rev$ Copyright (C) Fox-Alpha</de>
+            <en>Mapviewer V0.8 $Rev$ Copyright (C) Fox-Alpha 2010-2014</en>
+            <de>Mapviewer V0.8 $Rev$ Copyright (C) Fox-Alpha 2010-2014</de>
         </text>
         <!-- Tastenbeschreibungen -->
 		<text name="BIGMAP_Legende">
