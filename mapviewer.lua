@@ -262,7 +262,7 @@ function mapviewer:initMapViewer()
 	----
 
 	----
-	-- Globale Kartengröße verwnenden
+	-- Globale Kartengröße verwenden
 	-----
 	if g_currentMission.terrainSize ~= 2050 then	
 		g_currentMission.missionPDA.worldSizeX = 4096;
@@ -537,7 +537,7 @@ function mapviewer:initMapViewer()
 	----
 	self.bigmap.Legende = {};
 	self.bigmap.Legende.OverlayId = nil
-	self.bigmap.Legende.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.legende#file"), "gfx/background.dds"), self.moddir);
+	self.bigmap.Legende.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.legende.LegendeBackground#file"), "panel/Info_Panel_bg.dds"), self.moddir);
 	self.bigmap.Legende.OverlayId = createImageOverlay(self.bigmap.Legende.file);
     if self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
         self.useLegend = false;
@@ -1494,8 +1494,19 @@ function mapviewer:draw()
 	if self.mv_Error then
 		g_currentMission:addWarning(g_i18n:getText("MV_ErrorCreateMV"), 0.018, 0.033);
 	end;
+	
+	local sht = g_currentMission.showHelpText;
+	
 	if self.mapvieweractive then
 		--Aktuelle Transparenz und Copyright
+		
+		----
+		-- Hilfe Anzeige ausschalten solange MV Aktiv ist
+		----
+		
+		g_currentMission.showHelpText = false;
+		----
+		
 		setTextColor(1, 1, 1, 1);
 		renderText(0.5-0.0273, 1-0.03, 0.020, string.format("Transparenz\t%d", self.bigmap.mapTransp * 100));
 		renderText(0.5-0.035, 0.03, 0.018, g_i18n:getText("mapviewtxt"));
@@ -1575,57 +1586,6 @@ function mapviewer:draw()
 		end;
         ----
 		
-		--Maplegende anzeigen
-		if self.maplegende and self.useLegend then
-			if self.bigmap.Legende.OverlayId ~=nil then
-				setTextColor(0, 1, 0, 1);
-                ----
-                -- Legende der Fahrzeuge Typen anzeigen
-                ----
-				local c = self.bigmap.Legende.Content;
-				for i=1, table.getn(c) do
-					if c[i].OverlayID ~= nil and c[i].OverlayID ~= 0 then
-						renderOverlay(c[i].OverlayID,
-										c[i].l_PosX, -- 0.007324,
-										c[i].l_PosY, 
-										0.015625, 
-										0.015625);
-						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, c[i].Txt);
-					else
-						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, "Legenden Icon nicht vorhanden");
-					end;
-				end;
-				self.printInfo = false;
-
-                self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
-				
-                for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
-					if self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]] ~= nil then 
-						renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
-                                    self.bigmap.Legende.legPosX + 0.007324,
-                                    self.l_PosY, 
-                                    self.bigmap.attachmentsTypes.width,
-                                    self.bigmap.attachmentsTypes.height);
-						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
-					else
-						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
-					end;
-					self.l_PosY = self.l_PosY - 0.020;
-                end;
-                ----
-				setTextColor(1, 1, 1, 0);
-                
-			end;	--if legende nicht NIL
-		elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
-			renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Rendern der Legende Fehlgeschlagen");
-			print(g_i18n:getText("mapviewtxt") .. " : Rendern der Maplegende fehlgeschlagen");
-			print(g_i18n:getText("mapviewtxt") .. " : Error rendering map legend");
-		elseif self.mapvieweractive and not self.maplegende then
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Legende"), InputBinding.BIGMAP_Legende);
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransPlus"), InputBinding.BIGMAP_TransPlus);
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransMinus"), InputBinding.BIGMAP_TransMinus);
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_SwitchOverlay"), InputBinding.BIGMAP_SwitchOverlay);
-		end;
 
 		mplayer = {};
 		for key, value in pairs (g_currentMission.players) do
@@ -1892,6 +1852,67 @@ function mapviewer:draw()
             setTextColor(1, 1, 1, 0);
         end;
         ----
+		
+		----
+		-- Maplegende anzeigen
+		----
+		if self.maplegende and self.useLegend then
+			if self.bigmap.Legende.OverlayId ~=nil then
+				setTextColor(0, 0, 0, 1);
+                ----
+                -- Legende der Fahrzeuge Typen anzeigen
+                ----
+				renderOverlay(self.bigmap.Legende.OverlayId, 
+						self.bigmap.Legende.legPosX, 
+						0, --self.bigmap.Legende.legPosY, 
+						self.bigmap.Legende.width, 
+						1); --self.bigmap.Legende.height
+				----
+				local c = self.bigmap.Legende.Content;
+				for i=1, table.getn(c) do
+					if c[i].OverlayID ~= nil and c[i].OverlayID ~= 0 then
+						renderOverlay(c[i].OverlayID,
+										c[i].l_PosX, -- 0.007324,
+										c[i].l_PosY, 
+										0.015625, 
+										0.015625);
+						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, c[i].Txt);
+					else
+						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, "Legenden Icon nicht vorhanden");
+					end;
+				end;
+				self.printInfo = false;
+
+                self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
+				
+                for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
+					if self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]] ~= nil then 
+						renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
+                                    self.bigmap.Legende.legPosX + 0.007324,
+                                    self.l_PosY, 
+                                    self.bigmap.attachmentsTypes.width,
+                                    self.bigmap.attachmentsTypes.height);
+						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
+					else
+						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
+					end;
+					self.l_PosY = self.l_PosY - 0.020;
+                end;
+                ----
+				setTextColor(1, 1, 1, 0);
+                
+			end;	--if legende nicht NIL
+		elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
+			renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Rendern der Legende Fehlgeschlagen");
+			print(g_i18n:getText("mapviewtxt") .. " : Rendern der Maplegende fehlgeschlagen");
+			print(g_i18n:getText("mapviewtxt") .. " : Error rendering map legend");
+		elseif self.mapvieweractive and not self.maplegende then
+			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Legende"), InputBinding.BIGMAP_Legende);
+			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransPlus"), InputBinding.BIGMAP_TransPlus);
+			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransMinus"), InputBinding.BIGMAP_TransMinus);
+			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_SwitchOverlay"), InputBinding.BIGMAP_SwitchOverlay);
+		end;
+		----
 
 		----
 		-- InfoPanel anzeigen

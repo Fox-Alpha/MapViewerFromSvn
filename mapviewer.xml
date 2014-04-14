@@ -5,11 +5,15 @@
 -- $URL$
 -->
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<mapviewer ver="v0.60">
+<mapviewer ver="v0.80">
 	<map mapWidth="1" mapHeight="1" mapDimensionX="2048" mapDimensionY="2048">
 		<!-- Abweichende Karte verwenden, wird nmomentan nicht verwendet -->
 		<!-- <mapFile useMapFile="false" file="gfx/pda_map.dds" /> -->
-		<legende file="gfx/background.dds" width="0.15" height="0.125" posX="0.0244" posY="0.15" />
+		<Legende file="gfx/background.dds" width="0.185" height="0.125" posX="0.0244" posY="0.15" >
+			<LegendeTop file="Panel/Info_Panel_closebar_top.dds" width="0.15" height="0.0078125" />
+			<LegendeBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.15" />
+			<LegendeBottom file="Panel/Info_Panel_closebar_bottom.dds" width="0.15" height="0.0078125" />
+		</Legende>
 		<Infopanel >
 			<!-- Geschlossener Balken -->
 			<InfoPanelTop>
