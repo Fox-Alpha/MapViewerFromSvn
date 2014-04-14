@@ -11,9 +11,21 @@
 		<!-- <mapFile useMapFile="false" file="gfx/pda_map.dds" /> -->
 		<legende file="gfx/background.dds" width="0.15" height="0.125" posX="0.0244" posY="0.15" />
 		<Infopanel >
-			<InfoPanelTop file="Panel/Info_Panel_top.dds" width="0.15" height="0.0078125" />
+			<!-- Geschlossener Balken -->
+			<InfoPanelTop>
+				<CloseBarTop file="Panel/Info_Panel_closebar_top.dds" width="0.15" height="0.0078125" />
+				<CloseBarBottom file="Panel/Info_Panel_closebar_bottom.dds" width="0.15" height="0.0078125" />
+			</InfoPanelTop>
+			<!-- Abschluss mit sprechblase -->
+			<InfoPanelBubble>
+				<BubbleBottomLeft file="Panel/Info_Panel_bubble_bottomleft.dds" width="0.15" height="0.0078125"/>
+				<BubbleBottomRight file="Panel/Info_Panel_bubble_bottomright.dds" width="0.15" height="0.0078125"/>
+				<BubbleTopLeft file="Panel/Info_Panel_bubble_topleft.dds" width="0.15" height="0.0078125"/>
+				<BubbleTopRight file="Panel/Info_Panel_bubble_topright.dds" width="0.15" height="0.0078125"/>
+			</InfoPanelBubble>
+			
 			<InfoPanelBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.15" />
-			<InfoPanelBottom file="Panel/Info_Panel_bt.dds" width="0.15" height="0.03125" />
+			<!--<InfoPanelBottom file="Panel/Info_Panel_bt.dds" width="0.15" height="0.03125" />-->
 			<!-- <Buttons> -->
 				<!-- <ButtonSwitch width="0.01" height="0.01" file="Panel/Bt_Switch.dds"/> -->
 				<!-- <ButtonClose width="0.01" height="0.01" file="Panel/Bt_Close.dds"/> -->

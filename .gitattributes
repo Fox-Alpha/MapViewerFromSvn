@@ -1,14 +1,13 @@
 * text=auto !eol
 / svnc_tsvn_003aprojectlanguage=0x401
 /Panel svnc_tsvn_003aprojectlanguage=1025
-Panel/Bt_Close.dds -text
-Panel/Bt_Switch.dds -text
-Panel/Info_Panel.dds -text
 Panel/Info_Panel_bg.dds -text
-Panel/Info_Panel_bt.dds -text
-Panel/Info_Panel_top.dds -text
-Panel/button.dds -text
-Panel/selectedbutton.dds -text
+Panel/Info_Panel_bubble_bottomleft.dds -text
+Panel/Info_Panel_bubble_bottomright.dds -text
+Panel/Info_Panel_bubble_topleft.dds -text
+Panel/Info_Panel_bubble_topright.dds -text
+Panel/Info_Panel_closebar_bottom.dds -text
+Panel/Info_Panel_closebar_top.dds -text
 /gfx svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
 gfx/background.dds -text
 gfx/maplegende.dds -text

@@ -129,7 +129,7 @@ function mapviewer:loadMap(name)
 	----
 	self.Debug = {};
 	self.Debug.active = true;
-	self.Debug.printHotSpots = false;
+	self.Debug.printHotSpots = true;
 	self.Debug.printHorseShoes = false;
 	----
 	
@@ -183,6 +183,13 @@ function mapviewer:initMapViewer()
 	----
 	
 	print(string.format("|| %s || Initialising ... ||", g_i18n:getText("mapviewtxt")));
+	print(string.format("|| %s || self.modName:  ||", tostring(self.modName)));
+	
+	if self.modName == nil then
+		-- self.moname, self.modBase = self:getModName(self.moddir);
+		-- self.modName = ModsUtil.modList.modName;
+		self.modName, self.modBaseDirectory = Utils.getModNameAndBaseDirectory(self.moddir .. "modDesc.xml");
+	end;
 	
 	self.bigmap.OverlayId = {};
     self.bigmap.PoI = {};
@@ -197,19 +204,32 @@ function mapviewer:initMapViewer()
 	--
 	-- Wenn keine vorgegebene Datei als Karte verwendet werden soll
 	--
-	--self.mapPath = g_currentMission.missionInfo.map.baseDirectory;
-	self.mapPath = g_currentMission.loadingMapBaseDirectory;
+	if g_currentMission.missionInfo.map.baseDirectory ~= nil then
+		self.mapPath = g_currentMission.missionInfo.map.baseDirectory;
+	else
+		self.mapPath = "";
+	end;
+	
+	-- Utils.getModNameAndBaseDirectory(filename)
+	-- g_currentMission.loadingMapModName, g_currentMission.loadingMapBaseDirectory)
+	-- g_dedicatedServerInfo
+	-- g_currentMission.missionInfo.mapId = (string) -- Interner Name der Map
+	-- MapsUtil.idToMap[g_currentMission.missionInfo.mapId].baseDirectory
+	-- g_currentMission.maps [1] 1 = 3081 (mapID ?)
+
+	-- MapsUtil = {}
+	-- MapsUtil.mapList = {}
+	-- MapsUtil.idToMap = {}
+	
+	-- self.mapPath = g_currentMission.loadingMapBaseDirectory;
 
     --
     -- Prüfen ob es sich um die Standard Karte handelt
     --
 	self.mapName = g_currentMission.missionInfo.map.title;
-	self.mapZipName = self:getModName(g_currentMission.loadingMapBaseDirectory);
+	--self.mapZipName = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	
 	local pdaPath = {};
-	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});					--[hauptverzeichnis]/
-	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map01/"});		--[hauptverzeichnis]/map01/ 
-	table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map/map01/"});	--[hauptverzeichnis]/map/map01/
 	
     if self.mapPath == "" then
         self.mapPath = self.moddir;
@@ -217,6 +237,11 @@ function mapviewer:initMapViewer()
 		self.bigmap.file = Utils.getFilename("mv_pda_hagenstedt.dds", self.moddir);
     else
         -- self.mapPath = self.mapPath .. "map01/"
+		
+		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});					--[hauptverzeichnis]/
+		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map01/"});		--[hauptverzeichnis]/map01/ 
+		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map/map01/"});	--[hauptverzeichnis]/map/map01/
+		
 		print(string.format("|| %s || Versuche PDA_map.dds zu finden||", g_i18n:getText("mapviewtxt"))); --TODO: Übersetzen !
 		local pdaI = 1;
 		
@@ -275,13 +300,30 @@ function mapviewer:initMapViewer()
 	self.bigmap.mapTransp = 1;
 	----
 	
+	-- Utils.getModNameAndBaseDirectory(filename)
+	-- g_currentMission.loadingMapModName, g_currentMission.loadingMapBaseDirectory)
+	-- g_dedicatedServerInfo
+	-- g_currentMission.missionInfo.mapId = (string) -- Interner Name der Map
+	-- MapsUtil.idToMap[g_currentMission.missionInfo.mapId].baseDirectory
+	-- g_currentMission.maps [1] 1 = 3081 (mapID ?)
+
 	if self.Debug.active then
 		print("Debug: ");
-		print(string.format("self.useMapFile: %s", tostring(self.useMapFile)));
+		--print(string.format("self.useMapFile: %s", tostring(self.useMapFile)));
 		print(string.format("self.bigmap.file: %s", self.bigmap.file));
 		print(string.format("self.bigmap.OverlayId.ovid: %s", tostring(self.bigmap.OverlayId.ovid)));
 		print("LoadMap()");
 		print(string.format("Map Pfad : %s", self.mapPath));
+		-- print(string.format("Map Zip Name : %s", self.mapZipName));
+		
+		print(string.format("----"));
+		print(string.format("MapsUtil.idToMap[]: %s", tostring(MapsUtil.idToMap[g_currentMission.missionInfo.mapId].baseDirectory)));
+		print(string.format("g_currentMission.missionInfo.map.baseDirectory: %s", tostring(g_currentMission.missionInfo.map.baseDirectory)));
+		print(string.format("g_currentMission.BaseDirectory: %s", tostring(g_currentMission.baseDirectory)));
+		print(string.format("self.modDir: %s", tostring(self.moddir)));
+		print(string.format("self.modName: %s", tostring(self:getModName(self.moddir))));
+		print(string.format("self.modBaseDirectory: %s", tostring(self.modBaseDirectory)));
+		print(string.format("----"));
 
 		print(string.format("Overlay  : %s", tostring(self.bigmap.OverlayId.ovid)));
 	end;
@@ -322,20 +364,39 @@ function mapviewer:initMapViewer()
 	self.bigmap.IconAttachments.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconAttachmentFront#height"), 0.0078125);
 	----
     
-	--Array für Infopanel
+	----
+	-- Array für Infopanel
+	----
 	self.bigmap.InfoPanel = {};
 	self.bigmap.InfoPanel.top = {};
-	self.bigmap.InfoPanel.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
-	self.bigmap.InfoPanel.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop#file"), "panel/Info_Panel_top.dds"), self.moddir);
-	self.bigmap.InfoPanel.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.file);
+	
+	-- Oberes und Unteres Ende des Panels
+	self.bigmap.InfoPanel.top.closebar = {};
+	
+	self.bigmap.InfoPanel.top.closebar.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.top.closebar.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarTop#file"), "panel/Info_Panel_closebar_top.dds"), self.moddir);
+	self.bigmap.InfoPanel.top.closebar.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.top.file);
+	
+	self.bigmap.InfoPanel.top.closebar.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.top.closebar.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarBottom#file"), "panel/Info_Panel_closebar_bottom.dds"), self.moddir);
+	self.bigmap.InfoPanel.top.closebar.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.bottom.file);
+	----
+	
+	--self.bigmap.InfoPanel.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	--self.bigmap.InfoPanel.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop#file"), "panel/Info_Panel_closebar_top.dds"), self.moddir);
+	--self.bigmap.InfoPanel.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.file);
+
 	self.bigmap.InfoPanel.background = {};
 	self.bigmap.InfoPanel.background = {file = "", OverlayId = nil, width = 0.15, height= 0.125, Pos = {x=0, y=0}};
 	self.bigmap.InfoPanel.background.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBackground#file"), "panel/Info_Panel_bg.dds"), self.moddir);
 	self.bigmap.InfoPanel.background.OverlayId = createImageOverlay(self.bigmap.InfoPanel.background.file);
+
 	self.bigmap.InfoPanel.bottom = {};
 	self.bigmap.InfoPanel.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
-	self.bigmap.InfoPanel.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBottom#file"), "panel/Info_Panel_bt.dds"), self.moddir);
+	self.bigmap.InfoPanel.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBubble.BubbleBottomLeft#file"), "panel/Info_Panel_bubble_bottomleft.dds"), self.moddir);
 	self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
+
+
 	-- Informationen die angezeigt werden
 	self.bigmap.InfoPanel.Info = {Type = "", Ply= "", Tank = 0, Fruit = ""};
 	--- Fahrzeug Informationen
@@ -657,8 +718,12 @@ end;
 function mapviewer:getModName(s) 
 	local temp;
 	local PathToModDir;
+
+	print(string.format("getModName() self.moddir: %s", tostring(self.moddir)));
+	print(string.format("getModName() self.modName: %s", tostring(self.modName)));
 	
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
+	-- PathToModDir = string.gsub(self.moddir, s.."/", "");
 
 	s = string.gsub(s, PathToModDir, "");
 	s = string.gsub(s, "/", "");
@@ -679,12 +744,16 @@ function mapviewer:checkLocalPDAFile()
 	local mapName;
 	
 	fileName = "mv_pda_";
-	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
 
-	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
+	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
+	-- PathToModDir = string.gsub(self.moddir, s.."/", "");
+
+	-- if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
+	if g_currentMission.baseDirectory == "" or g_currentMission.baseDirectory == nil then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
+		--temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
+		temp = self:getModName(g_currentMission.baseDirectory);
 	end;
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
@@ -706,12 +775,23 @@ function mapviewer:checkLocalFnumFile()
 	
 	fileName = "mv_fnum_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
+	-- PathToModDir = string.gsub(self.moddir, s.."/", "");
 
-	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
+	--if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
+		--temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
+	--else
+		--temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
+	--end;
+	
+	-- if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
+	if g_currentMission.BaseDirectory == "" or g_currentMission.baseDirectory == nil then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
+		--temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
+		temp = self:getModName(g_currentMission.baseDirectory);
 	end;
+	
+	
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
 	
@@ -731,12 +811,22 @@ function mapviewer:checkLocalPoIFile()
 	
 	fileName = "mv_poi_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
+	-- PathToModDir = string.gsub(self.moddir, s.."/", "");
 
-	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
+--	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
+--		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
+--	else
+--		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
+--	end;
+
+	-- if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
+	if g_currentMission.BaseDirectory == "" or g_currentMission.baseDirectory == nil then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
+		--temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
+		temp = self:getModName(g_currentMission.baseDirectory);
 	end;
+
 	fileName = fileName .. temp;
 	fileName = string.lower(fileName);
 	
@@ -1365,8 +1455,8 @@ function mapviewer:ShowPanelonMap()
 		tTop = tY + self.bigmap.InfoPanel.background.height; -- - 0.035;
 		tLeft = tX + 0.005; 
 		
-		-- TODO: prüfen ob an dieser Stelle ein rendern erfolgen muss
-		renderOverlay(self.bigmap.InfoPanel.top.OverlayId, self.bigmap.InfoPanel.top.Pos.x, self.bigmap.InfoPanel.top.Pos.y, self.bigmap.InfoPanel.top.width, self.bigmap.InfoPanel.top.height);
+		-- Rendern des Panels
+		renderOverlay(self.bigmap.InfoPanel.top.closebar.top.OverlayId, self.bigmap.InfoPanel.top.closebar.top.Pos.x, self.bigmap.InfoPanel.top.closebar.top.Pos.y, self.bigmap.InfoPanel.top.closebar.top.width, self.bigmap.InfoPanel.top.closebar.top.height);
 		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
 		renderOverlay(self.bigmap.InfoPanel.bottom.OverlayId, self.bigmap.InfoPanel.bottom.Pos.x, self.bigmap.InfoPanel.bottom.Pos.y, self.bigmap.InfoPanel.bottom.width, self.bigmap.InfoPanel.bottom.height);
 		----
@@ -1591,8 +1681,16 @@ function mapviewer:draw()
 				-- Feldnummern ?
 				----
 				if g_currentMission.missionPDA.hotspots[j].showName then
-					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
-					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+					if self.useDefaultMap then 
+						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+					elseif g_currentMission.terrainSize ~= 2050 then	
+						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+2048;
+						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+2048;
+					else
+						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
+						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
+					end;
 					
 					self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
 					self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
@@ -1604,6 +1702,9 @@ function mapviewer:draw()
 					if self.useDefaultMap then 
 						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
 						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+					elseif g_currentMission.terrainSize ~= 2050 then	
+						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+2048;
+						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+2048;
 					else
 						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
 						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
@@ -2041,8 +2142,8 @@ function mapviewer:update(dt)
 			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
 			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
 			
-			self.bigmap.InfoPanel.top.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
+			self.bigmap.InfoPanel.top.closebar.top.Pos.x = distancePosX-0.0078125-0.0078125;
+			self.bigmap.InfoPanel.top.closebar.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
 			self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
 			self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
 			self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
