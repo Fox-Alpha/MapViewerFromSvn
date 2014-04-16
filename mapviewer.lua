@@ -46,8 +46,8 @@ mapviewer.modName = g_currentModName;
 ----
 -- Globale Fix für Relea<se 0.8
 ----
--- Draw Reihenfolge ändern. Panels sollten zuletzt erstellt werden.
--- Aktive CoursePlay Course Namen im Fahrzeugpanel anzeigen
+-- DONE: Draw Reihenfolge ändern. Panels sollten zuletzt erstellt werden.
+-- DONE: Aktive CoursePlay Course Namen im Fahrzeugpanel anzeigen
 -- Bunkersilo für Panel übersetzen
 -- Anpassen der Panels
 -- -- OVL 1: z.B. Abladetrigger entfernen
@@ -73,7 +73,7 @@ mapviewer.modName = g_currentModName;
 -- Hauptfunktion zum Laden des Mods
 ----
 function mapviewer:loadMap(name)
-	-- print(string.format("|| %s || Starting ... ||", g_i18n:getText("mapviewtxt")));
+
 	local userXMLPath = Utils.getFilename("mapviewer.xml", mapviewer.moddir);
 	self.xmlFile = loadXMLFile("xmlFile", userXMLPath);
 	
@@ -128,8 +128,8 @@ function mapviewer:loadMap(name)
 	-- Debug Modus
 	----
 	self.Debug = {};
-	self.Debug.active = true;
-	self.Debug.printHotSpots = true;
+	self.Debug.active = false;
+	self.Debug.printHotSpots = false;
 	self.Debug.printHorseShoes = false;
 	----
 	
@@ -183,13 +183,14 @@ function mapviewer:initMapViewer()
 	----
 	
 	print(string.format("|| %s || Initialising ... ||", g_i18n:getText("mapviewtxt")));
-	print(string.format("|| %s || self.modName:  ||", tostring(self.modName)));
-	
+
+	----
+	-- Modname und Modverzeichnis (zip) ermitteln
+	----
 	if self.modName == nil then
-		-- self.moname, self.modBase = self:getModName(self.moddir);
-		-- self.modName = ModsUtil.modList.modName;
 		self.modName, self.modBaseDirectory = Utils.getModNameAndBaseDirectory(self.moddir .. "modDesc.xml");
 	end;
+	----
 	
 	self.bigmap.OverlayId = {};
     self.bigmap.PoI = {};
@@ -201,58 +202,54 @@ function mapviewer:initMapViewer()
 	self.bigmap.mapPosY = 0.5-(self.bigmap.mapHeight/2);
 	self.bigmap.mapTransp = 1;
 	
-	--
+	----
 	-- Wenn keine vorgegebene Datei als Karte verwendet werden soll
-	--
+	----
 	if g_currentMission.missionInfo.map.baseDirectory ~= nil then
 		self.mapPath = g_currentMission.missionInfo.map.baseDirectory;
 	else
 		self.mapPath = "";
 	end;
+	----
 	
-	-- Utils.getModNameAndBaseDirectory(filename)
-	-- g_currentMission.loadingMapModName, g_currentMission.loadingMapBaseDirectory)
 	-- g_dedicatedServerInfo
-	-- g_currentMission.missionInfo.mapId = (string) -- Interner Name der Map
-	-- MapsUtil.idToMap[g_currentMission.missionInfo.mapId].baseDirectory
-	-- g_currentMission.maps [1] 1 = 3081 (mapID ?)
 
-	-- MapsUtil = {}
-	-- MapsUtil.mapList = {}
-	-- MapsUtil.idToMap = {}
-	
-	-- self.mapPath = g_currentMission.loadingMapBaseDirectory;
-
-    --
+    ----
     -- Prüfen ob es sich um die Standard Karte handelt
-    --
+    ----
 	self.mapName = g_currentMission.missionInfo.map.title;
-	--self.mapZipName = self:getModName(g_currentMission.loadingMapBaseDirectory);
 	
+	-- Table, um auch alternative Pfade nach der pda_map zu durchsuchen
 	local pdaPath = {};
 	
+	----
+	-- Wenn der Pfad leer ist, dann handelt es sich um die Standard Map
+	-- In diesem Fall erst einmal den Pfad zur mitgelieferten PDA setzen.
+	-- Andernfalls in der zip der Karte auch die am häufigsten verwendeten Pfade durchsuchen
+	----
     if self.mapPath == "" then
         self.mapPath = self.moddir;
         self.useDefaultMap = true;
 		self.bigmap.file = Utils.getFilename("mv_pda_hagenstedt.dds", self.moddir);
     else
-        -- self.mapPath = self.mapPath .. "map01/"
-		
+		----
+		-- am häufigsten verwendeten Pfade
+		----
 		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});					--[hauptverzeichnis]/
 		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map01/"});		--[hauptverzeichnis]/map01/ 
 		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map/map01/"});	--[hauptverzeichnis]/map/map01/
 		
-		print(string.format("|| %s || Versuche PDA_map.dds zu finden||", g_i18n:getText("mapviewtxt"))); --TODO: Übersetzen !
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InfoTryLocatePDAFile")));
 		local pdaI = 1;
+		----
 		
 		----
 		-- Alternative Pfade für pda_map.dds prüfen
 		----
 		for _,pdamap in pairs(pdaPath) do
-			-- print(pdaPath[pdaI].path..pdaPath[pdaI].file .. "||" .. tostring(fileExists(pdaPath[pdaI].path..pdaPath[pdaI].file)));
 			if fileExists(Utils.getFilename(pdaPath[pdaI].file, pdaPath[pdaI].path)) then
 				self.bigmap.file = pdaPath[pdaI].path..pdaPath[pdaI].file;
-				print(string.format("|| %s || PDA_map.dds in Zip der Map gefunden ||", g_i18n:getText("mapviewtxt"))); --TODO: Übersetzen !
+				print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InfoPDAFileLocated")));
 				break;
 			end;
 			pdaI = pdaI+1;
@@ -276,8 +273,10 @@ function mapviewer:initMapViewer()
 	----
 	
 	----
+	-- Mapname printen
 	-- Mapgroesse printen
 	----
+	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_MapName"), g_currentMission.missionInfo.map.title)));
 	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_InfoMapsize"), self.bigmap.mapDimensionX, self.bigmap.mapDimensionY)));
 	----
 
@@ -286,12 +285,6 @@ function mapviewer:initMapViewer()
     self.bigmap.PoI.height = 1;
     self.bigmap.FNum.width = 1;
     self.bigmap.FNum.height = 1;
-	
-	
-	----
-	-- Mapname printen
-	----
-	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_MapName"), g_currentMission.missionInfo.map.title)));
 	----
 	
 	----
@@ -299,36 +292,26 @@ function mapviewer:initMapViewer()
 	----
 	self.bigmap.mapTransp = 1;
 	----
-	
-	-- Utils.getModNameAndBaseDirectory(filename)
-	-- g_currentMission.loadingMapModName, g_currentMission.loadingMapBaseDirectory)
-	-- g_dedicatedServerInfo
-	-- g_currentMission.missionInfo.mapId = (string) -- Interner Name der Map
-	-- MapsUtil.idToMap[g_currentMission.missionInfo.mapId].baseDirectory
-	-- g_currentMission.maps [1] 1 = 3081 (mapID ?)
 
+	----
+	-- Debug ausgaben
+	----
 	if self.Debug.active then
-		print("Debug: ");
-		--print(string.format("self.useMapFile: %s", tostring(self.useMapFile)));
+		print(string.format("--Debug:--"));
 		print(string.format("self.bigmap.file: %s", self.bigmap.file));
 		print(string.format("self.bigmap.OverlayId.ovid: %s", tostring(self.bigmap.OverlayId.ovid)));
-		print("LoadMap()");
 		print(string.format("Map Pfad : %s", self.mapPath));
-		-- print(string.format("Map Zip Name : %s", self.mapZipName));
-		
-		print(string.format("----"));
 		print(string.format("MapsUtil.idToMap[]: %s", tostring(MapsUtil.idToMap[g_currentMission.missionInfo.mapId].baseDirectory)));
 		print(string.format("g_currentMission.missionInfo.map.baseDirectory: %s", tostring(g_currentMission.missionInfo.map.baseDirectory)));
 		print(string.format("g_currentMission.BaseDirectory: %s", tostring(g_currentMission.baseDirectory)));
 		print(string.format("self.modDir: %s", tostring(self.moddir)));
 		print(string.format("self.modName: %s", tostring(self:getModName(self.moddir))));
 		print(string.format("self.modBaseDirectory: %s", tostring(self.modBaseDirectory)));
-		print(string.format("----"));
-
 		print(string.format("Overlay  : %s", tostring(self.bigmap.OverlayId.ovid)));
+		print(string.format("----"));
 	end;
-		
-    
+	----
+
 	----
 	-- Array für Fahrzeugicons
 	----
@@ -370,9 +353,9 @@ function mapviewer:initMapViewer()
 	self.bigmap.InfoPanel = {};
 	self.bigmap.InfoPanel.top = {};
 	
-	-- Oberes und Unteres Ende des Panels
 	self.bigmap.InfoPanel.top.closebar = {};
 	
+	-- Oberes und Unteres Ende des Panels
 	self.bigmap.InfoPanel.top.closebar.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
 	self.bigmap.InfoPanel.top.closebar.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarTop#file"), "panel/Info_Panel_closebar_top.dds"), self.moddir);
 	self.bigmap.InfoPanel.top.closebar.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.top.file);
@@ -381,10 +364,6 @@ function mapviewer:initMapViewer()
 	self.bigmap.InfoPanel.top.closebar.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarBottom#file"), "panel/Info_Panel_closebar_bottom.dds"), self.moddir);
 	self.bigmap.InfoPanel.top.closebar.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.bottom.file);
 	----
-	
-	--self.bigmap.InfoPanel.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
-	--self.bigmap.InfoPanel.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop#file"), "panel/Info_Panel_closebar_top.dds"), self.moddir);
-	--self.bigmap.InfoPanel.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.file);
 
 	self.bigmap.InfoPanel.background = {};
 	self.bigmap.InfoPanel.background = {file = "", OverlayId = nil, width = 0.15, height= 0.125, Pos = {x=0, y=0}};
@@ -396,13 +375,14 @@ function mapviewer:initMapViewer()
 	self.bigmap.InfoPanel.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBubble.BubbleBottomLeft#file"), "panel/Info_Panel_bubble_bottomleft.dds"), self.moddir);
 	self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
 
-
 	-- Informationen die angezeigt werden
 	self.bigmap.InfoPanel.Info = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+
 	--- Fahrzeug Informationen
 	self.bigmap.InfoPanel.vehicleIndex = 0;
 	self.bigmap.InfoPanel.isVehicle = false;
 	self.bigmap.InfoPanel.lastVehicle = {};
+
 	--- Trigger Informationen
 	self.bigmap.InfoPanel.triggerIndex = 0;
 	self.bigmap.InfoPanel.isTrigger = false;
@@ -449,16 +429,20 @@ function mapviewer:initMapViewer()
 
 	--Array für CourseplayIcon
 	local mods = g_currentMission.missionDynamicInfo.mods;
+	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForCoursePlay")));
+	
 	local beg, ende = 0, 0;
+	local cpid = 0;
 	for i=1, table.getn(mods) do
 		beg, ende = string.find(string.lower(mods[i].modName), "courseplay");
 		if beg ~= nil and ende ~= nil then
 			self.useCoursePlay = true;
+			cpid = i;
 			break;
 		end;
 	end;
 	if self.useCoursePlay then
-		print(string.format("|| %s || CoursePlay vorhanden ||", g_i18n:getText("mapviewtxt")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_CoursePlayFound"), mods[i].title, mods[i].version)));
 		self.bigmap.IconCourseplay = {};
 		self.bigmap.IconCourseplay.Icon = {};
 		self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
@@ -466,7 +450,7 @@ function mapviewer:initMapViewer()
 		self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
 		self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
 	else
-		print(string.format("|| %s || Kein CoursePlay vorhanden ||", g_i18n:getText("mapviewtxt")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CoursePlayNotFound")));
 	end;
 	----
 
@@ -510,10 +494,9 @@ function mapviewer:initMapViewer()
 	self.bigmap.iconTipTrigger.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconHorseShoe#height"), 0.0156250);
     if self.bigmap.iconTipTrigger.Icon.OverlayId == nil or self.bigmap.iconTipTrigger.Icon.OverlayId == 0 then
         self.useTipTrigger = false;
-		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitHorseShoes")));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InitHorseShoesFailed")));
 	else
-		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), "TipTrigger vorbereiten erfolgreich"));	-- TODO: Übersetzen
-		print(table.show(self.bigmap.iconTipTrigger, "TipTrigger"));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InitTipTriggerSuccess")));
     end;
 	----
     
@@ -577,7 +560,7 @@ function mapviewer:initMapViewer()
 	
 	if bl == true and lf ~= nil then
 		self.bigmap.file = lf;
-		print(string.format("|| %s || Lokale PDA vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LocalePDAFileSuccess")));
 	end;
 	-- print(string.format("|| %s || checkLocalPDAFile(): %s / %s ||", g_i18n:getText("mapviewtxt"), tostring(bl), lf));
 	
@@ -615,12 +598,14 @@ function mapviewer:initMapViewer()
 	
 	if bpoi and lfpoi ~= nil then
         self.bigmap.PoI.file = lfpoi;
-		print(string.format("|| %s || Lokale PoI vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LocalePoIFileSuccess")));
 	else
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFromLocalPoI")));
     end;
 
-	print(string.format("|| Debug || PoIFile : %s ||", tostring(self.bigmap.PoI.file)));
+	if self.Debug.active then
+		print(string.format("|| Debug || PoIFile : %s ||", tostring(self.bigmap.PoI.file)));
+	end;
 	
 	if fileExists(self.bigmap.PoI.file) then 
 		self.bigmap.PoI.OverlayId = createImageOverlay(self.bigmap.PoI.file);
@@ -638,11 +623,11 @@ function mapviewer:initMapViewer()
 	
 	if self.usePoi then
 		if not bpoi and not self.useDefaultMap then 
-			print(string.format("|| %s || PoI Overlay in Map vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_PoIInMap")));
 		elseif not bpoi and self.useDefaultMap then 
-			print(string.format("|| %s || Nutze MapViewer PoI Overlay ", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_PoIFromMV")));
 		else
-			print(string.format("|| %s || Nutze lokale PoI Overlay Datei", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+			print(string.format("|| %s || %s||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_PoIFromLocaleFile")));
 		end;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapPoISuccess")));
 	end;
@@ -669,12 +654,14 @@ function mapviewer:initMapViewer()
 	
 	if bfnum and lfnum ~= nil then
 		self.bigmap.FNum.file = lfnum;
-		print(string.format("|| %s || Lokale Feldnummern vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_LocaleFNumFileSuccess")));
 	else
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateMVFromLocalFNum")));
 	end;
 	
-	print(string.format("|| Debug || FnumFile : %s ||", tostring(self.bigmap.FNum.file)));
+	if self.Debug.active then
+		print(string.format("|| Debug || FnumFile : %s ||", tostring(self.bigmap.FNum.file)));
+	end;
 	
 	if fileExists(self.bigmap.FNum.file) then 
 		self.bigmap.FNum.OverlayId = createImageOverlay(self.bigmap.FNum.file);
@@ -690,11 +677,11 @@ function mapviewer:initMapViewer()
 	print(string.format("|| Debug || useFnum : %s ||", tostring(self.useFNum)));
 	if self.useFNum then
 		if not bfnum and not self.useDefaultMap then 
-			print(string.format("|| %s || Feldnummern Overlay in Map vorhanden", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_FNumInMap")));
 		elseif not bfnum and self.useDefaultMap then 
-			print(string.format("|| %s || Nutze MapViewer Feldnummern Overlay ", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_FNumFromMV")));
 		else
-			print(string.format("|| %s || Nutze lokale Feldnummern Overlay Datei", g_i18n:getText("mapviewtxt")));		--TODO: Übersetzen !
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_FNumFromLocaleFile")));
 		end;
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_MapFNumSuccess")));
 	end;
@@ -718,12 +705,8 @@ end;
 function mapviewer:getModName(s) 
 	local temp;
 	local PathToModDir;
-
-	print(string.format("getModName() self.moddir: %s", tostring(self.moddir)));
-	print(string.format("getModName() self.modName: %s", tostring(self.modName)));
 	
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
-	-- PathToModDir = string.gsub(self.moddir, s.."/", "");
 
 	s = string.gsub(s, PathToModDir, "");
 	s = string.gsub(s, "/", "");
@@ -746,13 +729,10 @@ function mapviewer:checkLocalPDAFile()
 	fileName = "mv_pda_";
 
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
-	-- PathToModDir = string.gsub(self.moddir, s.."/", "");
 
-	-- if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 	if g_currentMission.baseDirectory == "" or g_currentMission.baseDirectory == nil then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		--temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 		temp = self:getModName(g_currentMission.baseDirectory);
 	end;
 	fileName = fileName .. temp;
@@ -775,19 +755,10 @@ function mapviewer:checkLocalFnumFile()
 	
 	fileName = "mv_fnum_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
-	-- PathToModDir = string.gsub(self.moddir, s.."/", "");
 
-	--if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
-		--temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
-	--else
-		--temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
-	--end;
-	
-	-- if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 	if g_currentMission.BaseDirectory == "" or g_currentMission.baseDirectory == nil then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		--temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 		temp = self:getModName(g_currentMission.baseDirectory);
 	end;
 	
@@ -811,19 +782,10 @@ function mapviewer:checkLocalPoIFile()
 	
 	fileName = "mv_poi_";
 	PathToModDir = string.gsub(self.moddir, self.modName.."/", "");
-	-- PathToModDir = string.gsub(self.moddir, s.."/", "");
 
---	if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
---		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
---	else
---		temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
---	end;
-
-	-- if g_currentMission.loadingMapBaseDirectory == "" then	--Standard Karte
 	if g_currentMission.BaseDirectory == "" or g_currentMission.baseDirectory == nil then	--Standard Karte
 		temp = string.gsub(g_currentMission.missionInfo.map.title, " ", "_");
 	else
-		--temp = self:getModName(g_currentMission.loadingMapBaseDirectory);
 		temp = self:getModName(g_currentMission.baseDirectory);
 	end;
 
@@ -949,7 +911,7 @@ end;
 -- Feld Trigger in der Nähe des Mausklicks finden
 ----
 function mapviewer:fieldInMouseRange()
-	-- print("mapviewer:fieldInMouseRange()");
+
 	local currFT = nil;
 	local isField = false;
 	local index = 0;
@@ -962,8 +924,6 @@ function mapviewer:fieldInMouseRange()
 	local aDistance = 0.006;
 	local vDistance = 0.006;
 
-	
-	-- for j=1, table.getn(g_currentMission.tipTriggers) do
 	for i=1, g_currentMission.fieldDefinitionBase.numberOfFields do
 		local currF = g_currentMission.fieldDefinitionBase.fieldDefsByFieldNumber[i];
 		
@@ -972,7 +932,6 @@ function mapviewer:fieldInMouseRange()
 		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
 		
 		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
-		-- print(string.format("Trigger Nr. %s - x:%s - y:%s - z:%s - distance:%s ", tostring(i), tostring(posX1), tostring(posY1), tostring(posZ1), tostring(tmpDistance)));
 		
 		if tmpDistance < nearestDistance then
 			sDistance = tmpDistance;
@@ -984,9 +943,6 @@ function mapviewer:fieldInMouseRange()
 			end;
 		end;
 	end;
-	-- print("index " .. tostring(index));
-	-- print("isField " .. tostring(isField));
-	-- print("currFT " .. tostring(currFT));
 	
 	return index, isField, currFT;	
 end;
@@ -996,7 +952,6 @@ end;
 -- Trigger in der Nähe des Mausklicks finden
 ----
 function mapviewer:triggerInMouseRange()
-	-- print("mapviewer:triggerInMouseRange()");
 	local currTT = nil;
 	local isTrigger = false;
 	local index = 0;
@@ -1009,18 +964,15 @@ function mapviewer:triggerInMouseRange()
 	local aDistance = 0.006;
 	local vDistance = 0.006;
 
-	
-	-- for j=1, table.getn(g_currentMission.tipTriggers) do
 	for i,j in pairs(g_currentMission.tipTriggers) do
 		triggerIndex = triggerIndex +1;
-		local currT = j;-- g_currentMission.tipTriggers[j];
+		local currT = j;
 		
 		local posX1, posY1, posZ1 = getWorldTranslation(currT.rootNode);
 		local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
 		local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
 		
 		tmpDistance = Utils.vector2Length(self.mouseX-distancePosX, self.mouseY-distancePosZ);
-		-- print(string.format("Trigger Nr. %s - x:%s - y:%s - z:%s - distance:%s ", tostring(i), tostring(posX1), tostring(posY1), tostring(posZ1), tostring(tmpDistance)));
 		
 		if tmpDistance < nearestDistance then
 			sDistance = tmpDistance;
@@ -1032,10 +984,7 @@ function mapviewer:triggerInMouseRange()
 			end;
 		end;
 	end;
-	-- print("index " .. tostring(index));
-	-- print("isTrigger " .. tostring(isTrigger));
-	-- print("currTT " .. tostring(currTT));
-	
+
 	return index, isTrigger, currTT;	
 end;
 ----
@@ -1046,18 +995,15 @@ end;
 function mapviewer:GetFieldInfo(field)
 	local fieldInfo = {};
 	
-	--print("GetFieldInfo() : " .. tostring(field.fieldNumber));
-	
-	-- TODO: Texte Übersetzen
 	if field ~= nil and type(field) == "table" then
-		table.insert(fieldInfo, string.format("Feld Nr.: %s", tostring(field.fieldNumber)));
-		table.insert(fieldInfo,string.format("Feldgröße: %0.2f ha",field.fieldArea));		
+		table.insert(fieldInfo, string.format("%s %s", g_i18n:getText("MV_FieldInfoFieldNumber"), tostring(field.fieldNumber)));
+		table.insert(fieldInfo,string.format("%s %0.2f ha", g_i18n:getText("MV_FieldInfoFieldSize"),field.fieldArea));		
 		if not field.ownedByPlayer and not field.fieldAuctionActive then
-			table.insert(fieldInfo, string.format("Kaufpreis: %s€", field.fieldPrice));
+			table.insert(fieldInfo, string.format("%s %s€", g_i18n:getText("MV_FieldInfoFieldPrice"), field.fieldPrice));
 		elseif not field.ownedByPlayer and field.fieldAuctionActive then
-			table.insert(fieldInfo,string.format("Aktuelles Gebot: %s",tostring(field.fieldCurrentBid)));
-			table.insert(fieldInfo,string.format("Höchstrer Bieter: %s",tostring(field.fieldHighestBidder)));
-			table.insert(fieldInfo,string.format("Nächstes Gebot: %s",tostring(field.fieldPrice+field.fieldBidStep)));			
+			table.insert(fieldInfo,string.format("%s %s", g_i18n:getText("MV_FieldInfoCurrentBid"),tostring(field.fieldCurrentBid)));
+			table.insert(fieldInfo,string.format("%s %s", g_i18n:getText("MV_FieldInfoHighestBidder"),tostring(field.fieldHighestBidder)));
+			table.insert(fieldInfo,string.format("%s %s", g_i18n:getText("MV_FieldInfoNextBid"),tostring(field.fieldPrice+field.fieldBidStep)));			
 		end;
 	end;
 	
@@ -1074,8 +1020,6 @@ function mapviewer:GetTriggerInfo(trigger)
 	local prices = {};
 	local amounts = {};
 	local fsa = 0;
-	
-	-- print("GetTriggerInfo() : " .. tostring(trigger));
 	
 	if trigger ~= nil and type(trigger) == "table" then
 		
@@ -1096,26 +1040,15 @@ function mapviewer:GetTriggerInfo(trigger)
 			else
 				table.insert(amounts, 0);
 			end;
-			--print("GetTriggerInfo() : fillType: " .. tostring(fillType));
 		end;
-		
-		--print(table.show(g_currentMission.missionStats.farmSiloAmounts, "farmSiloAmounts"));
 
 		for i=1, table.getn(fruits) do
 			local Frucht;
 			
-			-- if g_i18n.hasText(fruits[i]) then
-				-- Frucht = Utils.getNoNil(g_i18n:getText(fruits[i]), fruits[i]);
-			-- else
-				-- Frucht = fruits[i];
-			-- end;
 			if trigger.isFarmTrigger then
 				table.insert(triggerInfo, string.format("%s : %s", tostring(fruits[i]), tostring(amounts[i])));
-				-- table.insert(triggerInfo, string.format("%s : %s", Frucht, amounts[i]));
 			else
 				table.insert(triggerInfo, string.format("%s (%s€)", tostring(fruits[i]), tostring(prices[i])));
-				-- table.insert(triggerInfo, string.format("%s (%s€)", Frucht, prices[i]));
-				--print(string.format("%s (%s€)", fruits[i], prices[i]));
 			end;
 		end;
 		----
@@ -1133,8 +1066,6 @@ function mapviewer:getTriggerFruitTypesAndPrices(trigger)
 	local prices = {};
 	local missionStats = g_currentMission.missionStats;
 	
-	-- print("getTriggerFruitTypesAndPrices() : " .. tostring(trigger));
-	
 	for fillType, _ in pairs (trigger.acceptedFillTypes) do
 		local difficultyMultiplier = math.max(2 * (3 - missionStats.difficulty), 1)
 		local greatDemandMultiplier = 1
@@ -1145,16 +1076,10 @@ function mapviewer:getTriggerFruitTypesAndPrices(trigger)
 		local price = math.ceil(Fillable.fillTypeIndexToDesc[fillType].pricePerLiter * 1000 * trigger.priceMultipliers[fillType] * difficultyMultiplier * greatDemandMultiplier);
 		table.insert(prices, price);
 		
-		-- print("acceptedFillTypes:" .. tostring(fillType));
 		if not FruitUtil.fillTypeIsWindrow[fillType] then
-			--table.insert(fruits, tostring(Utils.getNoNil(g_i18n:getText(FruitUtil.fruitIndexToDesc[fillType].name)), g_i18n:getText("MV_Unknown")));
-			--table.insert(fruits, tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[FruitUtil.fillTypeToFruitType[fillType]].name) .. g_i18n:getText("MV_Unknown")));
-			--table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name .. "/" .. Fillable.fillTypeIndexToDesc[fillType].nameI18N);
 			table.insert(fruits, tostring(Utils.getNoNil(g_i18n:getText(Fillable.fillTypeIndexToDesc[fillType].name),g_i18n:getText("MV_Unknown"))));
 		else
-			-- table.insert(fruits, Fillable.fillTypeIndexToDesc[fillType].name);
 			table.insert(fruits, tostring(g_i18n:getText(FruitUtil.fruitIndexToDesc[FruitUtil.fillTypeToFruitType[fillType]].name)) .. " " .. g_i18n:getText("MV_Windrow"));
-			-- print(g_i18n:getText(Fillable.fillTypeIndexToDesc[fillType].name));
 		end;
 	end;
 	
@@ -1200,7 +1125,10 @@ function mapviewer:vehicleInMouseRange()
 	tmpDistance = 0.006;
 	aDistance = 0.006;
 	vDistance = 0.006;
+	
+	----
 	--Attachables
+	----
 	for a=1, table.getn(g_currentMission.attachables) do
 		if g_currentMission.attachables[a].attacherVehicle == nil or g_currentMission.attachables[a].attacherVehicle == 0 then
 			local currA = g_currentMission.attachables[a];
@@ -1220,6 +1148,8 @@ function mapviewer:vehicleInMouseRange()
 			end;
 		end;
 	end;
+	----
+	
 	return index, isVehicle, currV;	
 end;
 ----
@@ -1498,33 +1428,39 @@ function mapviewer:draw()
 	local sht = g_currentMission.showHelpText;
 	
 	if self.mapvieweractive then
-		--Aktuelle Transparenz und Copyright
-		
 		----
-		-- Hilfe Anzeige ausschalten solange MV Aktiv ist
+		-- Aktuelle Transparenz und Copyright
 		----
-		
-		g_currentMission.showHelpText = false;
-		----
-		
 		setTextColor(1, 1, 1, 1);
 		renderText(0.5-0.0273, 1-0.03, 0.020, string.format("Transparenz\t%d", self.bigmap.mapTransp * 100));
 		renderText(0.5-0.035, 0.03, 0.018, g_i18n:getText("mapviewtxt"));
 		setTextColor(1, 1, 1, 0);
         ----
+		
+		----
+		-- Hilfe Anzeige ausschalten solange MV Aktiv ist
+		----
+		-- TODO: vorherigen Stand merken
+		g_currentMission.showHelpText = false;
+		----
+		
 
-		--Points of Interessts
+		----
+		-- Points of Interessts
+		----
 		if self.showPoi then
 			if self.bigmap.PoI.OverlayId ~= nil and self.bigmap.PoI.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.PoI.OverlayId, self.bigmap.PoI.poiPosX, self.bigmap.PoI.poiPosY, self.bigmap.PoI.width, self.bigmap.PoI.height);
 			else
                 g_currentMission:addWarning(g_i18n:getText("MV_ErrorPoICreateOverlay"), 0.018, 0.033);
-				self.usePoi = false; -- not self.usePoi;
+				self.usePoi = false;
 			end;
 		end;
         ----
 		
-		--Fieldnumbers
+		----
+		-- Fieldnumbers Overlay
+		----
 		if self.showFNum then
 			if self.bigmap.FNum.OverlayId ~= nil and self.bigmap.FNum.OverlayId ~= 0 then
 				renderOverlay(self.bigmap.FNum.OverlayId, self.bigmap.FNum.FNumPosX, self.bigmap.FNum.FNumPosY, self.bigmap.FNum.width, self.bigmap.FNum.height);
@@ -1540,18 +1476,13 @@ function mapviewer:draw()
 		----
 		if self.showTipTrigger and self.useTipTrigger then
 			self:showTipTriggerHotSpot();
-			--self.showTipTriggers = false;
 		end;
-		-- self.missionPDA:createMapHotspot("TipPlace", Utils.getFilename("$dataS2/missions/hud_pda_spot_tipPlace.png", self.baseDirectory), 
-					-- 1024 + 43.5, 1024 - 128.3, 
-					-- iconSize, iconSize * (4 / 3), 
-					-- false, false, false, 0, true);
 		
 		----
 		-- Horseshoes
 		----
-		----
 		local countHorseShoesFound = 0;
+
 		if self.showHorseShoes and self.useHorseShoes then
 			local HShoes = {};
 			HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
@@ -1580,13 +1511,15 @@ function mapviewer:draw()
 					self.Debug.printHorseShoes = false;
 				end;
 			else
-                print(string.format("|| $s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
+                print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
 				self.useHorseShoes = not self.useHorseShoes;
 			end;
 		end;
         ----
 		
-
+		----
+		-- Alle Mitspieler auf Karte zeigen
+		----
 		mplayer = {};
 		for key, value in pairs (g_currentMission.players) do
 			mplayer.player = value;
@@ -1598,8 +1531,8 @@ function mapviewer:draw()
 				posX, posY, posZ = getWorldTranslation(mplayer.player.rootNode);
 			end;
 
-			mplayer.xPos = ((((self.bigmap.mapDimensionX/2)+posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);--self.bigmap.player.xPosPDA+0.008;
-			mplayer.yPos = ((((self.bigmap.mapDimensionY/2)-posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);--self.bigmap.player.yPosPDA+0.003;
+			mplayer.xPos = ((((self.bigmap.mapDimensionX/2)+posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+			mplayer.yPos = ((((self.bigmap.mapDimensionY/2)-posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 			setTextColor(0, 1, 0, 1);
 
 			if mplayer.player.rootNode == self.activePlayerNode and mplayer.player.isControlled then
@@ -1620,6 +1553,7 @@ function mapviewer:draw()
 			end;
 			setTextColor(1, 1, 1, 0);
 		end;
+		----
 		
 		----
 		-- Hotspots auf grosse Karte, zusammen mit den Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
@@ -1690,7 +1624,6 @@ function mapviewer:draw()
 			if self.Debug.printHotSpots then
 				self.Debug.printHotSpots = false;
 			end;
-			-- print("-- Hotspot Loop Ende --");
 		end;
 
 		----
@@ -1707,6 +1640,7 @@ function mapviewer:draw()
                 -- Auslesen der Kurse wenn CoursePlay vorhanden ist
                 ----
 				if self.useCoursePlay then
+					-- Erst prüfen ob die CP Spezi im Fahrzeug vorhanden ist.
 					if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
 						if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
 							for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
@@ -1895,6 +1829,7 @@ function mapviewer:draw()
 						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
 					else
 						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
+						print(string.format("|| %s || OverlayIcon nicht gefunden  : %s ||", g_i18n:getText("mapviewtxt"), self.bigmap.attachmentsTypes.names[lg]));
 					end;
 					self.l_PosY = self.l_PosY - 0.020;
                 end;
@@ -1907,6 +1842,7 @@ function mapviewer:draw()
 			print(g_i18n:getText("mapviewtxt") .. " : Rendern der Maplegende fehlgeschlagen");
 			print(g_i18n:getText("mapviewtxt") .. " : Error rendering map legend");
 		elseif self.mapvieweractive and not self.maplegende then
+			-- Tastenbelegung mit Panelhintergrund statt Hilfetext anzeigen
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Legende"), InputBinding.BIGMAP_Legende);
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransPlus"), InputBinding.BIGMAP_TransPlus);
 			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransMinus"), InputBinding.BIGMAP_TransMinus);
@@ -2042,12 +1978,17 @@ function mapviewer:update(dt)
 		end;
 	end;
 	
+	----
 	-- Nur wenn Variablen initialisiert sind, auf Tasten eingaben reagieren
+	----
 	if not self.mvInit then 
 		return;
 	end;
+	----
 
-	-- Taste für Map einblenden
+	----
+	-- Auf Taste zum MapViewer einblenden reagieren
+	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_Activate) then
 		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
 			self.mapvieweractive=not self.mapvieweractive;
@@ -2066,8 +2007,11 @@ function mapviewer:update(dt)
 			self.mv_Error = not self.mv_Error;
 		end;
 	end;
+	----
 
-	--Taste für Legende einblenden
+	----
+	-- Auf Taste zum Legende einblenden reagieren
+	----
 	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_Legende) then
 		if self.mapvieweractive and self.useLegend then
 			--Legende einblenden
@@ -2075,8 +2019,11 @@ function mapviewer:update(dt)
 			self.printInfo = self.maplegende;
 		end;
 	end;
+	----
 
-	--Overlay wechseln
+	----
+	-- Auf Taste zum Overlay wechseln reagieren
+	----
 	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
 		self.numOverlay = self.numOverlay+1;
 
@@ -2143,7 +2090,7 @@ function mapviewer:update(dt)
 	----
 	if self.mapvieweractive and self.showInfoPanel then 
 		local obj = nil;
-		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then	--nodeToVehicle
+		if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" then
 			if g_currentMission.nodeToVehicle[self.bigmap.InfoPanel.lastVehicle.rootNode] ~= nil then
 				obj = self.bigmap.InfoPanel.lastVehicle.rootNode;
 			else
@@ -2160,8 +2107,8 @@ function mapviewer:update(dt)
 		
 		if self.showInfoPanel and obj ~= nil then
 			local posX1, posY1, posZ1 = getWorldTranslation(obj);
-			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth); -- +self.bigmap.mapPosX;
-			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight); -- +self.bigmap.mapPosY;
+			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 			
 			self.bigmap.InfoPanel.top.closebar.top.Pos.x = distancePosX-0.0078125-0.0078125;
 			self.bigmap.InfoPanel.top.closebar.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
@@ -2174,7 +2121,7 @@ function mapviewer:update(dt)
 	----
 	
 	----
-	--BigMap Transparenz erhöhen und verringern
+	-- BigMap Transparenz erhöhen und verringern
 	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
 		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
@@ -2191,6 +2138,9 @@ function mapviewer:update(dt)
 	-- ende Transparenz umschalten
 	----
 	
+	----
+	-- Wenn TRansparenz aktiv, Mauszeiger ausblenden
+	----
 	if self.mapvieweractive then 
 		if self.bigmap.mapTransp < 1 and g_mouseControlsHelp.active == false then 
 			g_mouseControlsHelp.active = true; 
@@ -2208,6 +2158,7 @@ function mapviewer:update(dt)
 			end;
 		end;
 	end;	
+	----
 	
 	----
 	-- Tasten Modofizierer für Teleport

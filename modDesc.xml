@@ -73,6 +73,14 @@
 		</text>
 
         <!-- Log Meldungen -->
+		<text name="MV_InfoTryLocatePDAFile">
+			<en>Try to locate PDA Map File</en>
+			<de>Versuche PDA_map.dds zu finden</de>	
+		</text>
+		<text name="MV_InfoPDAFileLocated">
+			<en>PDA Map File is located</en>
+			<de>PDA_map.dds in Zip der Map gefunden</de>	
+		</text>
 		<text name="MV_InfoMapsize">
 			<en>Current Mapsize is : %d x %d</en>
 			<de>Aktuelle Map Größe ist : %d x %d</de>	
@@ -97,6 +105,89 @@
 			<en>Checking for locale FNum and PoI overlay files</en>
 			<de>Prüfen auf lokale FNum und PoI Overlay Dateien</de>	
 		</text>
+		
+		<!-- Meldung für PDA_Map Datei -->
+		<text name="MV_LocalePDAFileSuccess">
+			<en>Use locale PDA_Map file</en>
+			<de>Lokale PDA vorhanden</de>	
+		</text>
+		<text name="MV_LocalePDAFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		
+		<!-- Meldung für PoI Datei -->
+		<text name="MV_LocalePoIFileSuccess">
+			<en>Use locale PoI overlay file</en>
+			<de>Lokale PoI vorhanden</de>	
+		</text>
+		<text name="MV_LocalePoIFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		<text name="MV_PoIInMap">
+			<en>PoI Overlay in Map present</en>
+			<de>PoI Overlay in Map vorhanden</de>	
+		</text>
+		<text name="MV_PoIFromMV">
+			<en>Use internal PoI for default Map</en>
+			<de>Nutze MapViewer PoI Overlay</de>	
+		</text>
+		<text name="MV_PoIFromLocaleFile">
+			<en>Use local PoI file for Map</en>
+			<de>Nutze lokale PoI Datei als Overlay</de>	
+		</text>
+		
+		<!-- Meldung für FNum Datei -->
+		<text name="MV_LocaleFNumFileSuccess">
+			<en>Use locale PoI overlay file</en>
+			<de>Lokale Feldnummern vorhanden</de>	
+		</text>
+		<text name="MV_LocaleFNumFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		<text name="MV_FNumInMap">
+			<en>Feldnummern Overlay in Map present</en>
+			<de>Feldnummern Overlay in Map vorhanden</de>	
+		</text>
+		<text name="MV_FNumFromMV">
+			<en>Use internal FNum for default Map</en>
+			<de>Nutze MapViewer Feldnummern Overlay</de>	
+		</text>
+		<text name="MV_FNumFromLocaleFile">
+			<en>Use local FNum file for Map</en>
+			<de>Nutze lokale Feldnummern Datei als Overlay</de>	
+		</text>
+		
+		<!-- Feldinformationen im Panel -->
+		<text name="MV_FieldInfoFieldNumber">
+			<en></en>
+			<de>Feld Nr.:</de>	
+		</text>
+		<text name="MV_FieldInfoFieldSize">
+			<en></en>
+			<de>Feldgröße:</de>	
+		</text>
+		<text name="MV_FieldInfoFieldPrice">
+			<en></en>
+			<de>Kaufpreis:</de>	
+		</text>
+		<text name="MV_FieldInfoCurrentBid">
+			<en></en>
+			<de>Aktuelles Gebot:</de>	
+		</text>
+		<text name="MV_FieldInfoHighestBidder">
+			<en></en>
+			<de>Höchster Bieter:</de>	
+		</text>
+		<text name="MV_FieldInfoNextBid">
+			<en></en>
+			<de>Nächstes Gebot:</de>	
+		</text>
+		
+		
+		<!-- TODO: Prüfen wo dieser Text verwendet wird -->
 		<text name="MV_LocaleFileSuccess">
 			<en>Checking for locale FNum and PoI overlay files</en>
 			<de>%s Datei erfolgreich geladen</de>	
@@ -105,9 +196,31 @@
 			<en>Preparing horseshoes successfull</en>
 			<de>Vorbereiten der Hufeisen erfolgreich</de>	
 		</text>
+		<text name="MV_InitTipTriggerSuccess">
+			<en>Preparing TipTrigger successfull</en>
+			<de>TipTrigger vorbereiten erfolgreich</de>	
+		</text>
+		<text name="MV_InitHorseShoesFailed">
+			<en>Preparing TipTrigger failed</en>
+			<de>Vorbereiten der TipTrigger fehlgeschlagen</de>	
+		</text>
 		<text name="MV_LocaleFileSuccess">
 			<en>Checking for locale FNum and PoI overlay files</en>
 			<de>%s Datei erfolgreich geladen</de>	
+		</text>
+		<text name="MV_CheckForCoursePlay">
+			<en>Checking if courseplay is loaded</en>
+			<de>Prüfen ob CoursePlay verfügbar ist</de>	
+		</text>
+		
+		<!-- Courseplay Meldungen -->
+		<text name="MV_CoursePlayFound">
+			<en>CoursePlay found: %s %s</en>
+			<de>CoursePlay gefunden: %s %s</de>	
+		</text>
+		<text name="MV_CoursePlayNotFound">
+			<en>Courseplay not available</en>
+			<de>CoursePlay nicht vorhanden</de>	
 		</text>
 		
         <!-- Aktiver Overlay Modus -->
