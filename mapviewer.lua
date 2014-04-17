@@ -88,6 +88,7 @@ function mapviewer:loadMap(name)
     self.showInfoPanel = false;
 	self.showHotSpots = false;
 	self.showTipTrigger = true;
+	self.showKeyHelp = false;
     
     self.useHorseShoes = true;
     self.useLegend = true;
@@ -816,7 +817,9 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
     ----
 	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
 		print("---- MapViwer Debug aktiviert ----");
-		self.Debug.active = not self.Debug.active;
+		--self.Debug.active = not self.Debug.active;
+		 g_currentMission:addWarning("Ausgabe von g_currentMission in Log. Dies kann einen moment dauern", 0.018, 0.033);
+		print(table.show(g_currentMission, "g_currentMission"));
 		print("------");
 	end;
 	----
@@ -1364,6 +1367,47 @@ end;
 ----
 
 ----
+-- Anzeigen der Tasten für die MapViewer Steuerung
+----
+function mapviewer:showMapViewerKeys()
+	-- g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Legende"), InputBinding.BIGMAP_Legende);
+	-- g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransPlus"), InputBinding.BIGMAP_TransPlus);
+	-- g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransMinus"), InputBinding.BIGMAP_TransMinus);
+	-- g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_KeyHelp"), InputBinding.BIGMAP_KeyHelp);
+	local tY, tX, tLeft, tTop, tHeight, yHelp;
+	
+	tX = 0.01;	-- Abstand zum Linken Bildrand
+	tY = 0.92;	-- Abstand zum oberen Bildrand
+	tHeight = 5*0.018;	-- Höhe des Text Hintergrunds
+	tTop = 0.92 - tHeight;	-- Obere linke Ecke des Hintergrunds
+	tLeft = 0.018;	-- Begin des Textes links
+	tRight = (self.bigmap.InfoPanel.background.width)*1.75 ;	-- Begin des Textes links
+	tyBottom = tY - self.bigmap.InfoPanel.top.closebar.bottom.height - tHeight;
+	
+	renderOverlay(self.bigmap.InfoPanel.top.closebar.top.OverlayId, tX, tY, self.bigmap.InfoPanel.top.closebar.top.width*1.75, self.bigmap.InfoPanel.top.closebar.top.height);
+	renderOverlay(self.bigmap.InfoPanel.background.OverlayId, tX, tTop, self.bigmap.InfoPanel.background.width*1.75, tHeight);
+	renderOverlay(self.bigmap.InfoPanel.top.closebar.bottom.OverlayId, tX, tyBottom, self.bigmap.InfoPanel.top.closebar.bottom.width*1.75, self.bigmap.InfoPanel.top.closebar.bottom.height);
+
+	setTextColor(0, 0, 0, 1);
+
+	setTextAlignment(RenderText.ALIGN_LEFT)
+	renderText(tLeft, tY-0.016, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_Legende")));	--InputBinding.BIGMAP_Legende)
+	renderText(tLeft, tY-0.033, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_TransPlus")));	--InputBinding.BIGMAP_Legende)
+	renderText(tLeft, tY-0.049, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_TransMinus")));	--InputBinding.BIGMAP_Legende)
+	renderText(tLeft, tY-0.066, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_SwitchOverlay")));	--InputBinding.BIGMAP_Legende)
+	renderText(tLeft, tY-0.083, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_Teleport")));	--InputBinding.BIGMAP_Legende)
+	setTextAlignment(RenderText.ALIGN_RIGHT)
+	renderText(tRight, tY-0.016, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_Legende].keys1))));
+	renderText(tRight, tY-0.033, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_TransPlus].keys1))));
+	renderText(tRight, tY-0.049, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_TransMinus].keys1))));
+	renderText(tRight, tY-0.066, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_SwitchOverlay].keys1))));
+	renderText(tRight, tY-0.083, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_Teleport].keys1))));
+	setTextAlignment(RenderText.ALIGN_LEFT)
+	setTextColor(1, 1, 1, 0);
+end;
+----
+
+----
 -- Panel anzeigen
 ----
 function mapviewer:ShowPanelonMap()
@@ -1382,7 +1426,7 @@ function mapviewer:ShowPanelonMap()
 		----		
 		tX = self.bigmap.InfoPanel.background.Pos.x;
 		tY = self.bigmap.InfoPanel.background.Pos.y;
-		tTop = tY + self.bigmap.InfoPanel.background.height; -- - 0.035;
+		tTop = tY + self.bigmap.InfoPanel.background.height;
 		tLeft = tX + 0.005; 
 		
 		-- Rendern des Panels
@@ -1827,7 +1871,7 @@ function mapviewer:draw()
                                     self.bigmap.attachmentsTypes.width,
                                     self.bigmap.attachmentsTypes.height);
 						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
-					else
+					else		-- TODO: Übersetzen
 						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
 						print(string.format("|| %s || OverlayIcon nicht gefunden  : %s ||", g_i18n:getText("mapviewtxt"), self.bigmap.attachmentsTypes.names[lg]));
 					end;
@@ -1837,16 +1881,13 @@ function mapviewer:draw()
 				setTextColor(1, 1, 1, 0);
                 
 			end;	--if legende nicht NIL
-		elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then
+		elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then		-- TODO: Übersetzen
 			renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Rendern der Legende Fehlgeschlagen");
 			print(g_i18n:getText("mapviewtxt") .. " : Rendern der Maplegende fehlgeschlagen");
 			print(g_i18n:getText("mapviewtxt") .. " : Error rendering map legend");
-		elseif self.mapvieweractive and not self.maplegende then
+		elseif self.mapvieweractive and self.showKeyHelp and not self.maplegende then
 			-- Tastenbelegung mit Panelhintergrund statt Hilfetext anzeigen
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Legende"), InputBinding.BIGMAP_Legende);
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransPlus"), InputBinding.BIGMAP_TransPlus);
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_TransMinus"), InputBinding.BIGMAP_TransMinus);
-			g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_SwitchOverlay"), InputBinding.BIGMAP_SwitchOverlay);
+			self:showMapViewerKeys();
 		end;
 		----
 
@@ -2020,6 +2061,16 @@ function mapviewer:update(dt)
 		end;
 	end;
 	----
+	
+	----
+	-- Auf Taste zum Tasten einblenden reagieren
+	----
+	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_KeyHelp) then
+		if self.mapvieweractive then
+			self.showKeyHelp = not self.showKeyHelp;
+		end;
+	end;
+	----
 
 	----
 	-- Auf Taste zum Overlay wechseln reagieren
@@ -2163,7 +2214,8 @@ function mapviewer:update(dt)
 	----
 	-- Tasten Modofizierer für Teleport
 	----
-	if InputBinding.isPressed(InputBinding.BIGMAP_TPKey1) and InputBinding.isPressed(InputBinding.BIGMAP_TPKey2) then -- and InputBinding.isPressed(InputBinding.BIGMAP_TPMouse) then
+	-- if InputBinding.isPressed(InputBinding.BIGMAP_TPKey1) and InputBinding.isPressed(InputBinding.BIGMAP_TPKey2) then -- and InputBinding.isPressed(InputBinding.BIGMAP_TPMouse) then
+	if InputBinding.isPressed(InputBinding.BIGMAP_Teleport) then
 		self.useTeleport= true; 
 	else
 		self.useTeleport = false;

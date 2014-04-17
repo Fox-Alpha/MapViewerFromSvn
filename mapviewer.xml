@@ -69,7 +69,10 @@
             <iconSteerablecombine  width="0.01" height="0.01" file="icons/combine.dds" />
             <iconSteerableother  width="0.01" height="0.01" file="icons/tractor.dds" />
             
-            <!-- "cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other" -->
+            <!-- 
+				"cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other" 
+				"cutter", "trailer", "sowingMachine", "plough", "sprayer", "baler", "baleLoader", "cultivator", "tedder", "windrower", "shovel", "mower", "cultivator_animated", "selfPropelledSprayer", "cutter_animated", "sprayer_animated", "manureSpreader", "forageWagon", "other"
+			-->
             <iconAttachmentcutter  width="0.01" height="0.01" file="icons/1.dds" />
             <iconAttachmenttrailer  width="0.01" height="0.01" file="icons/2.dds" />
             <iconAttachmentsowingMachine  width="0.01" height="0.01" file="icons/3.dds" />
