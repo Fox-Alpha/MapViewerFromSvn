@@ -1,0 +1,38 @@
+<!--
+-- Revision der letzten Änderung :     $Rev$
+-- Author der letzten Änderung   :     $Author$
+-- Date der letzten Änderung     :     $Date$
+-- $URL$
+----
+-- 1.vehicles = steerables + attachments
+-- 2.hotspots = hotspot integrated in map
+-- 3.trigger = trigger for selling fruit, storing fruit, feed your animals etc.
+-- 4.fieldnumbers= Numbers of fields as clickable trigger
+-- 5.horseshoes = collectable horseshows, if map supported it
+-- 6.courseplay = show path for loaded courses
+-- 7.custom1 = custom defined information as transparent PNG.
+-- 8.custom2 = custom defined information as transparent PNG.
+----
+
+-->
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<mapviewer ver="v0.80">
+	<overlays count="6">
+		<overlay modes="vehicles">
+		<overlay modes="vehicles trigger">
+		<overlay modes="vehicles courseplay">
+		<overlay modes="fieldnumbers">
+		<overlay modes="horseshoes">
+		<overlay modes="vehicles custom1">
+	</overlays>
+	<Modes>
+		<Mode1 name="vehicles" activ="true" />
+		<Mode2 name="hotspots" activ="true" />
+		<Mode3 name="trigger" activ="true" />
+		<Mode4 name="horseshoes" activ="true" />
+		<Mode5 name="courseplay" activ="true" />
+		<Mode6 name="fieldnumbers" activ="true" />
+		<Mode7 name="custom1" activ="true" />
+		<Mode7 name="custom2" activ="false" />
+	</Modes>
+</mapviewer>

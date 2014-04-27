@@ -37,6 +37,7 @@ icons/tractor.dds -text
 icons/tractorctrl.dds -text
 /mapviewer.lua -text svn_keywords
 /mapviewer.xml -text svn_keywords
+/mapviewer_overlay_config.xml -text svn_keywords=Author+Date+Id+Rev+URL
 /modDesc.xml -text svn_keywords
 /mv_fnum_hagenstedt.dds -text
 /mv_pda_hagenstedt.dds -text
