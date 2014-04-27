@@ -89,6 +89,7 @@ function mapviewer:loadMap(name)
 	self.showHotSpots = false;
 	self.showTipTrigger = true;
 	self.showKeyHelp = false;
+	self.showVehicles = true;
     
     self.useHorseShoes = true;
     self.useLegend = true;
@@ -1455,6 +1456,14 @@ end;
 ----
 
 ----
+-- Panel am linken Bildschirmrand anzeigen
+----
+function mapviewer:showSidePanel()
+	
+end;
+----
+
+----
 -- Ausgabe auf dem Bildschirm
 ----
 function mapviewer:draw()
@@ -1474,7 +1483,7 @@ function mapviewer:draw()
 	
 	if self.mapvieweractive then
 		----
-		-- Aktuelle Transparenz und Copyright
+		-- Aktuelle Transparenz und Copyright anzeigen
 		----
 		setTextColor(1, 1, 1, 1);
 		renderText(0.5-0.0273, 1-0.03, 0.020, string.format("Transparenz\t%d", self.bigmap.mapTransp * 100));
@@ -1489,35 +1498,22 @@ function mapviewer:draw()
 		g_currentMission.showHelpText = false;
 		----
 		
+		----
+		-- Taste für Teleport wurde gedrückt
+		-- Hinweis das der nächste Mausklick den spieler teleportiert anzeigen
+		----
 		if self.useTeleport then
 			g_currentMission:addWarning("Teleport aktiv. Bitte Ziel wählen", 0.018, 0.033);
 		end;
+		----
 
-		----
-		-- Points of Interessts
-		----
-		if self.showPoi then
-			if self.bigmap.PoI.OverlayId ~= nil and self.bigmap.PoI.OverlayId ~= 0 then
-				renderOverlay(self.bigmap.PoI.OverlayId, self.bigmap.PoI.poiPosX, self.bigmap.PoI.poiPosY, self.bigmap.PoI.width, self.bigmap.PoI.height);
-			else
-                g_currentMission:addWarning(g_i18n:getText("MV_ErrorPoICreateOverlay"), 0.018, 0.033);
-				self.usePoi = false;
-			end;
-		end;
-        ----
 		
 		----
+		-- Points of Interessts
 		-- Fieldnumbers Overlay
 		----
-		if self.showFNum then
-			if self.bigmap.FNum.OverlayId ~= nil and self.bigmap.FNum.OverlayId ~= 0 then
-				renderOverlay(self.bigmap.FNum.OverlayId, self.bigmap.FNum.FNumPosX, self.bigmap.FNum.FNumPosY, self.bigmap.FNum.width, self.bigmap.FNum.height);
-			else
-                g_currentMission:addWarning(g_i18n:getText("MV_ErrorFNumCreateOverlay"), 0.018, 0.033);
-				self.useFNum = false; 
-			end;
-		end;
-        ----
+		self:showCustomOverlays();
+		----
 
 		----
 		-- Trigger
@@ -1525,298 +1521,51 @@ function mapviewer:draw()
 		if self.showTipTrigger and self.useTipTrigger then
 			self:showTipTriggerHotSpot();
 		end;
+		----
 		
 		----
 		-- Horseshoes
 		----
-		local countHorseShoesFound = 0;
+		local countHorseShoesFound = 0;		--	Anzahl der bereits gefundenen Hufeisen
 
 		if self.showHorseShoes and self.useHorseShoes then
-			local HShoes = {};
-			HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
-			if self.bigmap.iconHorseShoes.Icon.OverlayId ~= nil and self.bigmap.iconHorseShoes.Icon.OverlayId ~= 0 then
-                for i=1, table.getn(HShoes) do
-                    local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
-                    if bottleFound==48 then
-                        self.posX, self.posY, self.posZ=getWorldTranslation(HShoes[i].horseshoeTriggerId);
-                        self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-                        self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-                        
-                        renderOverlay(self.bigmap.iconHorseShoes.Icon.OverlayId,
-                                    self.buttonX-self.bigmap.iconHorseShoes.width/2, 
-                                    self.buttonZ-self.bigmap.iconHorseShoes.height/2, 
-                                    self.bigmap.iconHorseShoes.width, 
-                                    self.bigmap.iconHorseShoes.height);
-					else
-						countHorseShoesFound = countHorseShoesFound+1;
-                    end;
-
-					if self.Debug.printHorseShoes then
-						print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | Index: %s | Count: %d", self.posX, self.posZ, self.buttonX, self.buttonZ, tostring(i), countHorseShoesFound));
-					end;
-                end;
-				if self.Debug.printHorseShoes then
-					self.Debug.printHorseShoes = false;
-				end;
-			else
-                print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
-				self.useHorseShoes = not self.useHorseShoes;
-			end;
+			countHorseShoesFound = self:showHorseShoesOnMap();
 		end;
-        ----
+		----
 		
 		----
 		-- Alle Mitspieler auf Karte zeigen
 		----
-		mplayer = {};
-		for key, value in pairs (g_currentMission.players) do
-			mplayer.player = value;
-			if mplayer.player.isControlled == false then
-				posX = mplayer.player.lastXPos;
-				posY = mplayer.player.lastYPos;
-				posZ = posY;
-			else
-				posX, posY, posZ = getWorldTranslation(mplayer.player.rootNode);
-			end;
-
-			mplayer.xPos = ((((self.bigmap.mapDimensionX/2)+posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-			mplayer.yPos = ((((self.bigmap.mapDimensionY/2)-posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-			setTextColor(0, 1, 0, 1);
-
-			if mplayer.player.rootNode == self.activePlayerNode and mplayer.player.isControlled then
-				if self.bigmap.player.ArrowOverlayId ~= nil and self.bigmap.player.ArrowOverlayId ~= 0 then
-					renderOverlay(self.bigmap.player.ArrowOverlayId, 
-									mplayer.xPos-self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2,
-									self.bigmap.player.width, self.bigmap.player.height);
-				end;
-				renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
-				renderText(0.020, 0.060, 0.015, string.format("Koordinaten : x%.1f / y%.1f",mplayer.xPos*1000,mplayer.yPos*1000));
-			elseif mplayer.player.isControlled then
-				if self.bigmap.player.mpArrowOverlayId ~=nil and self.bigmap.player.mpArrowOverlayId ~= 0 then
-					renderOverlay(self.bigmap.player.mpArrowOverlayId, 
-									mplayer.xPos-self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 
-									self.bigmap.player.width, self.bigmap.player.height);
-				end;
-				renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
-			end;
-			setTextColor(1, 1, 1, 0);
-		end;
+		self:showPlayerOnMap();
 		----
 		
 		----
 		-- Hotspots auf grosse Karte, zusammen mit den Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
 		----
 		if self.showHotSpots and self.useHotSpots then
-			local hsPosX, hsPosY;
-			for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
-				self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
-				self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
-				----
-				self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
-
-				local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
-				
-				setTextColor(1, 1, 1, 1);
-				setTextAlignment(RenderText.ALIGN_CENTER);
-
-				----
-				-- Feldnummern ?
-				----
-				if g_currentMission.missionPDA.hotspots[j].showName then
-					if self.useDefaultMap then 
-						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
-						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
-					elseif g_currentMission.terrainSize ~= 2050 then	
-						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+2048;
-						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+2048;
-					else
-						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
-						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
-					end;
-					
-					self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-					self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
-
-					setTextColor(bc[1], bc[2], bc[3], bc[4]);
-					renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
-					renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
-				else
-					if self.useDefaultMap then 
-						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
-						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
-					elseif g_currentMission.terrainSize ~= 2050 then	
-						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+2048;
-						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+2048;
-					else
-						hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
-						hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
-					end;
-					
-					self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-					self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
-
-					renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
-					if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
-						renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
-					else
-						renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
-					end;
-				end;
-				setTextAlignment(RenderText.ALIGN_LEFT);
-				setTextColor(1, 1, 1, 0);
-
-				if self.Debug.printHotSpots then
-					print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
-				end;
-			end;
-			if self.Debug.printHotSpots then
-				self.Debug.printHotSpots = false;
-			end;
+			self:showMapHotspotsOnMap();
+			self:showFieldNumbersOnMap();
 		end;
-
 		----
-		-- Fahrzeuge auf grosse Karte
+		
 		----
-		for i=1, table.getn(g_currentMission.steerables) do
-			if not g_currentMission.steerables[i].isBroken then
-				self.currentVehicle = g_currentMission.steerables[i];
-				self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-				self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-                
-                ----
-                -- Auslesen der Kurse wenn CoursePlay vorhanden ist
-                ----
-				if self.useCoursePlay then
-					-- Erst prüfen ob die CP Spezi im Fahrzeug vorhanden ist.
-					if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
-						if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
-							for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
-								local wx = g_currentMission.steerables[i].Waypoints[w].cx;
-								local wz = g_currentMission.steerables[i].Waypoints[w].cz;
-								wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-								wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-
-								renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
-											wx-self.bigmap.IconCourseplay.width/2, 
-											wz-self.bigmap.IconCourseplay.height/2,
-											self.bigmap.IconCourseplay.width,
-											self.bigmap.IconCourseplay.height);
-							end;
-							setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
-						end;
-					end;
-				end;
-                ----
-				
-				setTextColor(0, 1, 0, 1);
-				if self.currentVehicle.isControlled and self.currentVehicle.controllerName == self.plyname.name then
-					if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
-						renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
-									self.buttonX-self.bigmap.IconSteerable.width/2, 
-									self.buttonZ-self.bigmap.IconSteerable.height/2,
-									self.bigmap.IconSteerable.width,
-									self.bigmap.IconSteerable.height);
-						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
-					end;
-					
-					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.plyname.name));
-					renderText(0.020, 0.020, 0.015, string.format("Koordinaten : x=%.1f / y=%.1f",self.buttonX * 1000,self.buttonZ * 1000));
-				elseif self.currentVehicle.isControlled then
-					if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
-						renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
-									self.buttonX-self.bigmap.IconSteerable.width/2, 
-									self.buttonZ-self.bigmap.IconSteerable.height/2,
-									self.bigmap.IconSteerable.width,
-									self.bigmap.IconSteerable.height);
-						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
-					end;
-					renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.currentVehicle.controllerName));
-                else
-					if self.bigmap.IconSteerable.OverlayId ~= nil and self.bigmap.IconSteerable.OverlayId ~= 0 then
-						renderOverlay(self.bigmap.IconSteerable.OverlayId,
-									self.buttonX-self.bigmap.IconSteerable.width/2, 
-									self.buttonZ-self.bigmap.IconSteerable.height/2,
-									self.bigmap.IconSteerable.width,
-									self.bigmap.IconSteerable.height);
-						setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
-					end;
-				end;
-				setTextColor(1, 1, 1,0);
-			elseif g_currentMission.steerables[i].isBroken then
-			----
-			-- unbrauchbare Fahrzeuge mit weiterem Icon anzeigen
-			----
-				self.posX, self.posY, self.posZ = getWorldTranslation(g_currentMission.steerables[i].rootNode);
-				self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-                if self.bigmap.iconIsBroken.Icon.OverlayId ~= nil and self.bigmap.iconIsBroken.Icon.OverlayId ~= 0 then
-                    renderOverlay(self.bigmap.iconIsBroken.Icon.OverlayId,
-                                self.buttonX-self.bigmap.iconIsBroken.width/2, 
-                                self.buttonZ-self.bigmap.iconIsBroken.height/2,
-                                self.bigmap.iconIsBroken.width,
-                                self.bigmap.iconIsBroken.height);
-                    setOverlayColor(self.bigmap.iconIsBroken.Icon.OverlayId, 1, 1, 1, 1);
-                end;
-			end;
-		end;
-
-		-----
-		-- Darstellen der Geräte auf der Karte
+		-- Fahrzeuge und Attachments einblenden
 		----
-		for i=1, table.getn(g_currentMission.attachables) do
-			self.currentVehicle = g_currentMission.attachables[i];
-			self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-			self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-			self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-
-            if g_currentMission.attachables[i].attacherVehicle == nil or g_currentMission.attachables[i].attacherVehicle == 0 then
-				if self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName] ~= nil then
-					renderOverlay(self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName],
-                                self.buttonX-self.bigmap.attachmentsTypes.width/2, 
-                                self.buttonZ-self.bigmap.attachmentsTypes.height/2,
-                                self.bigmap.attachmentsTypes.width,
-                                self.bigmap.attachmentsTypes.height);
-				else
-					renderOverlay(self.bigmap.attachmentsTypes.overlays["other"],
-                                self.buttonX-self.bigmap.attachmentsTypes.width/2, 
-                                self.buttonZ-self.bigmap.attachmentsTypes.height/2,
-                                self.bigmap.attachmentsTypes.width,
-                                self.bigmap.attachmentsTypes.height);
-				end;
-            else
-                renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
-                                self.buttonX-self.bigmap.IconAttachments.width/2, 
-                                self.buttonZ-self.bigmap.IconAttachments.height/2,
-                                self.bigmap.IconAttachments.width,
-                                self.bigmap.IconAttachments.height);
-            end;
-			setOverlayColor(self.bigmap.IconAttachments.Icon.front.OverlayId, 1, 1, 1, 1);
-		end;
+		if self.showVehicles then
+		----
+		self:showSteerablesOnMap();
+		----
+		
+		----
+		--	Darstellen der Geräte auf der Karte
+		self:showAttachmentsOnMap();
 		----
 		
 		----
 		-- Milchtruck auf Karte Zeichnen
 		----
-		for i=1, table.getn(g_currentMission.trafficVehicles) do
-			if g_currentMission.trafficVehicles[i].typeName == "milktruck" then
-				self.currentVehicle = g_currentMission.trafficVehicles[i];
-				if self.bigmap.IconMilchtruck.OverlayId ~= nil and self.bigmap.IconMilchtruck.OverlayId ~= 0 then
-					self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
-					self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-					self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-					
-					if self.bigmap.IconMilchtruck.OverlayId ~= nil then
-						renderOverlay(self.bigmap.IconMilchtruck.OverlayId,
-									self.buttonX-self.bigmap.IconMilchtruck.width/2, 
-									self.buttonZ-self.bigmap.IconMilchtruck.height/2,
-									self.bigmap.IconMilchtruck.width,
-									self.bigmap.IconMilchtruck.height);
-					-- TODO: Milchtruckposition an Clients senden
-					end;
-				end;
-				break;
-			end;
+		self:showMilkTruckOnMap();
+		----
 		end;
 		----
 		
@@ -1838,59 +1587,13 @@ function mapviewer:draw()
 		----
 		-- Maplegende anzeigen
 		----
-		if self.maplegende and self.useLegend then
-			if self.bigmap.Legende.OverlayId ~=nil then
-				setTextColor(0, 0, 0, 1);
-                ----
-                -- Legende der Fahrzeuge Typen anzeigen
-                ----
-				renderOverlay(self.bigmap.Legende.OverlayId, 
-						self.bigmap.Legende.legPosX, 
-						0, --self.bigmap.Legende.legPosY, 
-						self.bigmap.Legende.width, 
-						1); --self.bigmap.Legende.height
-				----
-				local c = self.bigmap.Legende.Content;
-				for i=1, table.getn(c) do
-					if c[i].OverlayID ~= nil and c[i].OverlayID ~= 0 then
-						renderOverlay(c[i].OverlayID,
-										c[i].l_PosX, -- 0.007324,
-										c[i].l_PosY, 
-										0.015625, 
-										0.015625);
-						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, c[i].Txt);
-					else
-						renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, "Legenden Icon nicht vorhanden");
-					end;
-				end;
-				self.printInfo = false;
-
-                self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
-				
-                for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
-					if self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]] ~= nil then 
-						renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
-                                    self.bigmap.Legende.legPosX + 0.007324,
-                                    self.l_PosY, 
-                                    self.bigmap.attachmentsTypes.width,
-                                    self.bigmap.attachmentsTypes.height);
-						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
-					else		-- TODO: Übersetzen
-						renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
-						print(string.format("|| %s || OverlayIcon nicht gefunden  : %s ||", g_i18n:getText("mapviewtxt"), self.bigmap.attachmentsTypes.names[lg]));
-					end;
-					self.l_PosY = self.l_PosY - 0.020;
-                end;
-                ----
-				setTextColor(1, 1, 1, 0);
-                
-			end;	--if legende nicht NIL
-		elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then		-- TODO: Übersetzen
-			renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Rendern der Legende Fehlgeschlagen");
-			print(g_i18n:getText("mapviewtxt") .. " : Rendern der Maplegende fehlgeschlagen");
-			print(g_i18n:getText("mapviewtxt") .. " : Error rendering map legend");
-		elseif self.mapvieweractive and self.showKeyHelp and not self.maplegende then
-			-- Tastenbelegung mit Panelhintergrund statt Hilfetext anzeigen
+		self:showMaplegende();
+		----
+		
+		----
+		-- Tastenbelegung mit Panelhintergrund statt Hilfetext anzeigen
+		----
+		if self.showKeyHelp and not self.maplegende then
 			self:showMapViewerKeys();
 		end;
 		----
@@ -1959,7 +1662,7 @@ function mapviewer:draw()
 	end;
 	
 	----
-	-- Namen auf PDA anzeigen
+	-- Eigenen Namen auf PDA anzeigen
 	----
     ----
     -- TODO: Alle Spieler auf PDA anzeigen, Position des Namens korrigieren
@@ -1972,6 +1675,390 @@ function mapviewer:draw()
 		setTextAlignment(RenderText.ALIGN_CENTER);
 		renderText(self.plyname.xPos, self.plyname.yPos, 0.02, self.plyname.name);
 		setTextAlignment(RenderText.ALIGN_LEFT);
+	end;
+	----
+end;
+----
+
+----
+-- Hufeisen anzeigen
+----
+function mapviewer:showHorseShoesOnMap()
+
+	local countHorseShoesFound = 0;
+
+	if self.showHorseShoes and self.useHorseShoes then
+		local HShoes = {};
+		HShoes = g_currentMission.collectableHorseshoesObject.horseshoes;
+		if self.bigmap.iconHorseShoes.Icon.OverlayId ~= nil and self.bigmap.iconHorseShoes.Icon.OverlayId ~= 0 then
+			for i=1, table.getn(HShoes) do
+				local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
+				if bottleFound==48 then
+					self.posX, self.posY, self.posZ=getWorldTranslation(HShoes[i].horseshoeTriggerId);
+					self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+					self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+					
+					renderOverlay(self.bigmap.iconHorseShoes.Icon.OverlayId,
+								self.buttonX-self.bigmap.iconHorseShoes.width/2, 
+								self.buttonZ-self.bigmap.iconHorseShoes.height/2, 
+								self.bigmap.iconHorseShoes.width, 
+								self.bigmap.iconHorseShoes.height);
+				else
+					countHorseShoesFound = countHorseShoesFound+1;
+				end;
+
+				if self.Debug.printHorseShoes then
+					print(string.format("Debug : HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | Index: %s | Count: %d", self.posX, self.posZ, self.buttonX, self.buttonZ, tostring(i), countHorseShoesFound));
+				end;
+			end;
+			if self.Debug.printHorseShoes then
+				self.Debug.printHorseShoes = false;
+			end;
+		else
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorHorseShoesCreateOverlay")));
+			self.useHorseShoes = not self.useHorseShoes;
+		end;
+	end;
+	----
+	-- Anzahl der gefundenen Hufeisen zurückgeben
+	----
+	return countHorseShoesFound;
+end;
+----
+
+----
+-- Alle Mitspieler auf Karte zeigen
+----
+function mapviewer:showPlayerOnMap()
+	mplayer = {};
+	for key, value in pairs (g_currentMission.players) do
+		mplayer.player = value;
+		if mplayer.player.isControlled == false then
+			posX = mplayer.player.lastXPos;
+			posY = mplayer.player.lastYPos;
+			posZ = posY;
+		else
+			posX, posY, posZ = getWorldTranslation(mplayer.player.rootNode);
+		end;
+
+		mplayer.xPos = ((((self.bigmap.mapDimensionX/2)+posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+		mplayer.yPos = ((((self.bigmap.mapDimensionY/2)-posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+		setTextColor(0, 1, 0, 1);
+
+		if mplayer.player.rootNode == self.activePlayerNode and mplayer.player.isControlled then
+			if self.bigmap.player.ArrowOverlayId ~= nil and self.bigmap.player.ArrowOverlayId ~= 0 then
+				renderOverlay(self.bigmap.player.ArrowOverlayId, 
+								mplayer.xPos-self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2,
+								self.bigmap.player.width, self.bigmap.player.height);
+			end;
+			renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
+			renderText(0.020, 0.060, 0.015, string.format("Koordinaten : x%.1f / y%.1f",mplayer.xPos*1000,mplayer.yPos*1000));
+		elseif mplayer.player.isControlled then
+			if self.bigmap.player.mpArrowOverlayId ~=nil and self.bigmap.player.mpArrowOverlayId ~= 0 then
+				renderOverlay(self.bigmap.player.mpArrowOverlayId, 
+								mplayer.xPos-self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 
+								self.bigmap.player.width, self.bigmap.player.height);
+			end;
+			renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
+		end;
+		setTextColor(1, 1, 1, 0);
+	end;
+	----
+end;
+----
+
+----
+-- Hotspots auf grosse Karte, 
+-- zusammen mit den Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
+----
+function mapviewer:showMapHotspotsOnMap()
+
+	if self.showHotSpots and self.useHotSpots then
+		local hsPosX, hsPosY;
+		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
+			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
+			self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
+			----
+			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
+
+			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
+			
+			setTextColor(1, 1, 1, 1);
+			setTextAlignment(RenderText.ALIGN_CENTER);
+
+			----
+			-- Feldnummern
+			----
+			if not g_currentMission.missionPDA.hotspots[j].showName then
+				if self.useDefaultMap then 
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+				elseif g_currentMission.terrainSize ~= 2050 then	
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+2048;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+2048;
+				else
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
+				end;
+				
+				self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+				self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+
+				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+				if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
+					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
+				else
+					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
+				end;
+			end;
+			setTextAlignment(RenderText.ALIGN_LEFT);
+			setTextColor(1, 1, 1, 0);
+
+			if self.Debug.printHotSpots then
+				print(string.format("Debug MapHotspots: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+			end;
+		end;
+		if self.Debug.printHotSpots then
+			self.Debug.printHotSpots = false;
+		end;
+	end;
+end;
+----
+
+----
+--	Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
+----
+function mapviewer:showFieldNumbersOnMap()
+	if self.showHotSpots and self.useHotSpots then
+		local hsPosX, hsPosY;
+		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
+			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
+			self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
+			----
+			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
+
+			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
+			
+			setTextColor(1, 1, 1, 1);
+			setTextAlignment(RenderText.ALIGN_CENTER);
+
+			----
+			-- Feldnummern
+			----
+			if g_currentMission.missionPDA.hotspots[j].showName then
+				if self.useDefaultMap then 		-- Standard Karte
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
+				elseif g_currentMission.terrainSize ~= 2050 then		-- Größe anders als Standard Karte	
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+2048;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+2048;
+				else		-- Gemoddede Karte mit standard größe
+					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos;
+					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
+				end;
+				
+				self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
+				self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+
+				setTextColor(bc[1], bc[2], bc[3], bc[4]);
+				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+				renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
+			end;
+			setTextAlignment(RenderText.ALIGN_LEFT);
+			setTextColor(1, 1, 1, 0);
+
+			if self.Debug.printHotSpots then
+				print(string.format("Debug Feldnummern: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+			end;
+		end;
+		if self.Debug.printHotSpots then
+			self.Debug.printHotSpots = false;
+		end;
+	end;
+end;
+----
+
+----
+--	Fahrzeuge auf grosse Karte 
+----
+function mapviewer:showSteerablesOnMap()
+	for i=1, table.getn(g_currentMission.steerables) do
+		if not g_currentMission.steerables[i].isBroken then
+			self.currentVehicle = g_currentMission.steerables[i];
+			self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+			self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+			self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+			
+			----
+			-- Auslesen der Kurse wenn CoursePlay vorhanden ist
+			----
+			if self.useCoursePlay then
+				-- Erst prüfen ob die CP Spezi im Fahrzeug vorhanden ist.
+				if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) and self.showCP then
+					if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+						for w=1, table.getn(g_currentMission.steerables[i].Waypoints) do
+							local wx = g_currentMission.steerables[i].Waypoints[w].cx;
+							local wz = g_currentMission.steerables[i].Waypoints[w].cz;
+							wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+							wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+
+							renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+										wx-self.bigmap.IconCourseplay.width/2, 
+										wz-self.bigmap.IconCourseplay.height/2,
+										self.bigmap.IconCourseplay.width,
+										self.bigmap.IconCourseplay.height);
+						end;
+						setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+					end;
+				end;
+			end;
+			----
+			
+			setTextColor(0, 1, 0, 1);
+			if self.currentVehicle.isControlled and self.currentVehicle.controllerName == self.plyname.name then
+				if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
+					renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
+								self.buttonX-self.bigmap.IconSteerable.width/2, 
+								self.buttonZ-self.bigmap.IconSteerable.height/2,
+								self.bigmap.IconSteerable.width,
+								self.bigmap.IconSteerable.height);
+					setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
+				end;
+				
+				renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.plyname.name));
+				renderText(0.020, 0.020, 0.015, string.format("Koordinaten : x=%.1f / y=%.1f",self.buttonX * 1000,self.buttonZ * 1000));
+			elseif self.currentVehicle.isControlled then
+				if self.bigmap.IconSteerable.mpOverlayId ~= nil and self.bigmap.IconSteerable.mpOverlayId ~= 0 then
+					renderOverlay(self.bigmap.IconSteerable.mpOverlayId,
+								self.buttonX-self.bigmap.IconSteerable.width/2, 
+								self.buttonZ-self.bigmap.IconSteerable.height/2,
+								self.bigmap.IconSteerable.width,
+								self.bigmap.IconSteerable.height);
+					setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
+				end;
+				renderText(self.buttonX-0.025, self.buttonZ-self.bigmap.IconSteerable.height-0.01, 0.015, string.format("%s", self.currentVehicle.controllerName));
+			else
+				if self.bigmap.IconSteerable.OverlayId ~= nil and self.bigmap.IconSteerable.OverlayId ~= 0 then
+					renderOverlay(self.bigmap.IconSteerable.OverlayId,
+								self.buttonX-self.bigmap.IconSteerable.width/2, 
+								self.buttonZ-self.bigmap.IconSteerable.height/2,
+								self.bigmap.IconSteerable.width,
+								self.bigmap.IconSteerable.height);
+					setOverlayColor(self.bigmap.IconSteerable.OverlayId, 1, 1, 1, 1);
+				end;
+			end;
+			setTextColor(1, 1, 1,0);
+		elseif g_currentMission.steerables[i].isBroken then
+		----
+		-- unbrauchbare Fahrzeuge mit weiterem Icon anzeigen
+		----
+			self.posX, self.posY, self.posZ = getWorldTranslation(g_currentMission.steerables[i].rootNode);
+			self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+			self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+			if self.bigmap.iconIsBroken.Icon.OverlayId ~= nil and self.bigmap.iconIsBroken.Icon.OverlayId ~= 0 then
+				renderOverlay(self.bigmap.iconIsBroken.Icon.OverlayId,
+							self.buttonX-self.bigmap.iconIsBroken.width/2, 
+							self.buttonZ-self.bigmap.iconIsBroken.height/2,
+							self.bigmap.iconIsBroken.width,
+							self.bigmap.iconIsBroken.height);
+				setOverlayColor(self.bigmap.iconIsBroken.Icon.OverlayId, 1, 1, 1, 1);
+			end;
+		end;
+	end;
+end;
+----
+
+----
+--	Darstellen der Geräte auf der Karte
+----
+function mapviewer:showAttachmentsOnMap()
+	for i=1, table.getn(g_currentMission.attachables) do
+		self.currentVehicle = g_currentMission.attachables[i];
+		self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+		self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+		self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+
+		if g_currentMission.attachables[i].attacherVehicle == nil or g_currentMission.attachables[i].attacherVehicle == 0 then
+			if self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName] ~= nil then
+				renderOverlay(self.bigmap.attachmentsTypes.overlays[g_currentMission.attachables[i].typeName],
+							self.buttonX-self.bigmap.attachmentsTypes.width/2, 
+							self.buttonZ-self.bigmap.attachmentsTypes.height/2,
+							self.bigmap.attachmentsTypes.width,
+							self.bigmap.attachmentsTypes.height);
+			else
+				renderOverlay(self.bigmap.attachmentsTypes.overlays["other"],
+							self.buttonX-self.bigmap.attachmentsTypes.width/2, 
+							self.buttonZ-self.bigmap.attachmentsTypes.height/2,
+							self.bigmap.attachmentsTypes.width,
+							self.bigmap.attachmentsTypes.height);
+			end;
+		else
+			renderOverlay(self.bigmap.IconAttachments.Icon.front.OverlayId,
+							self.buttonX-self.bigmap.IconAttachments.width/2, 
+							self.buttonZ-self.bigmap.IconAttachments.height/2,
+							self.bigmap.IconAttachments.width,
+							self.bigmap.IconAttachments.height);
+		end;
+		setOverlayColor(self.bigmap.IconAttachments.Icon.front.OverlayId, 1, 1, 1, 1);
+	end;
+end;
+----
+
+----
+-- Milchtruck auf Karte Anzeigen
+----
+function mapviewer:showMilkTruckOnMap()
+	for i=1, table.getn(g_currentMission.trafficVehicles) do
+		if g_currentMission.trafficVehicles[i].typeName == "milktruck" then
+			self.currentVehicle = g_currentMission.trafficVehicles[i];
+			if self.bigmap.IconMilchtruck.OverlayId ~= nil and self.bigmap.IconMilchtruck.OverlayId ~= 0 then
+				self.posX, self.posY, self.posZ = getWorldTranslation(self.currentVehicle.rootNode);
+				self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+				self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+				
+				if self.bigmap.IconMilchtruck.OverlayId ~= nil then
+					renderOverlay(self.bigmap.IconMilchtruck.OverlayId,
+								self.buttonX-self.bigmap.IconMilchtruck.width/2, 
+								self.buttonZ-self.bigmap.IconMilchtruck.height/2,
+								self.bigmap.IconMilchtruck.width,
+								self.bigmap.IconMilchtruck.height);
+				-- TODO: Milchtruckposition an Clients senden
+				end;
+			end;
+			break;
+		end;
+	end;
+end;
+----
+
+----
+--	Points of Interessts und Fieldnumbers Overlay
+--	Custom1 und custom2
+----
+function mapviewer:showCustomOverlays()
+	----
+	-- Points of Interessts
+	----
+	if self.showPoi then
+		if self.bigmap.PoI.OverlayId ~= nil and self.bigmap.PoI.OverlayId ~= 0 then
+			renderOverlay(self.bigmap.PoI.OverlayId, self.bigmap.PoI.poiPosX, self.bigmap.PoI.poiPosY, self.bigmap.PoI.width, self.bigmap.PoI.height);
+		else
+			g_currentMission:addWarning(g_i18n:getText("MV_ErrorPoICreateOverlay"), 0.018, 0.033);
+			self.usePoi = false;
+		end;
+	end;
+	----
+	
+	----
+	-- Fieldnumbers Overlay
+	----
+	if self.showFNum then
+		if self.bigmap.FNum.OverlayId ~= nil and self.bigmap.FNum.OverlayId ~= 0 then
+			renderOverlay(self.bigmap.FNum.OverlayId, self.bigmap.FNum.FNumPosX, self.bigmap.FNum.FNumPosY, self.bigmap.FNum.width, self.bigmap.FNum.height);
+		else
+			g_currentMission:addWarning(g_i18n:getText("MV_ErrorFNumCreateOverlay"), 0.018, 0.033);
+			self.useFNum = false; 
+		end;
 	end;
 	----
 end;
@@ -1998,6 +2085,69 @@ function mapviewer:showTipTriggerHotSpot()
 					self.bigmap.iconTipTrigger.width, 
 					self.bigmap.iconTipTrigger.height);
 	end;
+end;
+----
+
+----
+-- Maplegende anzeigen
+----
+function mapviewer:showMaplegende()
+	if self.maplegende and self.useLegend then
+		if self.bigmap.Legende.OverlayId ~=nil then
+			setTextColor(0, 0, 0, 1);
+			----
+			-- Legende der Fahrzeuge Typen anzeigen
+			----
+			renderOverlay(self.bigmap.Legende.OverlayId, 
+					self.bigmap.Legende.legPosX, 
+					0, --self.bigmap.Legende.legPosY, 
+					self.bigmap.Legende.width, 
+					1); --self.bigmap.Legende.height
+			----
+			local c = self.bigmap.Legende.Content;
+			for i=1, table.getn(c) do
+				if c[i].OverlayID ~= nil and c[i].OverlayID ~= 0 then
+					renderOverlay(c[i].OverlayID,
+									c[i].l_PosX, -- 0.007324,
+									c[i].l_PosY, 
+									0.015625, 
+									0.015625);
+					renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, c[i].Txt);
+				else
+					renderText(c[i].l_Txt, c[i].l_PosY, c[i].TxtSize, "Legenden Icon nicht vorhanden");
+				end;
+			end;
+			self.printInfo = false;
+
+			self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
+			
+			for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
+				if self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]] ~= nil then 
+					renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
+								self.bigmap.Legende.legPosX + 0.007324,
+								self.l_PosY, 
+								self.bigmap.attachmentsTypes.width,
+								self.bigmap.attachmentsTypes.height);
+					renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
+				else		-- TODO: Übersetzen
+					renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
+					print(string.format("|| %s || OverlayIcon nicht gefunden  : %s ||", g_i18n:getText("mapviewtxt"), self.bigmap.attachmentsTypes.names[lg]));
+				end;
+				self.l_PosY = self.l_PosY - 0.020;
+			end;
+			----
+			setTextColor(1, 1, 1, 0);
+			
+		end;	--if legende nicht NIL
+	elseif self.bigmap.Legende.OverlayId == nil or self.bigmap.Legende.OverlayId == 0 then		-- TODO: Übersetzen
+		renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.012, "Rendern der Legende Fehlgeschlagen");
+		print(g_i18n:getText("mapviewtxt") .. " : Rendern der Maplegende fehlgeschlagen");
+		print(g_i18n:getText("mapviewtxt") .. " : Error rendering map legend");
+	--elseif self.mapvieweractive and self.showKeyHelp and not self.maplegende then
+		-- Tastenbelegung mit Panelhintergrund statt Hilfetext anzeigen
+		--self:showMapViewerKeys();
+	end;
+	----
 end;
 ----
 
