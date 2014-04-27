@@ -899,6 +899,7 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 					g_currentMission.showHudEnv = true;
 					----
 				end;
+				self.useTeleport = false;
 				----
 			end;
 		end;
@@ -1488,6 +1489,9 @@ function mapviewer:draw()
 		g_currentMission.showHelpText = false;
 		----
 		
+		if self.useTeleport then
+			g_currentMission:addWarning("Teleport aktiv. Bitte Ziel wählen", 0.018, 0.033);
+		end;
 
 		----
 		-- Points of Interessts
@@ -2193,6 +2197,10 @@ function mapviewer:update(dt)
 	-- Wenn TRansparenz aktiv, Mauszeiger ausblenden
 	----
 	if self.mapvieweractive then 
+		if self.bigmap.mapTransp > 1 then
+			self.bigmap.mapTransp = 1;
+		end;
+		
 		if self.bigmap.mapTransp < 1 and g_mouseControlsHelp.active == false then 
 			g_mouseControlsHelp.active = true; 
 			InputBinding.setShowMouseCursor(false); 
@@ -2215,8 +2223,12 @@ function mapviewer:update(dt)
 	-- Tasten Modofizierer für Teleport
 	----
 	-- if InputBinding.isPressed(InputBinding.BIGMAP_TPKey1) and InputBinding.isPressed(InputBinding.BIGMAP_TPKey2) then -- and InputBinding.isPressed(InputBinding.BIGMAP_TPMouse) then
-	if InputBinding.isPressed(InputBinding.BIGMAP_Teleport) then
-		self.useTeleport= true; 
+	if self.mapvieweractive and self.bigmap.mapTransp >= 1 then
+		if InputBinding.isPressed(InputBinding.BIGMAP_Teleport) then
+			self.useTeleport= true; 
+		else
+			self.useTeleport = false;
+		end;
 	else
 		self.useTeleport = false;
 	end;
