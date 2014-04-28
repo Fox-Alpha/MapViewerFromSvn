@@ -133,6 +133,7 @@ function mapviewer:loadMap(name)
 	self.Debug.active = false;
 	self.Debug.printHotSpots = false;
 	self.Debug.printHorseShoes = false;
+	self.Debug.printPanelTable = true;
 	----
 	
 	self.mv_Error = false;
@@ -353,30 +354,81 @@ function mapviewer:initMapViewer()
 	-- Array für Infopanel
 	----
 	self.bigmap.InfoPanel = {};
-	self.bigmap.InfoPanel.top = {};
+	self.bigmap.InfoPanel.width = 0.15;								--	Standard Breite des Panels
+	self.bigmap.InfoPanel.height = 0.0078125+0.125+0.03125;			--	Höhe des Panels, wird berechnet. Standard: Top+Mitte+Bottom
 	
-	self.bigmap.InfoPanel.top.closebar = {};
-	
-	-- Oberes und Unteres Ende des Panels
-	self.bigmap.InfoPanel.top.closebar.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
-	self.bigmap.InfoPanel.top.closebar.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarTop#file"), "panel/Info_Panel_closebar_top.dds"), self.moddir);
-	self.bigmap.InfoPanel.top.closebar.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.top.file);
-	
-	self.bigmap.InfoPanel.top.closebar.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
-	self.bigmap.InfoPanel.top.closebar.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarBottom#file"), "panel/Info_Panel_closebar_bottom.dds"), self.moddir);
-	self.bigmap.InfoPanel.top.closebar.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.bottom.file);
 	----
-
+	--	Obere Panel Grafiken
+	----
+	self.bigmap.InfoPanel.top = {};
+	self.bigmap.InfoPanel.top.image = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	
+	self.bigmap.InfoPanel.top.closebar = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.top.closebar.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarTop#file"), "panel/Info_Panel_closebar_top.dds"), self.moddir);
+	self.bigmap.InfoPanel.top.closebar.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.file);
+	
+	self.bigmap.InfoPanel.top.bubbleleft = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.top.bubbleleft.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.BubbleTopLeft#file"), "panel/Info_Panel_bubble_topleft.dds"), self.moddir);
+	self.bigmap.InfoPanel.top.bubbleleft.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.bubbleleft.file);
+	
+	self.bigmap.InfoPanel.top.bubblemid = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.top.bubblemid.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.BubbleTopMid#file"), "panel/Info_Panel_bubble_topmid.dds"), self.moddir);
+	self.bigmap.InfoPanel.top.bubblemid.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.bubblemid.file);
+	
+	self.bigmap.InfoPanel.top.bubbleright = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.top.bubbleright.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.BubbleTopRight#file"), "panel/Info_Panel_bubble_topright.dds"), self.moddir);
+	self.bigmap.InfoPanel.top.bubbleright.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.bubbleright.file);
+	----
+	
+	----
+	--	Paneltext Hintergrund
+	----
 	self.bigmap.InfoPanel.background = {};
-	self.bigmap.InfoPanel.background = {file = "", OverlayId = nil, width = 0.15, height= 0.125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.background = {file = "", OverlayId = nil, width = 0.15, height = 0.125, Pos = {x=0, y=0}};
 	self.bigmap.InfoPanel.background.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBackground#file"), "panel/Info_Panel_bg.dds"), self.moddir);
 	self.bigmap.InfoPanel.background.OverlayId = createImageOverlay(self.bigmap.InfoPanel.background.file);
-
+	----
+	
+	----
+	--	Untere Panel Grafiken
+	----
 	self.bigmap.InfoPanel.bottom = {};
-	self.bigmap.InfoPanel.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
-	self.bigmap.InfoPanel.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBubble.BubbleBottomLeft#file"), "panel/Info_Panel_bubble_bottomleft.dds"), self.moddir);
-	self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
+	self.bigmap.InfoPanel.bottom.image = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	
+	self.bigmap.InfoPanel.bottom.closebar = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.bottom.closebar.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBottom.CloseBarBottom#file"), "panel/Info_Panel_closebar_Bottom.dds"), self.moddir);
+	self.bigmap.InfoPanel.bottom.closebar.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.closebar.file);
+	
+	self.bigmap.InfoPanel.bottom.bubbleleft = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.bottom.bubbleleft.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBottom.BubbleBottomLeft#file"), "panel/Info_Panel_bubble_Bottomleft.dds"), self.moddir);
+	self.bigmap.InfoPanel.bottom.bubbleleft.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.bubbleleft.file);
+	
+	self.bigmap.InfoPanel.bottom.bubblemid = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.bottom.bubblemid.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBottom.BubbleBottomMid#file"), "panel/Info_Panel_bubble_Bottommid.dds"), self.moddir);
+	self.bigmap.InfoPanel.bottom.bubblemid.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.bubblemid.file);
+	
+	self.bigmap.InfoPanel.bottom.bubbleright = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
+	self.bigmap.InfoPanel.bottom.bubbleright.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBottom.BubbleBottomRight#file"), "panel/Info_Panel_bubble_Bottomright.dds"), self.moddir);
+	self.bigmap.InfoPanel.bottom.bubbleright.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.bubbleright.file);
+	----
+	
+	--[[ Oberes und Unteres Ende des Panels alt
+	-- self.bigmap.InfoPanel.top.closebar.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	-- self.bigmap.InfoPanel.top.closebar.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarTop#file"), "panel/Info_Panel_closebar_top.dds"), self.moddir);
+	-- self.bigmap.InfoPanel.top.closebar.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.top.file);
+	
+	-- self.bigmap.InfoPanel.top.closebar.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+	-- self.bigmap.InfoPanel.top.closebar.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarBottom#file"), "panel/Info_Panel_closebar_bottom.dds"), self.moddir);
+	-- self.bigmap.InfoPanel.top.closebar.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.bottom.file);
+	--
 
+	-- self.bigmap.InfoPanel.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
+	-- self.bigmap.InfoPanel.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBubble.BubbleBottomMid#file"), "panel/Info_Panel_bubble_bottommid.dds"), self.moddir);
+	-- self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
+	]]
+	
+	
+	
 	-- Informationen die angezeigt werden
 	self.bigmap.InfoPanel.Info = {Type = "", Ply= "", Tank = 0, Fruit = ""};
 
@@ -400,6 +452,15 @@ function mapviewer:initMapViewer()
 	self.bigmap.InfoPanel.isField = false;
 	self.bigmap.InfoPanel.lastField = {};
 	self.bigmap.InfoPanel.fieldIndex = 0;
+	----
+	
+	----
+	--	InfoPanel Daten
+	----
+	--if self.Debug.active then
+	if self.Debug.printPanelTable then
+		print(table.show(self.bigmap.InfoPanel, "InfoPanel"));
+	end;
 	----
 	
     ----
@@ -1423,8 +1484,6 @@ function mapviewer:ShowPanelonMap()
 		self.bigmap.InfoPanel.background.height = zeile * 0.015;
 		----
 		
-		----
-		-- TODO: Position anpassen wenn Panel zuweit oben oder zu weit rechts ist.
 		----		
 		tX = self.bigmap.InfoPanel.background.Pos.x;
 		tY = self.bigmap.InfoPanel.background.Pos.y;
@@ -1432,9 +1491,21 @@ function mapviewer:ShowPanelonMap()
 		tLeft = tX + 0.005; 
 		
 		-- Rendern des Panels
-		renderOverlay(self.bigmap.InfoPanel.top.closebar.top.OverlayId, self.bigmap.InfoPanel.top.closebar.top.Pos.x, self.bigmap.InfoPanel.top.closebar.top.Pos.y, self.bigmap.InfoPanel.top.closebar.top.width, self.bigmap.InfoPanel.top.closebar.top.height);
+		-- renderOverlay(self.bigmap.InfoPanel.top.closebar.top.OverlayId, self.bigmap.InfoPanel.top.closebar.top.Pos.x, self.bigmap.InfoPanel.top.closebar.top.Pos.y, self.bigmap.InfoPanel.top.closebar.top.width, self.bigmap.InfoPanel.top.closebar.top.height);
+		-- renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
+		-- renderOverlay(self.bigmap.InfoPanel.bottom.OverlayId, self.bigmap.InfoPanel.bottom.Pos.x, self.bigmap.InfoPanel.bottom.Pos.y, self.bigmap.InfoPanel.bottom.width, self.bigmap.InfoPanel.bottom.height);
+		--
+		-- if self.Debug.printPanelTable then
+			-- print(table.show(self.bigmap.InfoPanel.top, "InfoPanel.top"));
+			-- print(table.show(self.bigmap.InfoPanel.background, "InfoPanel.background"));
+			-- print(table.show(self.bigmap.InfoPanel.bottom, "InfoPanel.bottom"));
+			-- self.Debug.printPanelTable = false;
+		-- end;
+		renderOverlay(self.bigmap.InfoPanel.top.image.OverlayId, self.bigmap.InfoPanel.top.image.Pos.x, self.bigmap.InfoPanel.top.image.Pos.y, self.bigmap.InfoPanel.top.image.width, self.bigmap.InfoPanel.top.image.height);
+		
 		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, self.bigmap.InfoPanel.background.Pos.x, self.bigmap.InfoPanel.background.Pos.y, self.bigmap.InfoPanel.background.width, self.bigmap.InfoPanel.background.height);
-		renderOverlay(self.bigmap.InfoPanel.bottom.OverlayId, self.bigmap.InfoPanel.bottom.Pos.x, self.bigmap.InfoPanel.bottom.Pos.y, self.bigmap.InfoPanel.bottom.width, self.bigmap.InfoPanel.bottom.height);
+		
+		renderOverlay(self.bigmap.InfoPanel.bottom.image.OverlayId, self.bigmap.InfoPanel.bottom.image.Pos.x, self.bigmap.InfoPanel.bottom.image.Pos.y, self.bigmap.InfoPanel.bottom.image.width, self.bigmap.InfoPanel.bottom.image.height);
 		----
 
 		----
@@ -2311,16 +2382,130 @@ function mapviewer:update(dt)
 		end;	
 		
 		if self.showInfoPanel and obj ~= nil then
+			--	Position des angeklickten Objektes (Fahrzeug oder Trigger etc.)
 			local posX1, posY1, posZ1 = getWorldTranslation(obj);
 			local distancePosX = ((((self.bigmap.mapDimensionX/2)+posX1)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
 			local distancePosZ = ((((self.bigmap.mapDimensionY/2)-posZ1)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+			----
 			
-			self.bigmap.InfoPanel.top.closebar.top.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.top.closebar.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
-			self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
-			self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
-			self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+			local panelWidth = self.bigmap.InfoPanel.width;
+			
+			--	Standard Images für obere und untere Grafik zuweisen
+			self.bigmap.InfoPanel.top.image = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
+			self.bigmap.InfoPanel.top.image.OverlayId = self.bigmap.InfoPanel.top.closebar.OverlayId;
+			self.bigmap.InfoPanel.top.image.width = self.bigmap.InfoPanel.top.closebar.width;
+			self.bigmap.InfoPanel.top.image.height = self.bigmap.InfoPanel.top.closebar.height;
+			
+			self.bigmap.InfoPanel.bottom.image = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
+			self.bigmap.InfoPanel.bottom.image.OverlayId = self.bigmap.InfoPanel.bottom.bubblemid.OverlayId;
+			self.bigmap.InfoPanel.bottom.image.width = self.bigmap.InfoPanel.bottom.bubblemid.width;
+			self.bigmap.InfoPanel.bottom.image.height = self.bigmap.InfoPanel.bottom.bubblemid.height;
+			----
+			
+			----
+			-- Funktion zum berechnen der Position
+			----
+			local function calcPos()
+				self.bigmap.InfoPanel.top.image.Pos.x = distancePosX-panelWidth/2;
+				self.bigmap.InfoPanel.top.image.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.image.height + self.bigmap.InfoPanel.background.height;
+				
+				self.bigmap.InfoPanel.background.Pos.x = distancePosX-panelWidth/2;
+				self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.image.height;
+				
+				self.bigmap.InfoPanel.bottom.image.Pos.x = distancePosX-panelWidth/2;
+				self.bigmap.InfoPanel.bottom.image.Pos.y = distancePosZ;
+			end;
+			----
+			
+			----
+			--	Übertragen der Position auf Panel
+			----
+			-- self.bigmap.InfoPanel.top.closebar.top.Pos.x = distancePosX-0.0078125-0.0078125;
+			-- self.bigmap.InfoPanel.top.closebar.top.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height + self.bigmap.InfoPanel.background.height;
+			-- self.bigmap.InfoPanel.background.Pos.x = distancePosX-0.0078125-0.0078125;
+			-- self.bigmap.InfoPanel.background.Pos.y = distancePosZ + self.bigmap.InfoPanel.bottom.height;
+			-- self.bigmap.InfoPanel.bottom.Pos.x = distancePosX-0.0078125-0.0078125;
+			-- self.bigmap.InfoPanel.bottom.Pos.y = distancePosZ;
+			
+			
+			calcPos();
+			
+			----
+			--	Prüfen der berechneten Position zum Bildschirmrand
+			----
+			--	rechte Position
+			----
+			if distancePosX + panelWidth/2 > self.bigmap.mapWidth then
+				self.bigmap.InfoPanel.bottom.image.OverlayId = self.bigmap.InfoPanel.bottom.bubbleright.OverlayId;
+				self.bigmap.InfoPanel.bottom.image.width = self.bigmap.InfoPanel.bottom.bubbleright.width;
+				self.bigmap.InfoPanel.bottom.image.height = self.bigmap.InfoPanel.bottom.bubbleright.height;
+
+				self.bigmap.InfoPanel.top.image.Pos.x = self.bigmap.InfoPanel.top.image.Pos.x - panelWidth/2;
+				self.bigmap.InfoPanel.background.Pos.x = self.bigmap.InfoPanel.background.Pos.x - panelWidth/2;
+				self.bigmap.InfoPanel.bottom.image.Pos.x = self.bigmap.InfoPanel.bottom.image.Pos.x - panelWidth/2;
+				
+				--calcPos();
+			end;
+			
+			----
+			--	obere Position
+			----
+			local panelHeight = self.bigmap.InfoPanel.top.image.height + self.bigmap.InfoPanel.background.height + self.bigmap.InfoPanel.bottom.image.height;
+
+			if distancePosZ + panelHeight > self.bigmap.mapHeight then
+				self.bigmap.InfoPanel.top.image.OverlayId = self.bigmap.InfoPanel.top.bubblemid.OverlayId;
+				self.bigmap.InfoPanel.top.image.width = self.bigmap.InfoPanel.top.bubblemid.width;
+				self.bigmap.InfoPanel.top.image.height = self.bigmap.InfoPanel.top.bubblemid.height;
+
+				self.bigmap.InfoPanel.bottom.image.OverlayId = self.bigmap.InfoPanel.bottom.closebar.OverlayId;
+				self.bigmap.InfoPanel.bottom.image.width = self.bigmap.InfoPanel.bottom.closebar.width;
+				self.bigmap.InfoPanel.bottom.image.height = self.bigmap.InfoPanel.bottom.closebar.height;
+
+				self.bigmap.InfoPanel.top.image.Pos.y = distancePosZ - self.bigmap.InfoPanel.top.image.height;
+				self.bigmap.InfoPanel.background.Pos.y = self.bigmap.InfoPanel.top.image.Pos.y - self.bigmap.InfoPanel.background.height;
+				self.bigmap.InfoPanel.bottom.image.Pos.y = self.bigmap.InfoPanel.background.Pos.y - self.bigmap.InfoPanel.bottom.image.height;
+			end;
+			
+			----
+			--	linke Position
+			----
+			if distancePosX - panelWidth/2 < 0 then
+				self.bigmap.InfoPanel.bottom.image.OverlayId = self.bigmap.InfoPanel.bottom.bubbleleft.OverlayId;
+				self.bigmap.InfoPanel.bottom.image.width = self.bigmap.InfoPanel.bottom.bubbleleft.width;
+				self.bigmap.InfoPanel.bottom.image.height = self.bigmap.InfoPanel.bottom.bubbleleft.height;
+
+				self.bigmap.InfoPanel.top.image.Pos.x = self.bigmap.InfoPanel.top.image.Pos.x + panelWidth/2;
+				self.bigmap.InfoPanel.background.Pos.x = self.bigmap.InfoPanel.background.Pos.x + panelWidth/2;
+				self.bigmap.InfoPanel.bottom.image.Pos.x = self.bigmap.InfoPanel.bottom.image.Pos.x + panelWidth/2;
+				
+				--calcPos();
+			end;			
+			----
+
+			----
+			--	Oben/Links
+			----
+			----
+			
+			----
+			--	Oben/rechts
+			----
+			----
+			
+			----
+			--	Unten/Links
+			----
+			----
+			
+			----
+			--	Unten/rechts
+			----
+			----
+			
+			-- print("----");
+			-- print(table.show(self.bigmap.InfoPanel.bottom, "InfoPanel.bottom"));
+			-- print("----");
+			----
 		end;
 	end;	
 	----
