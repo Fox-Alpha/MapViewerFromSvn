@@ -14,21 +14,25 @@
 			<LegendeBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.15" />
 			<LegendeBottom file="Panel/Info_Panel_closebar_bottom.dds" width="0.15" height="0.0078125" />
 		</Legende>
+		
 		<Infopanel >
 			<!-- Geschlossener Balken -->
 			<InfoPanelTop>
 				<CloseBarTop file="Panel/Info_Panel_closebar_top.dds" width="0.15" height="0.0078125" />
-				<CloseBarBottom file="Panel/Info_Panel_closebar_bottom.dds" width="0.15" height="0.0078125" />
+				<BubbleTopLeft file="Panel/Info_Panel_bubble_topleft.dds" width="0.15" height="0.03125"/>
+				<BubbleTopMid file="Panel/Info_Panel_bubble_topmid.dds" width="0.15" height="0.03125"/>
+				<BubbleTopRight file="Panel/Info_Panel_bubble_topright.dds" width="0.15" height="0.03125"/>
 			</InfoPanelTop>
+			<!-- Hintergrund für Text -->
+			<InfoPanelBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.125" />
 			<!-- Abschluss mit sprechblase -->
-			<InfoPanelBubble>
-				<BubbleBottomLeft file="Panel/Info_Panel_bubble_bottomleft.dds" width="0.15" height="0.0078125"/>
-				<BubbleBottomRight file="Panel/Info_Panel_bubble_bottomright.dds" width="0.15" height="0.0078125"/>
-				<BubbleTopLeft file="Panel/Info_Panel_bubble_topleft.dds" width="0.15" height="0.0078125"/>
-				<BubbleTopRight file="Panel/Info_Panel_bubble_topright.dds" width="0.15" height="0.0078125"/>
-			</InfoPanelBubble>
+			<InfoPanelBottom>
+				<CloseBarBottom file="Panel/Info_Panel_closebar_bottom.dds" width="0.15" height="0.0078125" />
+				<BubbleBottomLeft file="Panel/Info_Panel_bubble_bottomleft.dds" width="0.15" height="0.03125"/>
+				<BubbleBottomMid file="Panel/Info_Panel_bubble_bottommid.dds" width="0.15" height="0.03125"/>
+				<BubbleBottomRight file="Panel/Info_Panel_bubble_bottomright.dds" width="0.15" height="0.03125"/>
+			</InfoPanelBottom>
 			
-			<InfoPanelBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.15" />
 			<!--<InfoPanelBottom file="Panel/Info_Panel_bt.dds" width="0.15" height="0.03125" />-->
 			<!-- <Buttons> -->
 				<!-- <ButtonSwitch width="0.01" height="0.01" file="Panel/Bt_Switch.dds"/> -->
@@ -44,7 +48,8 @@
 		
 		<!-- Symbole für Spieler, Fahrzeuge und Geräte -->
 		<icons>
-<!-- 			<iconPlayer  width="0.0078125" height="0.0078125" file="icons/eigenerspieler.dds" />
+<!-- 			
+			<iconPlayer  width="0.0078125" height="0.0078125" file="icons/eigenerspieler.dds" />
 			<iconMPPlayer  width="0.0078125" height="0.0078125" file="icons/mpspieler.dds" />
 			<iconSteerable  width="0.0078125" height="0.0078125" file="icons/tractor.dds" />
 			<iconSteerableCtrl  width="0.0078125" height="0.0078125" file="icons/tractorctrl.dds" />
