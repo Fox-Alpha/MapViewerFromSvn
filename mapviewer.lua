@@ -2434,6 +2434,7 @@ function mapviewer:update(dt)
 			--	Prüfen der berechneten Position zum Bildschirmrand
 			----
 			--	rechte Position
+			--	Panel mit Bubble nach rechts-unten
 			----
 			if distancePosX + panelWidth/2 > self.bigmap.mapWidth then
 				self.bigmap.InfoPanel.bottom.image.OverlayId = self.bigmap.InfoPanel.bottom.bubbleright.OverlayId;
@@ -2447,11 +2448,12 @@ function mapviewer:update(dt)
 				--calcPos();
 			end;
 			
-			----
-			--	obere Position
-			----
 			local panelHeight = self.bigmap.InfoPanel.top.image.height + self.bigmap.InfoPanel.background.height + self.bigmap.InfoPanel.bottom.image.height;
 
+			----
+			--	obere Position
+			--	Panel mit Bubble mittig-oben
+			----
 			if distancePosZ + panelHeight > self.bigmap.mapHeight then
 				self.bigmap.InfoPanel.top.image.OverlayId = self.bigmap.InfoPanel.top.bubblemid.OverlayId;
 				self.bigmap.InfoPanel.top.image.width = self.bigmap.InfoPanel.top.bubblemid.width;
@@ -2468,6 +2470,7 @@ function mapviewer:update(dt)
 			
 			----
 			--	linke Position
+			--	Panel mit Bubble nach links-unten
 			----
 			if distancePosX - panelWidth/2 < 0 then
 				self.bigmap.InfoPanel.bottom.image.OverlayId = self.bigmap.InfoPanel.bottom.bubbleleft.OverlayId;
@@ -2484,7 +2487,26 @@ function mapviewer:update(dt)
 
 			----
 			--	Oben/Links
+			--	Panel mit Bubble nach links-oben
 			----
+			if distancePosX - panelWidth/2 < 0 and distancePosZ + panelHeight > self.bigmap.mapHeight then
+			-- Obere Grafik setzen
+				self.bigmap.InfoPanel.top.image.OverlayId = self.bigmap.InfoPanel.top.bubbleleft.OverlayId;
+				self.bigmap.InfoPanel.top.image.width = self.bigmap.InfoPanel.top.bubbleleft.width;
+				self.bigmap.InfoPanel.top.image.height = self.bigmap.InfoPanel.top.bubbleleft.height;
+			-- untere Grafik setzen
+				self.bigmap.InfoPanel.bottom.image.OverlayId = self.bigmap.InfoPanel.bottom.closebar.OverlayId;
+				self.bigmap.InfoPanel.bottom.image.width = self.bigmap.InfoPanel.bottom.closebar.width;
+				self.bigmap.InfoPanel.bottom.image.height = self.bigmap.InfoPanel.bottom.closebar.height;
+			-- Panel richtig zum Objekt positionieren Y-position (Oberhalb)
+				self.bigmap.InfoPanel.top.image.Pos.y = distancePosZ - self.bigmap.InfoPanel.top.image.height;
+				self.bigmap.InfoPanel.background.Pos.y = self.bigmap.InfoPanel.top.image.Pos.y - self.bigmap.InfoPanel.background.height;
+				self.bigmap.InfoPanel.bottom.image.Pos.y = self.bigmap.InfoPanel.background.Pos.y - self.bigmap.InfoPanel.bottom.image.height;
+			-- Panel richtig zum Objekt positionieren X-position (rechts)
+				self.bigmap.InfoPanel.top.image.Pos.x = distancePosX;
+				self.bigmap.InfoPanel.background.Pos.x = distancePosX;
+				self.bigmap.InfoPanel.bottom.image.Pos.x = distancePosX;
+			end;
 			----
 			
 			----
