@@ -427,6 +427,27 @@ function mapviewer:initMapViewer()
 	-- self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
 	]]
 	
+	--Array für Hinweisesymbole
+	self.bigmap.InfoPanel.Hints = {};
+	self.bigmap.InfoPanel.Hints.Icons = {
+										critical = {
+												file = "", OverlayId = nil, height = 0, width = 0}, 
+										warning = {
+												file = "", OverlayId = nil, height = 0, width = 0}
+										};
+										
+	self.bigmap.InfoPanel.Hints.Icons.critical.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.InfoPanel.InfoPanelHintIcons.HintCritical#file"), "icons/critical.dds"), self.moddir);
+	self.bigmap.InfoPanel.Hints.Icons.warning.file  = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.InfoPanel.InfoPanelHintIcons.HintWarning#file"), "icons/warning.dds"), self.moddir);
+	
+	self.bigmap.InfoPanel.Hints.Icons.critical.OverlayId = createImageOverlay(self.bigmap.InfoPanel.Hints.Icons.critical.file);
+	self.bigmap.InfoPanel.Hints.Icons.warning.OverlayId  = createImageOverlay(self.bigmap.InfoPanel.Hints.Icons.warnings.file);
+	
+	self.bigmap.InfoPanel.Hints.Icons.critical.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanel.InfoPanelHintIcons.HintCritical#height"), 0.0078125);
+	self.bigmap.InfoPanel.Hints.Icons.warning.height  = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanel.InfoPanelHintIcons.HintWarning#height" ), 0.0078125);
+	
+	self.bigmap.InfoPanel.Hints.Icons.critical.width = Utils.getNoNil(getXMLFloat(self.xmlFile,	"mapviewer.map.InfoPanel.InfoPanelHintIcons.HintCritical#width"), 0.0078125);
+	self.bigmap.InfoPanel.Hints.Icons.warning.width  = Utils.getNoNil(getXMLFloat(self.xmlFile,	"mapviewer.map.InfoPanel.InfoPanelHintIcons.HintWarning#width"), 0.0078125);	
+	----
 	
 	
 	-- Informationen die angezeigt werden

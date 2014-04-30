@@ -29,6 +29,7 @@ icons/9.dds -text
 icons/bottle.dds -text
 icons/combine.dds -text
 icons/courseplay.dds -text
+icons/critical.dds -text
 icons/eigenerspieler.dds -text
 icons/feldgeraet.dds -text
 icons/hufeisen.dds -text
@@ -37,6 +38,7 @@ icons/milktruck.dds -text
 icons/mpspieler.dds -text
 icons/tractor.dds -text
 icons/tractorctrl.dds -text
+icons/warning.dds -text
 /mapviewer.lua -text svn_keywords
 /mapviewer.xml -text svn_keywords
 /mapviewer_overlay_config.xml -text svn_keywords=Author+Date+Id+Rev+URL

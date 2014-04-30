@@ -32,6 +32,12 @@
 				<BubbleBottomRight file="Panel/Info_Panel_bubble_bottomright.dds" width="0.15" height="0.03125"/>
 			</InfoPanelBottom>
 			
+			<!-- Symbole für Hinweise im Paneltext -->
+			<InfoPanelHintIcons>
+				<HintWarning file="icons/warning.dds" width="0.125" height="0.125" />
+				<HintCritical file="icons/critical.dds" width="0.125" height="0.125" />
+			</InfoPanelHintIcons>
+			
 		</Infopanel>
 		<!--  -->
 
