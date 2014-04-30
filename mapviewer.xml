@@ -7,14 +7,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <mapviewer ver="v0.80">
 	<map mapWidth="1" mapHeight="1" mapDimensionX="2048" mapDimensionY="2048">
-		<!-- Abweichende Karte verwenden, wird nmomentan nicht verwendet -->
-		<!-- <mapFile useMapFile="false" file="gfx/pda_map.dds" /> -->
 		<Legende file="gfx/background.dds" width="0.185" height="0.125" posX="0.0244" posY="0.15" >
 			<LegendeTop file="Panel/Info_Panel_closebar_top.dds" width="0.15" height="0.0078125" />
 			<LegendeBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.15" />
 			<LegendeBottom file="Panel/Info_Panel_closebar_bottom.dds" width="0.15" height="0.0078125" />
 		</Legende>
 		
+		<!-- Grafik definitionen für das Panel -->
 		<Infopanel >
 			<!-- Geschlossener Balken -->
 			<InfoPanelTop>
@@ -33,31 +32,11 @@
 				<BubbleBottomRight file="Panel/Info_Panel_bubble_bottomright.dds" width="0.15" height="0.03125"/>
 			</InfoPanelBottom>
 			
-			<!--<InfoPanelBottom file="Panel/Info_Panel_bt.dds" width="0.15" height="0.03125" />-->
-			<!-- <Buttons> -->
-				<!-- <ButtonSwitch width="0.01" height="0.01" file="Panel/Bt_Switch.dds"/> -->
-				<!-- <ButtonClose width="0.01" height="0.01" file="Panel/Bt_Close.dds"/> -->
-			<!-- </Buttons> -->
 		</Infopanel>
 		<!--  -->
 
-		<!-- Point of Interests und Feldnummern Overlay für die Standard Karte -->
-		<!-- <poi usePoI="true" file="gfx/poi_karte_1.dds" width="2048" height="2048" /> -->
-		<!-- <fieldnumbers useFNum="true" file="gfx/fn_karte_1.dds" width="2048" height="2048" /> -->
-		<!--  -->
-		
 		<!-- Symbole für Spieler, Fahrzeuge und Geräte -->
 		<icons>
-<!-- 			
-			<iconPlayer  width="0.0078125" height="0.0078125" file="icons/eigenerspieler.dds" />
-			<iconMPPlayer  width="0.0078125" height="0.0078125" file="icons/mpspieler.dds" />
-			<iconSteerable  width="0.0078125" height="0.0078125" file="icons/tractor.dds" />
-			<iconSteerableCtrl  width="0.0078125" height="0.0078125" file="icons/tractorctrl.dds" />
-			<iconAttachmentFront  width="0.0078125" height="0.0078125" file="icons/feldgeraet.dds" />
-			<iconAttachmentRear  width="0.0078125" height="0.0078125" file="icons/feldgeraet.dds" />
-			<iconIsBroken  width="0.0078125" height="0.0078125" file="icons/isBroken.dds" />
-			<iconBottle  width="0.0078125" height="0.0156250" file="icons/Bottle.dds" />
- -->
             <iconPlayer  width="0.01" height="0.01" file="icons/eigenerspieler.dds" />
 			<iconMPPlayer  width="0.01" height="001" file="icons/mpspieler.dds" />
 			<iconSteerable  width="0.01" height="0.01" file="icons/tractor.dds" />
@@ -66,13 +45,13 @@
 			<iconAttachmentFront  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
 			<iconAttachmentRear  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
 			<iconIsBroken  width="0.01" height="0.01" file="icons/isBroken.dds" />
-			<!-- <iconBottle  width="0.01" height="0.02" file="icons/Bottle.dds" />  -->
 			<iconHorseShoe  width="0.018" height="0.015" file="icons/hufeisen.dds" /> 
-			
             
             <iconSteerabletractor  width="0.01" height="0.01" file="icons/tractor.dds" />
             <iconSteerablecombine  width="0.01" height="0.01" file="icons/combine.dds" />
             <iconSteerableother  width="0.01" height="0.01" file="icons/tractor.dds" />
+			
+            <iconCoursePlay  width="0.01" height="0.01" file="icons/courseplay.dds" />
             
             <!-- 
 				"cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other" 
