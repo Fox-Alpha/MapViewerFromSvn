@@ -53,11 +53,11 @@ mapviewer.modName = g_currentModName;
 -- -- OVL 1: z.B. Abladetrigger entfernen
 -- Besitzstatus im Feldpanel. Wenn im Besitzt den Feld-/Kaufwert anzeigen.
 -- Beste Verkaufsstelle und besten Preis ermitteln für Hofsilos
--- Panelposition fixen. Am oberen und rechten Bildrand
+-- DONE:Panelposition fixen. Am oberen und rechten Bildrand
 -- Grasabladestelle, Station übersetzen
 -- -- Wenn nur Gras und Heuschwad im Verkauf sind, dann ist es eine Grasstelle
 -- Feature: Overlay Anzeigen per XML Konfigurieren
--- Miclhtruck Position im MP anzeigen. Wird vom Server gesteuert
+-- Milchtruck Position im MP anzeigen. Wird vom Server gesteuert
 ----
 -- Overlay Bezeichnungen
 ----
@@ -90,6 +90,73 @@ function mapviewer:loadMap(name)
 	self.showTipTrigger = true;
 	self.showKeyHelp = false;
 	self.showVehicles = true;
+	
+	----
+	--	Test eines Overlays für das Felderwachstum und Fruchtsorten pro Feld
+	----
+	self.showFoliageState = true;
+	
+	self.mv_FoliageStateOverlays = 0;
+	self.growthGrowingColors = {
+		{
+			0,
+			0.45,
+			1,
+			1
+		},
+		{
+			0,
+			0.31,
+			0.86,
+			1
+		},
+		{
+			0,
+			0.2,
+			0.7,
+			1
+		},
+		{
+			0,
+			0.1,
+			0.6,
+			1
+		}
+	}
+	self.growthReadyToHarvestColors = {
+	{
+		0,
+		0.9,
+		0.1,
+		1
+	},
+	{
+		0,
+		0.7,
+		0.1,
+		1
+	},
+	{
+		0,
+		0.5,
+		0.2,
+		1
+	}
+	}
+	self.growthReadyToPrepareColor = {
+		0.1,
+		1,
+		0.8,
+		1
+	}
+	self.growthWitheredColor = {
+		0.7,
+		0,
+		0.1,
+		1
+	}
+	self.mv_FoliageStateOverlays = createFoliageStateOverlay("foliageState", 256, 256)
+	----
     
     self.useHorseShoes = true;
     self.useLegend = true;
@@ -133,7 +200,7 @@ function mapviewer:loadMap(name)
 	self.Debug.active = false;
 	self.Debug.printHotSpots = false;
 	self.Debug.printHorseShoes = false;
-	self.Debug.printPanelTable = true;
+	self.Debug.printPanelTable = false;
 	----
 	
 	self.mv_Error = false;
@@ -312,6 +379,9 @@ function mapviewer:initMapViewer()
 		print(string.format("self.modBaseDirectory: %s", tostring(self.modBaseDirectory)));
 		print(string.format("Overlay  : %s", tostring(self.bigmap.OverlayId.ovid)));
 		print(string.format("----"));
+		print(string.format("--Tip Triggers--"));
+		--self:listTipTriggers();
+		print(string.format("--Tip Triggers--"));
 	end;
 	----
 
@@ -412,21 +482,6 @@ function mapviewer:initMapViewer()
 	self.bigmap.InfoPanel.bottom.bubbleright.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.bubbleright.file);
 	----
 	
-	--[[ Oberes und Unteres Ende des Panels alt
-	-- self.bigmap.InfoPanel.top.closebar.top = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
-	-- self.bigmap.InfoPanel.top.closebar.top.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarTop#file"), "panel/Info_Panel_closebar_top.dds"), self.moddir);
-	-- self.bigmap.InfoPanel.top.closebar.top.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.top.file);
-	
-	-- self.bigmap.InfoPanel.top.closebar.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.0078125, Pos = {x=0, y=0}};
-	-- self.bigmap.InfoPanel.top.closebar.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelTop.CloseBarBottom#file"), "panel/Info_Panel_closebar_bottom.dds"), self.moddir);
-	-- self.bigmap.InfoPanel.top.closebar.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.top.closebar.bottom.file);
-	--
-
-	-- self.bigmap.InfoPanel.bottom = {file = "", OverlayId = nil, width = 0.15, height= 0.03125, Pos = {x=0, y=0}};
-	-- self.bigmap.InfoPanel.bottom.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.Infopanel.InfoPanelBubble.BubbleBottomMid#file"), "panel/Info_Panel_bubble_bottommid.dds"), self.moddir);
-	-- self.bigmap.InfoPanel.bottom.OverlayId = createImageOverlay(self.bigmap.InfoPanel.bottom.file);
-	]]
-	
 	--Array für Hinweisesymbole
 	self.bigmap.InfoPanel.Hints = {};
 	self.bigmap.InfoPanel.Hints.Icons = {
@@ -440,7 +495,7 @@ function mapviewer:initMapViewer()
 	self.bigmap.InfoPanel.Hints.Icons.warning.file  = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.InfoPanel.InfoPanelHintIcons.HintWarning#file"), "icons/warning.dds"), self.moddir);
 	
 	self.bigmap.InfoPanel.Hints.Icons.critical.OverlayId = createImageOverlay(self.bigmap.InfoPanel.Hints.Icons.critical.file);
-	self.bigmap.InfoPanel.Hints.Icons.warning.OverlayId  = createImageOverlay(self.bigmap.InfoPanel.Hints.Icons.warnings.file);
+	self.bigmap.InfoPanel.Hints.Icons.warning.OverlayId  = createImageOverlay(self.bigmap.InfoPanel.Hints.Icons.warning.file);
 	
 	self.bigmap.InfoPanel.Hints.Icons.critical.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanel.InfoPanelHintIcons.HintCritical#height"), 0.0078125);
 	self.bigmap.InfoPanel.Hints.Icons.warning.height  = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.InfoPanel.InfoPanelHintIcons.HintWarning#height" ), 0.0078125);
@@ -451,7 +506,7 @@ function mapviewer:initMapViewer()
 	
 	
 	-- Informationen die angezeigt werden
-	self.bigmap.InfoPanel.Info = {Type = "", Ply= "", Tank = 0, Fruit = ""};
+	self.bigmap.InfoPanel.Info = {Type = "", Ply = "", Tank = 0, Fruit = ""};
 
 	--- Fahrzeug Informationen
 	self.bigmap.InfoPanel.vehicleIndex = 0;
@@ -498,12 +553,14 @@ function mapviewer:initMapViewer()
     
 	-- TODO: Typen an LS 2013 anpassen
     self.bigmap.attachmentsTypes = {};
-    self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingMachine", "plough", "sprayer", "baler", "baleLoader", "cultivator", "tedder", "windrower", "shovel", "mower", "cultivator_animated", "selfPropelledSprayer", "cutter_animated", "sprayer_animated", "manureSpreader", "forageWagon", "other"};
+    --self.bigmap.attachmentsTypes.names = {"cutter", "trailer", "sowingMachine", "plough", "sprayer", "baler", "baleLoader", "cultivator", "tedder", "windrower", "shovel", "mower", "cultivator_animated", "selfPropelledSprayer", "cutter_animated", "sprayer_animated", "manureSpreader", "forageWagon", "other"};
+	
+	self.bigmap.attachmentsTypes.names = {"waterTrailer", "cultivator_animated", "selfPropelledPotatoHarvester", "mower_animated", "selfPropelledSprayer", "baleLoader", "milktruck", "trailer_mouseControlled", "baler", "dynamicMountAttacherImplement", "cart", "selfPropelledMixerWagon", "trailer", "plough", "sowingMachine_animated", "trafficVehicle", "implement_animated", "telehandler", "fuelTrailer", "ridingMower", "attachableCombine", "wheelLoader", "dynamicMountAttacherTrailer", "defoliator_animated", "implement", "tractor_cylindered", "windrower", "forageWagon", "sowingMachine", "tractor", "manureBarrel", "mower", "manureSpreader", "sprayer", "shovel_animated", "sprayer_mouseControlled", "cultivator", "sprayer_animated", "cutter_animated", "tractor_articulatedAxis", "cutter", "mixerWagon", "combine_cylindered", "strawBlower", "selfPropelledMower", "combine", "frontloader", "tedder", "shovel"};
     self.bigmap.attachmentsTypes.icons = {}
     self.bigmap.attachmentsTypes.overlays = {}
     
     for at=1, table.getn(self.bigmap.attachmentsTypes.names) do
-        local tempIcon = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"), "icons/feldgeraet.dds"), self.moddir);
+        local tempIcon = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconAttachment" .. self.bigmap.attachmentsTypes.names[at] .."#file"), "icons/other.dds"), self.moddir);
         table.insert(self.bigmap.attachmentsTypes.icons,tempIcon); 
         self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[at]] = createImageOverlay(self.bigmap.attachmentsTypes.icons[at]);
     end;
@@ -777,6 +834,22 @@ function mapviewer:initMapViewer()
 	-- Initialisierung abgeschlossen
 	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
 	----
+	
+	-- print(string.format("--Tip Triggers--"));
+	-- self:listTipTriggers();
+	-- print(string.format("--Tip Triggers--"));
+
+	print(string.format("--vehicleTypes--"));
+	--print(table.show(VehicleTypeUtil.vehicleTypes, "vehicleTypes"));
+	for k,v in pairs(VehicleTypeUtil.vehicleTypes) do
+		print(string.format("|| %s || vehicleTypes.name  : %s || %s ||", 
+			g_i18n:getText("mapviewtxt"), 
+			tostring(g_i18n:getText(VehicleTypeUtil.vehicleTypes[k].name)), 
+			tostring(VehicleTypeUtil.vehicleTypes[k].name)
+			));
+	end;
+	print(string.format("--vehicleTypes--"));
+
 
 	self.mvInit = true;
 end;
@@ -1107,17 +1180,32 @@ function mapviewer:GetTriggerInfo(trigger)
 	local prices = {};
 	local amounts = {};
 	local fsa = 0;
+	local triggerName = "";
 	
 	if trigger ~= nil and type(trigger) == "table" then
 		
 		----
 		-- Aktzeptierte Waren und Preise ermitteln
 		----
+		--	TODO: g_i18n:hasText(name)
+		----
+		if g_i18n:hasText(trigger.stationName) then
+			triggerName = g_i18n:getText(trigger.stationName);
+		elseif trigger.isFarmTrigger then 
+			triggerName = g_i18n:getText("MV_Farmsilo");
+		else
+			triggerName = trigger.stationName;
+		end;
+		
+		if trigger.bga ~= nil then
+			triggerName = g_i18n:getText("BGA_Station_name");
+		end;
+		
 		fruits, prices = self:getTriggerFruitTypesAndPrices(trigger);
 		if trigger.isFarmTrigger then
-			table.insert(triggerInfo, string.format("Name: %s", g_i18n:getText("MV_Farmsilo")));
+			table.insert(triggerInfo, string.format("Name: %s", triggerName));
 		else
-			table.insert(triggerInfo, string.format("Name: %s", tostring(Utils.getNoNil(g_i18n:getText(trigger.stationName), g_i18n:getText("MV_Unknown")))));
+			table.insert(triggerInfo, string.format("Name: %s", tostring(triggerName)));
 		end;
 		
 		for fillType, _ in pairs (trigger.acceptedFillTypes) do
@@ -1749,6 +1837,17 @@ function mapviewer:draw()
 			end;
 		end;
 		----
+		-- Test Feld STatus
+		----
+		if self.mapvieweractive and self.mv_FoliageStateOverlays ~= nil and self.mv_FoliageStateOverlays ~= 0 then
+			if getIsFoliageStateOverlayReady(self.foliageStateOverlay) then
+			--if self.showFoliageState then
+			--print(table.show(g_inGameMenu.foliageStateOverlay, "g_inGameMenu.foliageStateOverlay"));
+			--self.showFoliageState = false;
+				renderOverlay(self.mv_FoliageStateOverlays, 0.0915, 0.2075, 0.4685, 0.625);
+			end;
+		end;
+		----
 	else
 		g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Activate"), InputBinding.BIGMAP_Activate);
 	end;
@@ -1769,6 +1868,51 @@ function mapviewer:draw()
 		setTextAlignment(RenderText.ALIGN_LEFT);
 	end;
 	----
+end;
+----
+
+----
+function mapviewer:mv_createMapStateOverlay()
+	do
+		for fruitType, ids in pairs(g_currentMission.fruits) do
+			if ids.id ~= 0 then
+				local desc = FruitUtil.fruitIndexToDesc[fruitType]
+				if 0 <= desc.maxHarvestingGrowthState then
+					local witheredState = desc.maxHarvestingGrowthState + 1
+					if 0 <= desc.maxPreparingGrowthState then
+						witheredState = desc.maxPreparingGrowthState + 1
+					end
+		
+					if witheredState ~= desc.cutState and witheredState ~= desc.preparedGrowthState and witheredState ~= desc.minPreparingGrowthState then
+						setFoliageStateOverlayGrowthStateColor(self.mv_FoliageStateOverlays, ids.id, witheredState + 1, self.growthWitheredColor[1], self.growthWitheredColor[2], self.growthWitheredColor[3])
+					end
+			
+					local maxGrowingState = desc.minHarvestingGrowthState - 1
+					if 0 <= desc.minPreparingGrowthState then
+						maxGrowingState = math.min(maxGrowingState, desc.minPreparingGrowthState - 1)
+					end
+			
+					for i = 0, maxGrowingState do
+						local index = math.min(i + 1, #self.growthGrowingColors)
+						setFoliageStateOverlayGrowthStateColor(self.mv_FoliageStateOverlays, ids.id, i + 1, self.growthGrowingColors[index][1], self.growthGrowingColors[index][2], self.growthGrowingColors[index][3])
+					end
+			
+					if 0 <= desc.minPreparingGrowthState then
+						for i = desc.minPreparingGrowthState, desc.maxPreparingGrowthState do
+							setFoliageStateOverlayGrowthStateColor(self.mv_FoliageStateOverlays, ids.id, i + 1, self.growthReadyToPrepareColor[1], self.growthReadyToPrepareColor[2], self.growthReadyToPrepareColor[3])
+						end
+					end
+			
+					for i = desc.minHarvestingGrowthState, desc.maxHarvestingGrowthState do
+						local index = math.min(i - desc.minHarvestingGrowthState + 1, #self.growthReadyToHarvestColors)
+						setFoliageStateOverlayGrowthStateColor(self.mv_FoliageStateOverlays, ids.id, i + 1, self.growthReadyToHarvestColors[index][1], self.growthReadyToHarvestColors[index][2], self.growthReadyToHarvestColors[index][3])
+					end
+				end
+			end
+		end
+	end;
+	generateFoliageStateOverlayGrowthStateColors(self.mv_FoliageStateOverlays)
+	g_inGameMenu:checkFoliageStateOverlayReady()
 end;
 ----
 
@@ -1917,6 +2061,20 @@ function mapviewer:showMapHotspotsOnMap()
 end;
 ----
 
+----
+--	Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
+----
+function mapviewer:showFieldNumbersOnMap_try()
+	for _, fieldDef in pairs(g_currentMission.fieldDefinitionBase.fieldDefs) do
+		local x, _, z = getWorldTranslation(fieldDef.fieldMapIndicator)
+		setTextBold(true)
+		setTextColor(0, 0, 0, 1)
+		renderText(0.0915 + (g_currentMission.missionPDA.worldCenterOffsetX + x) / g_currentMission.missionPDA.worldSizeX * 0.4685 - 0.0075, 0.8325 - (g_currentMission.missionPDA.worldCenterOffsetZ + z) / g_currentMission.missionPDA.worldSizeZ * 0.625 - 0.011, 0.02, tostring(fieldDef.fieldNumber))
+		setTextColor(fieldDef.fieldMapHotspot.baseColor[1], fieldDef.fieldMapHotspot.baseColor[2], fieldDef.fieldMapHotspot.baseColor[3], 1)
+		renderText(0.0915 + (g_currentMission.missionPDA.worldCenterOffsetX + x) / g_currentMission.missionPDA.worldSizeX * 0.4685 - 0.0075, 0.8325 - (g_currentMission.missionPDA.worldCenterOffsetZ + z) / g_currentMission.missionPDA.worldSizeZ * 0.625 - 0.009, 0.02, tostring(fieldDef.fieldNumber))
+		setTextBold(false)
+	end
+end;
 ----
 --	Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
 ----
@@ -2213,19 +2371,66 @@ function mapviewer:showMaplegende()
 
 			self.l_PosY = 1-0.02441 - 0.007324 - 0.015625 - self.bigmap.Legende.height;
 			
-			for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
-				if self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]] ~= nil then 
-					renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
-								self.bigmap.Legende.legPosX + 0.007324,
+			-- for lg=1, table.getn(self.bigmap.attachmentsTypes.names) do
+				-- if self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]] ~= nil then 
+					-- renderOverlay(self.bigmap.attachmentsTypes.overlays[self.bigmap.attachmentsTypes.names[lg]],
+								-- self.bigmap.Legende.legPosX + 0.007324,
+								-- self.l_PosY, 
+								-- self.bigmap.attachmentsTypes.width,
+								-- self.bigmap.attachmentsTypes.height);
+					-- renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
+				-- else		-- TODO: Übersetzen
+					-- renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
+					-- print(string.format("|| %s || OverlayIcon nicht gefunden  : %s ||", g_i18n:getText("mapviewtxt"), self.bigmap.attachmentsTypes.names[lg]));
+				-- end;
+				-- self.l_PosY = self.l_PosY - 0.020;
+			-- end;
+			--
+			
+			local LegTxtPosX = self.bigmap.Legende.legPosX + 0.029297;
+			local LegOvIDPosX = self.bigmap.Legende.legPosX + 0.007324;
+
+			for k,v in pairs(VehicleTypeUtil.vehicleTypes) do
+				if self.bigmap.attachmentsTypes.overlays[VehicleTypeUtil.vehicleTypes[k].name] ~= nil then 
+						renderOverlay(self.bigmap.attachmentsTypes.overlays[VehicleTypeUtil.vehicleTypes[k].name],
+									LegOvIDPosX,
+									self.l_PosY, 
+									self.bigmap.attachmentsTypes.width,
+									self.bigmap.attachmentsTypes.height);
+
+					if g_i18n:hasText("MV_AttachType" .. VehicleTypeUtil.vehicleTypes[k].name) then
+						renderText(LegTxtPosX, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. VehicleTypeUtil.vehicleTypes[k].name));
+					else
+						renderText(LegTxtPosX, self.l_PosY, 0.016, VehicleTypeUtil.vehicleTypes[k].name);
+					end;
+				else		-- TODO: Übersetzen
+					--renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("Symbol für Legende nicht gefunden  : %s", VehicleTypeUtil.vehicleTypes[k].name));
+					renderOverlay(self.bigmap.attachmentsTypes.overlays["other"],
+								LegOvIDPosX,
 								self.l_PosY, 
 								self.bigmap.attachmentsTypes.width,
 								self.bigmap.attachmentsTypes.height);
-					renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. self.bigmap.attachmentsTypes.names[lg]));
-				else		-- TODO: Übersetzen
-					renderText(self.bigmap.Legende.legPosX + 0.029297, self.l_PosY, 0.016, string.format("OverlayIcon nicht gefunden  : %s", self.bigmap.attachmentsTypes.names[lg]));
-					print(string.format("|| %s || OverlayIcon nicht gefunden  : %s ||", g_i18n:getText("mapviewtxt"), self.bigmap.attachmentsTypes.names[lg]));
+					renderText(LegTxtPosX, self.l_PosY, 0.016, tostring(VehicleTypeUtil.vehicleTypes[k].name));
+					--print(string.format("|| %s || OverlayIcon nicht gefunden  : %s ||", g_i18n:getText("mapviewtxt"), tostring(VehicleTypeUtil.vehicleTypes[k].name)));
 				end;
 				self.l_PosY = self.l_PosY - 0.020;
+				
+				----
+				--	Wenn mehr zeilen als verfügbar angezeigt werden sollen
+				----
+				if self.l_PosY < 0 then
+					--- Weiteren Hintergrund zeichenen
+					self.l_PosY = 1;
+					LegOvIDPosX = LegOvIDPosX + 0.025 + self.bigmap.Legende.width;
+					LegTxtPosX = LegTxtPosX + 0.025 + self.bigmap.Legende.width;
+					
+					renderOverlay(self.bigmap.Legende.OverlayId, 
+						self.bigmap.Legende.legPosX + 0.025 + self.bigmap.Legende.width, 
+						0, --self.bigmap.Legende.legPosY, 
+						self.bigmap.Legende.width, 
+						1); --self.bigmap.Legende.height
+				end;
+				----
 			end;
 			----
 			setTextColor(1, 1, 1, 0);
@@ -2305,6 +2510,17 @@ function mapviewer:update(dt)
 			self.maplegende = not self.maplegende;
 			self.printInfo = self.maplegende;
 		end;
+	end;
+	----
+	
+	----
+	-- 
+	----
+	if self.mapvieweractive then
+		self:mv_createMapStateOverlay();
+		--generateFoliageStateOverlayFruitTypeColors(self.mv_FoliageStateOverlays)
+		generateFoliageStateOverlayGrowthStateColors(self.mv_FoliageStateOverlays)
+		g_inGameMenu:checkFoliageStateOverlayReady()
 	end;
 	----
 	
@@ -2553,21 +2769,6 @@ function mapviewer:update(dt)
 				self.bigmap.InfoPanel.bottom.image.Pos.x = distancePosX - panelWidth;
 			end;
 			----
-			
-			----
-			--	Unten/Links
-			----
-			----
-			
-			----
-			--	Unten/rechts
-			----
-			----
-			
-			-- print("----");
-			-- print(table.show(self.bigmap.InfoPanel.bottom, "InfoPanel.bottom"));
-			-- print("----");
-			----
 		end;
 	end;	
 	----
@@ -2577,13 +2778,13 @@ function mapviewer:update(dt)
 	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
 		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
-			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
+			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
 		end;
 	end;
 	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
 		if self.bigmap.mapTransp > 0.1 and self.mapvieweractive then
-			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
+			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
 		end;
 	end;
 	----
@@ -2804,15 +3005,16 @@ end;
 ----
 function mapviewer:listTipTriggers()
 	local z=0;
-	for k,v in pairs(g_currentMission.tipTriggers) do
+	--for k,v in pairs(g_currentMission.tipTriggers) do
 		z=z+1;
-		print("TipTrigger: " .. tostring(z));
-		print(tostring(k) .."("..type(v)..")="..tostring(v));
-		for i,j in pairs(g_currentMission.tipTriggers[k]) do
-			print(tostring(i).."("..type(j)..")="..tostring(j));
-		end;
-	end;
-	--print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
+		--print("TipTrigger: " .. tostring(z));
+		--print(tostring(k) .."("..type(v)..")="..tostring(v));
+		--for i,j in pairs(g_currentMission.tipTriggers[k]) do
+			--print(tostring(i).."("..type(j)..")="..tostring(j));
+			--table.show(g_currentMission.tipTriggers[k], "TipTrigger: " .. tostring(z))
+		--end;
+	--end;
+	print(table.show(g_currentMission.tipTriggers, "TipTrigger"));
 end;
 ----
 

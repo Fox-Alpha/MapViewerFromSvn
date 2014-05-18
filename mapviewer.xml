@@ -60,8 +60,7 @@
             <iconCoursePlay  width="0.01" height="0.01" file="icons/courseplay.dds" />
             
             <!-- 
-				"cutter", "trailer", "sowingmachine", "plought", "sprayer", "bailer", "cultivator", "tedder", "windrower", "shovel", "mover", "other" 
-				"cutter", "trailer", "sowingMachine", "plough", "sprayer", "baler", "baleLoader", "cultivator", "tedder", "windrower", "shovel", "mower", "cultivator_animated", "selfPropelledSprayer", "cutter_animated", "sprayer_animated", "manureSpreader", "forageWagon", "other"
+				"waterTrailer", "cultivator_animated", "selfPropelledPotatoHarvester", "mower_animated", "selfPropelledSprayer", "baleLoader", "milktruck", "trailer_mouseControlled", "baler", "dynamicMountAttacherImplement", "cart", "selfPropelledMixerWagon", "trailer", "plough", "sowingMachine_animated", "trafficVehicle", "implement_animated", "telehandler", "fuelTrailer", "ridingMower", "attachableCombine", "wheelLoader", "dynamicMountAttacherTrailer", "defoliator_animated", "implement", "tractor_cylindered", "windrower", "forageWagon", "sowingMachine", "tractor", "manureBarrel", "mower", "manureSpreader", "sprayer", "shovel_animated", "sprayer_mouseControlled", "cultivator", "sprayer_animated", "cutter_animated", "tractor_articulatedAxis", "cutter", "mixerWagon", "combine_cylindered", "strawBlower", "selfPropelledMower", "combine", "frontloader", "tedder", "shovel"
 			-->
             <iconAttachmentcutter  width="0.01" height="0.01" file="icons/1.dds" />
             <iconAttachmenttrailer  width="0.01" height="0.01" file="icons/2.dds" />
@@ -75,7 +74,7 @@
             <iconAttachmentwindrower  width="0.01" height="0.01" file="icons/9.dds" />
             <iconAttachmentshovel  width="0.01" height="0.01" file="icons/10.dds" />
             <iconAttachmentmover  width="0.01" height="0.01" file="icons/11.dds" />
-            <iconAttachmentother  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
+            <iconAttachmentother  width="0.01" height="0.01" file="icons/other.dds" />
 		</icons>
 		<!--  -->
 	</map>
