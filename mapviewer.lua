@@ -1554,11 +1554,11 @@ function mapviewer:showMapViewerKeys()
 	tTop = 0.92 - tHeight;	-- Obere linke Ecke des Hintergrunds
 	tLeft = 0.018;	-- Begin des Textes links
 	tRight = (self.bigmap.InfoPanel.background.width)*1.75 ;	-- Begin des Textes links
-	tyBottom = tY - self.bigmap.InfoPanel.top.closebar.bottom.height - tHeight;
+	tyBottom = tY - self.bigmap.InfoPanel.top.closebar.height - tHeight;
 	
-	renderOverlay(self.bigmap.InfoPanel.top.closebar.top.OverlayId, tX, tY, self.bigmap.InfoPanel.top.closebar.top.width*1.75, self.bigmap.InfoPanel.top.closebar.top.height);
+	renderOverlay(self.bigmap.InfoPanel.top.closebar.OverlayId, tX, tY, self.bigmap.InfoPanel.top.closebar.width*1.75, self.bigmap.InfoPanel.top.closebar.height);
 	renderOverlay(self.bigmap.InfoPanel.background.OverlayId, tX, tTop, self.bigmap.InfoPanel.background.width*1.75, tHeight);
-	renderOverlay(self.bigmap.InfoPanel.top.closebar.bottom.OverlayId, tX, tyBottom, self.bigmap.InfoPanel.top.closebar.bottom.width*1.75, self.bigmap.InfoPanel.top.closebar.bottom.height);
+	renderOverlay(self.bigmap.InfoPanel.bottom.closebar.OverlayId, tX, tyBottom, self.bigmap.InfoPanel.bottom.closebar.width*1.75, self.bigmap.InfoPanel.bottom.closebar.height);
 
 	setTextColor(0, 0, 0, 1);
 
@@ -1733,18 +1733,18 @@ function mapviewer:draw()
 		----
 		if self.showVehicles then
 		----
-		self:showSteerablesOnMap();
+			self:showSteerablesOnMap();
 		----
 		
 		----
 		--	Darstellen der Geräte auf der Karte
-		self:showAttachmentsOnMap();
+			self:showAttachmentsOnMap();
 		----
 		
 		----
 		-- Milchtruck auf Karte Zeichnen
 		----
-		self:showMilkTruckOnMap();
+			self:showMilkTruckOnMap();
 		----
 		end;
 		----
