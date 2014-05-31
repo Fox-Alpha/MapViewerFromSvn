@@ -155,7 +155,7 @@ function mapviewer:loadMap(name)
 		0.1,
 		1
 	}
-	self.mv_FoliageStateOverlays = createFoliageStateOverlay("foliageState", 256, 256)
+	--self.mv_FoliageStateOverlays = createFoliageStateOverlay("foliageState", 256, 256)
 	----
     
     self.useHorseShoes = true;
@@ -832,6 +832,7 @@ function mapviewer:initMapViewer()
 	
 	----
 	-- Initialisierung abgeschlossen
+	----
 	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
 	----
 	
@@ -839,18 +840,23 @@ function mapviewer:initMapViewer()
 	-- self:listTipTriggers();
 	-- print(string.format("--Tip Triggers--"));
 
-	print(string.format("--vehicleTypes--"));
-	--print(table.show(VehicleTypeUtil.vehicleTypes, "vehicleTypes"));
-	for k,v in pairs(VehicleTypeUtil.vehicleTypes) do
-		print(string.format("|| %s || vehicleTypes.name  : %s || %s ||", 
-			g_i18n:getText("mapviewtxt"), 
-			tostring(g_i18n:getText(VehicleTypeUtil.vehicleTypes[k].name)), 
-			tostring(VehicleTypeUtil.vehicleTypes[k].name)
-			));
+	----
+	--	Ausgabe der nicht übersetzten VehicleTypes nur im Debug
+	----
+	if self.Debug.active then
+		print(string.format("--vehicleTypes--"));
+		--print(table.show(VehicleTypeUtil.vehicleTypes, "vehicleTypes"));
+		for k,v in pairs(VehicleTypeUtil.vehicleTypes) do
+			print(string.format("|| %s || vehicleTypes.name  : %s || %s ||", 
+				g_i18n:getText("mapviewtxt"), 
+				tostring(g_i18n:getText(VehicleTypeUtil.vehicleTypes[k].name)), 
+				tostring(VehicleTypeUtil.vehicleTypes[k].name)
+				));
+		end;
+		print(string.format("--vehicleTypes--"));
 	end;
-	print(string.format("--vehicleTypes--"));
-
-
+	----
+	
 	self.mvInit = true;
 end;
 ----
@@ -1778,12 +1784,21 @@ function mapviewer:draw()
 		end;
 		----
 
+		
+		
+		----
+		-- Wenn Debug, Ausgabe der Mouseposition
+		----		
+		if self.Debug.active then
+			setTextColor(0, 0, 0, 1);
+			renderText(0.020, 0.090, 0.020, string.format("Mouse Pos : x:%.3f / y:%.3f",self.mouseX,self.mouseY));
+			setTextColor(1, 1, 1, 0);
+		end;
+		----
+
 		----
 		-- InfoPanel anzeigen
-		----
-		setTextColor(0, 0, 0, 1);
-		renderText(0.020, 0.090, 0.020, string.format("Mouse Pos : x:%.3f / y:%.3f",self.mouseX,self.mouseY));
-		setTextColor(1, 1, 1, 0);
+		----		
 		if self.showInfoPanel then
 			self.bigmap.InfoPanel.Info = {};
 			if self.bigmap.InfoPanel.lastVehicle ~= nil then
@@ -1832,6 +1847,7 @@ function mapviewer:draw()
 				end;
 			end;
 			----
+			
 			if self.showInfoPanel then
 				self:ShowPanelonMap();
 			end;
@@ -1839,14 +1855,14 @@ function mapviewer:draw()
 		----
 		-- Test Feld STatus
 		----
-		if self.mapvieweractive and self.mv_FoliageStateOverlays ~= nil and self.mv_FoliageStateOverlays ~= 0 then
-			if getIsFoliageStateOverlayReady(self.foliageStateOverlay) then
-			--if self.showFoliageState then
-			--print(table.show(g_inGameMenu.foliageStateOverlay, "g_inGameMenu.foliageStateOverlay"));
-			--self.showFoliageState = false;
-				renderOverlay(self.mv_FoliageStateOverlays, 0.0915, 0.2075, 0.4685, 0.625);
-			end;
-		end;
+		-- if self.mapvieweractive and self.mv_FoliageStateOverlays ~= nil and self.mv_FoliageStateOverlays ~= 0 then
+			-- if getIsFoliageStateOverlayReady(self.foliageStateOverlay) then
+			-- if self.showFoliageState then
+			-- print(table.show(g_inGameMenu.foliageStateOverlay, "g_inGameMenu.foliageStateOverlay"));
+			-- self.showFoliageState = false;
+				-- renderOverlay(self.mv_FoliageStateOverlays, 0.0915, 0.2075, 0.4685, 0.625);
+			-- end;
+		-- end;
 		----
 	else
 		g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Activate"), InputBinding.BIGMAP_Activate);
@@ -1988,7 +2004,7 @@ function mapviewer:showPlayerOnMap()
 								self.bigmap.player.width, self.bigmap.player.height);
 			end;
 			renderText(mplayer.xPos +self.bigmap.player.width/2, mplayer.yPos-self.bigmap.player.height/2, 0.015, mplayer.player.controllerName);
-			renderText(0.020, 0.060, 0.015, string.format("Koordinaten : x%.1f / y%.1f",mplayer.xPos*1000,mplayer.yPos*1000));
+			--renderText(0.020, 0.060, 0.015, string.format("Koordinaten : x%.1f / y%.1f",mplayer.xPos*1000,mplayer.yPos*1000));
 		elseif mplayer.player.isControlled then
 			if self.bigmap.player.mpArrowOverlayId ~=nil and self.bigmap.player.mpArrowOverlayId ~= 0 then
 				renderOverlay(self.bigmap.player.mpArrowOverlayId, 
@@ -2517,15 +2533,15 @@ function mapviewer:update(dt)
 	-- 
 	----
 	if self.mapvieweractive then
-		self:mv_createMapStateOverlay();
+		--self:mv_createMapStateOverlay();
 		--generateFoliageStateOverlayFruitTypeColors(self.mv_FoliageStateOverlays)
-		generateFoliageStateOverlayGrowthStateColors(self.mv_FoliageStateOverlays)
-		g_inGameMenu:checkFoliageStateOverlayReady()
+		--generateFoliageStateOverlayGrowthStateColors(self.mv_FoliageStateOverlays)
+		--g_inGameMenu:checkFoliageStateOverlayReady()
 	end;
 	----
 	
 	----
-	-- Auf Taste zum Tasten einblenden reagieren
+	-- Auf Taste zum Tastenbelegung einblenden reagieren
 	----
 	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_KeyHelp) then
 		if self.mapvieweractive then
@@ -2599,7 +2615,7 @@ function mapviewer:update(dt)
 	end;
 	
 	----
-	-- Panel Position an Fahrzeug anpassen
+	-- Panel Position an Fahrzeug anpassen, nur wenn Karte Aktiv und ein Panel aufgerufen wurde
 	----
 	if self.mapvieweractive and self.showInfoPanel then 
 		local obj = nil;
@@ -2777,22 +2793,38 @@ function mapviewer:update(dt)
 	-- BigMap Transparenz erhöhen und verringern
 	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
-		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
+		if self.bigmap.mapTransp > 0.1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp - 0.05;
 		end;
 	end;
 	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
-		if self.bigmap.mapTransp > 0.1 and self.mapvieweractive then
+		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
 		end;
+	end;
+	----
+	-- Im Debug Informationen ausgeben
+	----
+	if self.Debug.active then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_TransPlus")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Aktuelle Transparenz %s", tostring(self.bigmap.mapTransp)));
+		end;
+
+		if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_TransMinus")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Aktuelle Transparenz %s", tostring(self.bigmap.mapTransp)));
+		end;		
 	end;
 	----
 	-- ende Transparenz umschalten
 	----
 	
 	----
-	-- Wenn TRansparenz aktiv, Mauszeiger ausblenden
+	-- Wenn Transparenz aktiv, Mauszeiger ausblenden
 	----
 	if self.mapvieweractive then 
 		if self.bigmap.mapTransp > 1 then
