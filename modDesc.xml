@@ -59,18 +59,6 @@
 			<en>Mapviewer decrease Transparence</en>
 			<de>Mapviewer Transparenz verringern</de>	
 		</text>
-		<text name="BIGMAP_TPKey1">
-			<en>Right CTRL</en>
-			<de>Rechte STRG</de>	
-		</text>
-		<text name="BIGMAP_TPKey2">
-			<en>Right SHIFT</en>
-			<de>Rechte SHIFT</de>	
-		</text>
-		<text name="BIGMAP_TPMouse">
-			<en>Mouse 1</en>
-			<de>Maus 1</de>	
-		</text>
 		<text name="BIGMAP_Teleport">
 			<en>Mapvewer Teleporten</en>
 			<de>Mapvewer Teleporten</de>	
@@ -83,6 +71,11 @@
 		<text name="BIGMAP_Overlay_1">
 			<en>Show Overlay 1</en>
 			<de>Overlay 1 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_ShowOverlay">
+			<en>Overlays de-/activate</en>
+			<de>Overlays ein-/ausblenden</de>	
 		</text>
 
 		<text name="BIGMAP_Overlay_2">

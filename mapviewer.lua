@@ -171,14 +171,18 @@ function mapviewer:loadMap(name)
 	self.mouseX = 0;
 	self.mouseY = 0;
 	
-	
+	----
+	--	F1 Hilfe aktiv ?
+	----
+	self.showHelpTxt = false
+	----
 	
 	----
 	-- Debug Modus
 	----
 	self.Debug = {};
 	self.Debug.active = false;
-	self.Debug.printHotSpots = false;
+	self.Debug.printHotSpots = true;
 	self.Debug.printHorseShoes = false;
 	self.Debug.printPanelTable = false;
 	----
@@ -1212,8 +1216,6 @@ function mapviewer:GetTriggerInfo(trigger)
 		----
 		-- Aktzeptierte Waren und Preise ermitteln
 		----
-		--	TODO: g_i18n:hasText(name)
-		----
 		if g_i18n:hasText(trigger.stationName) then
 			triggerName = g_i18n:getText(trigger.stationName);
 		elseif trigger.isFarmTrigger then 
@@ -1571,7 +1573,7 @@ function mapviewer:showMapViewerKeys()
 	
 	tX = 0.01;	-- Abstand zum Linken Bildrand
 	tY = 0.92;	-- Abstand zum oberen Bildrand
-	tHeight = 5*0.018;	-- Höhe des Text Hintergrunds
+	tHeight = 6*0.018;	-- Höhe des Text Hintergrunds
 	tTop = 0.92 - tHeight;	-- Obere linke Ecke des Hintergrunds
 	tLeft = 0.018;	-- Begin des Textes links
 	tRight = (self.bigmap.InfoPanel.background.width)*1.75 ;	-- Begin des Textes links
@@ -1593,12 +1595,14 @@ function mapviewer:showMapViewerKeys()
 	renderText(tLeft, tY-0.049, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_TransMinus")));	--InputBinding.BIGMAP_Legende)
 	renderText(tLeft, tY-0.066, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_SwitchOverlay")));	--InputBinding.BIGMAP_Legende)
 	renderText(tLeft, tY-0.083, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_Teleport")));	--InputBinding.BIGMAP_Legende)
+	renderText(tLeft, tY-0.100, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_ShowOverlay")));
 	setTextAlignment(RenderText.ALIGN_RIGHT)
 	renderText(tRight, tY-0.016, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_Legende].keys1))));
 	renderText(tRight, tY-0.033, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_TransPlus].keys1))));
 	renderText(tRight, tY-0.049, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_TransMinus].keys1))));
 	renderText(tRight, tY-0.066, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_SwitchOverlay].keys1))));
 	renderText(tRight, tY-0.083, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_Teleport].keys1))));
+	renderText(tRight, tY-0.100, 0.015, string.format("NumPad 1-9"));
 	setTextAlignment(RenderText.ALIGN_LEFT)
 	setTextColor(1, 1, 1, 0);
 end;
@@ -1663,17 +1667,15 @@ function mapviewer:draw()
 		g_currentMission:addWarning(g_i18n:getText("MV_ErrorCreateMV"), 0.018, 0.033);
 	end;
 	
-	local sht = g_currentMission.showHelpText;
-	
 	if self.mapvieweractive then
 		----
 		-- Aktuelle Transparenz und Copyright anzeigen
 		----
-		--	TODO: Ausgabe Centern
-		----
 		setTextColor(1, 1, 1, 1);
+		setTextAlignment(RenderText.ALIGN_CENTER);
 		renderText(0.5-0.0273, 1-0.03, 0.020, string.format("Transparenz\t%d", self.bigmap.mapTransp * 100));
 		renderText(0.5-0.035, 0.03, 0.018, g_i18n:getText("mapviewtxt"));
+		setTextAlignment(RenderText.ALIGN_LEFT);
 		setTextColor(1, 1, 1, 0);
         ----
 		
@@ -2104,13 +2106,13 @@ function mapviewer:showMapHotspotsOnMap()
 			setTextColor(1, 1, 1, 0);
 
 			-- Ausgabe der Hotspot Positionen und weiterer Infos
-			if self.Debug.printHotSpots then
-				print(string.format("Debug MapHotspots: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
-			end;
+			-- if self.Debug.printHotSpots then
+				-- print(string.format("Debug MapHotspots: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+			-- end;
 		end;
-		if self.Debug.printHotSpots then
-			self.Debug.printHotSpots = false;
-		end;
+		-- if self.Debug.printHotSpots then
+			-- self.Debug.printHotSpots = false;
+		-- end;
 	end;
 end;
 ----
@@ -2144,10 +2146,14 @@ function mapviewer:showFieldNumbersOnMap()
 			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
 			
 			setTextColor(1, 1, 1, 1);
-			setTextAlignment(RenderText.ALIGN_CENTER);
+			--setTextAlignment(RenderText.ALIGN_CENTER);
 
 			----
 			-- Feldnummern Positionen
+			----
+			--	TODO: Position der angezeigten Feldnummern
+			----
+			--	BUG: Feldnummerindex um 1 versetzt
 			----
 			if g_currentMission.missionPDA.hotspots[j].showName then
 				if self.useDefaultMap then 		-- Standard Karte
@@ -2165,14 +2171,14 @@ function mapviewer:showFieldNumbersOnMap()
 				self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
 
 				setTextColor(bc[1], bc[2], bc[3], bc[4]);
-				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+				--renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
 				renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 			end;
 			setTextAlignment(RenderText.ALIGN_LEFT);
 			setTextColor(1, 1, 1, 0);
 
 			if self.Debug.printHotSpots then
-				print(string.format("Debug Feldnummern: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+				print(string.format("Debug Feldnummern: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, hsPosX, hsPosY, g_currentMission.missionPDA.hotspots[j].name));
 			end;
 		end;
 		if self.Debug.printHotSpots then
@@ -2522,6 +2528,10 @@ function mapviewer:update(dt)
 		if self.bigmap.OverlayId.ovid ~= nil and self.bigmap.OverlayId.ovid ~= 0 then
 			self.mapvieweractive=not self.mapvieweractive;
 			if not self.mapvieweractive then
+				----
+				-- Wenn MapViewer deaktiviert wird, F1 Hilfe wieder herstellen
+				g_currentMission.showHelpText = self.showHelpTxt;
+				----
 				g_mouseControlsHelp.active = true; 
 				InputBinding.setShowMouseCursor(false); 
 				InputBinding.wrapMousePositionEnabled = true; 
@@ -2530,6 +2540,11 @@ function mapviewer:update(dt)
 				end;
 				g_currentMission.showHudEnv = true;
 			else
+				----
+				--	Merken ob F1 Hilfe aktiviert ist
+				----
+				self.showHelpTxt = g_currentMission.showHelpText;
+				----
 				g_currentMission.showHudEnv = false;
 			end;
 		else
