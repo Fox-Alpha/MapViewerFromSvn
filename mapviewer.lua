@@ -785,7 +785,9 @@ function mapviewer:initMapViewer()
 	
 	local bfnum, lfnum = self:checkLocalFnumFile();
 
-	print(string.format("|| Debug || bfnum : %s | lfnum : %s ||", tostring(bfnum), tostring(lfnum)));
+	if self.Debug.active then
+		print(string.format("|| Debug || bfnum : %s | lfnum : %s ||", tostring(bfnum), tostring(lfnum)));
+	end;
 
 	if self.useDefaultMap then
 		self.bigmap.FNum.file = Utils.getFilename("mv_fnum_" .. string.gsub(g_currentMission.missionInfo.map.title, " ", "_") .. ".dds", self.mapPath);
@@ -815,7 +817,11 @@ function mapviewer:initMapViewer()
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorInitFNum")));
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_ErrorCreateFNumFileNotFound")));
 	end;
-	print(string.format("|| Debug || useFnum : %s ||", tostring(self.useFNum)));
+
+	if self.Debug.active then
+		print(string.format("|| Debug || useFnum : %s ||", tostring(self.useFNum)));
+	end;
+
 	if self.useFNum then
 		if not bfnum and not self.useDefaultMap then 
 			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_FNumInMap")));
@@ -1019,6 +1025,7 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
 				self.bigmap.InfoPanel.triggerIndex, self.bigmap.InfoPanel.isTrigger, self.bigmap.InfoPanel.lastTrigger = self:triggerInMouseRange();
 				self.bigmap.InfoPanel.fieldIndex, self.bigmap.InfoPanel.isField, self.bigmap.InfoPanel.lastField = self:fieldInMouseRange();
+				
 				if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
 					self.showInfoPanel = true;
 					self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
@@ -2564,7 +2571,8 @@ function mapviewer:update(dt)
         self.showCP = false;
         self.showHorseShoes = false;
 		self.showHotSpots = false;
-        ----
+		self.showTipTrigger = false;
+       ----
 
 		if self.numOverlay == 1 then	--nur Feldnummernhotspots und Besitzstatus
 			self.showHotSpots = true;
@@ -2601,6 +2609,7 @@ function mapviewer:update(dt)
 		
 		if self.numOverlay > 6 then
 			self.numOverlay = 0;		--Alles aus
+			self.showTipTrigger = false;
 			self.showPoi = false;
 			self.showFNum = false;
             self.showCP = false;
