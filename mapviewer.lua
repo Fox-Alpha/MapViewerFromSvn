@@ -583,7 +583,7 @@ function mapviewer:initMapViewer()
 		end;
 	end;
 	if self.useCoursePlay then
-		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_CoursePlayFound"), mods[i].title, mods[i].version)));
+		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_CoursePlayFound"), mods[cpid].title, mods[cpid].version)));
 		self.bigmap.IconCourseplay = {};
 		self.bigmap.IconCourseplay.Icon = {};
 		self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
