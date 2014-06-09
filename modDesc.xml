@@ -80,6 +80,51 @@
 			<de>Mapvewer Tastenbelegung</de>	
 		</text>
 
+		<text name="BIGMAP_Overlay_1">
+			<en>Show Overlay 1</en>
+			<de>Overlay 1 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_2">
+			<en>Mapviewer Show Overlay 2</en>
+			<de>Mapviewer Overlay 2 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_3">
+			<en>Mapviewer Show Overlay 3</en>
+			<de>Mapviewer Overlay 3 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_4">
+			<en>Mapviewer Show Overlay 4</en>
+			<de>Mapviewer Overlay 4 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_5">
+			<en>Mapviewer Show Overlay 5</en>
+			<de>Mapviewer Overlay 5 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_6">
+			<en>Mapviewer Show Overlay 6</en>
+			<de>Mapviewer Overlay 6 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_7">
+			<en>Mapviewer Show Overlay 7</en>
+			<de>Mapviewer Overlay 7 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_8">
+			<en>Mapviewer Show Overlay 8</en>
+			<de>Mapviewer Overlay 8 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_9">
+			<en>Mapviewer Show Overlay 9</en>
+			<de>Mapviewer Overlay 9 einblenden</de>	
+		</text>
+
         <!-- Log Meldungen -->
 		<text name="MV_InfoTryLocatePDAFile">
 			<en>Try to locate PDA Map File</en>
@@ -195,11 +240,11 @@
 		</text>
 		
 		
-		<!-- TODO: Prüfen wo dieser Text verwendet wird -->
+		<!-- TODO: Prüfen wo dieser Text verwendet wird
 		<text name="MV_LocaleFileSuccess">
 			<en>Checking for locale FNum and PoI overlay files</en>
 			<de>%s Datei erfolgreich geladen</de>	
-		</text>
+		</text> -->
 		<text name="MV_InitHorseShoesSuccess">
 			<en>Preparing horseshoes successfull</en>
 			<de>Vorbereiten der Hufeisen erfolgreich</de>	
@@ -576,5 +621,15 @@
        <input name="BIGMAP_TransPlus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_plus" 						key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_TransMinus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_minus" 					key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_Teleport" 		category="ONFOOT" 			key1="KEY_rshift"			 			key2="" button="" device="0" mouse="" />
+		<!-- Manuelles Einblenden der einzelnen Overlay -->
+       <input name="BIGMAP_Overlay_1" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_1"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_2" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_2"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_3" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_3"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_4" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_4"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_5" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_5"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_6" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_6"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_7" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_7"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_8" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_8"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_9" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_9"				key2="" button="" device="0" mouse="" />
     </inputBindings>
 </modDesc>

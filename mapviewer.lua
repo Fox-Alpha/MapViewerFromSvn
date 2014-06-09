@@ -81,15 +81,17 @@ function mapviewer:loadMap(name)
 	self.maplegende = false;
 	self.activePlayerNode=0;
 	self.mvInit = false;
+	
 	self.showFNum = false;
 	self.showPoi = false;
     self.showCP = false;
     self.showHorseShoes = false;
     self.showInfoPanel = false;
 	self.showHotSpots = false;
-	self.showTipTrigger = true;
+	self.showTipTrigger = false;
 	self.showKeyHelp = false;
 	self.showVehicles = true;
+	self.showFieldStatus = false;
 	
 	----
 	--	Test eines Overlays für das Felderwachstum und Fruchtsorten pro Feld
@@ -164,6 +166,7 @@ function mapviewer:loadMap(name)
 	self.useHotSpots = true;
 	self.useTipTrigger = true;
     self.useCoursePlay = false;
+	self.useFieldStatus = true;
 	
 	self.setNewPlyPosition = false;
     
@@ -1733,10 +1736,17 @@ function mapviewer:draw()
 		----
 		
 		----
-		-- Hotspots auf grosse Karte, zusammen mit den Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
-		----
+		-- Hotspots aus der Karte anzeigen
 		if self.showHotSpots and self.useHotSpots then
 			self:showMapHotspotsOnMap();
+		end;
+		----
+		
+		----
+		-- aktueller Besitzstand und Feldinformationen der Felder 
+		-- aus der Kartendefinition auf grosse Karte anzeigen
+		----
+		if self.showFieldStatus and self.useFieldStatus then
 			self:showFieldNumbersOnMap();
 		end;
 		----
@@ -1809,6 +1819,7 @@ function mapviewer:draw()
 		if self.showInfoPanel then
 			self.bigmap.InfoPanel.Info = {};
 			if self.bigmap.InfoPanel.lastVehicle ~= nil then
+			-- TODO: CoursePlay Kurs einblendung in Funktion auslaggern
 				self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle); -- self.bigmap.InfoPanel.vehicleIndex
 			elseif self.bigmap.InfoPanel.lastTrigger ~= nil then
 				self.bigmap.InfoPanel.Info = self:GetTriggerInfo(self.bigmap.InfoPanel.lastTrigger); -- self.bigmap.InfoPanel.vehicleIndex
@@ -2102,7 +2113,7 @@ end;
 --	Feldnummern und dem aktuellen Besitzstand der Felder aus der Kartendefinition
 ----
 function mapviewer:showFieldNumbersOnMap()
-	if self.showHotSpots and self.useHotSpots then
+	if self.showFieldStatus and self.useFieldStatus then
 		local hsPosX, hsPosY;
 		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
 			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
@@ -2561,7 +2572,7 @@ function mapviewer:update(dt)
 	-- Auf Taste zum Overlay wechseln reagieren
 	----
 	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
-		self.numOverlay = self.numOverlay+1;
+		--self.numOverlay = self.numOverlay+1;
 
         ----
         -- Alle Overlays deaktivieren
@@ -2799,6 +2810,90 @@ function mapviewer:update(dt)
 	----
 	
 	----
+	--	Manuelles einblenden der Overlays
+	----
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_1) then
+			self.showTipTrigger = not self.showTipTrigger;
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_1")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Overlay TipTrigger Aktiv? %s", tostring(self.showTipTrigger)));
+		end;
+	end;
+
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_2) then
+			self.showFNum = not self.showFNum;
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_2")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Overlay Feldnummern Aktiv? %s", tostring(self.showFNum)));
+		end;
+	end;
+
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_3) then
+			self.showPoi = not self.showPoi;
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_3")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Overlay POI Aktiv? %s", tostring(self.showPoi)));
+		end;
+	end;
+
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_4) then
+			self.showHotSpots = not self.showHotSpots;
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_4")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Overlay HotSpots Aktiv? %s", tostring(self.showHotSpots)));
+		end;
+	end;
+
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_5) then
+            self.showCP = not self.showCP;
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_5")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Overlay CoursePlay Aktiv? %s", tostring(self.showCP)));
+		end;
+	end;
+
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_6) then
+            self.showHorseShoes = not self.showHorseShoes;
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_6")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Overlay Hufeisen Aktiv? %s", tostring(self.showHorseShoes)));
+		end;
+	end;
+
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_7) then
+			self.showFieldStatus = not self.showFieldStatus;
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_7")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			print(string.format("Overlay Aktiv? %s", tostring(self.showFieldStatus)));
+		end;
+	end;
+
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_8) then
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_8")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			--print(string.format("Overlay Aktiv? %s", tostring(self.showTipTrigger)));
+		end;
+	end;
+
+	if self.mapvieweractive then
+		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_9) then
+			print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_9")));
+			print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
+			--print(string.format("Overlay Aktiv? %s", tostring(self.showTipTrigger)));
+		end;
+	end;
+
+	----
+	
+	----
 	-- BigMap Transparenz erhöhen und verringern
 	----
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransMinus) then
@@ -2813,7 +2908,7 @@ function mapviewer:update(dt)
 		end;
 	end;
 	----
-	-- Im Debug Informationen ausgeben
+	-- Im Debug Informationen zu Transparenz ausgeben
 	----
 	if self.Debug.active then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
