@@ -838,13 +838,7 @@ function mapviewer:initMapViewer()
 	
 	print(string.format("|| %s || %s complete ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForLocaleOverlay")));
 	----
-	
-	----
-	-- Initialisierung abgeschlossen
-	----
-	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
-	----
-	
+		
 	-- print(string.format("--Tip Triggers--"));
 	-- self:listTipTriggers();
 	-- print(string.format("--Tip Triggers--"));
@@ -866,6 +860,34 @@ function mapviewer:initMapViewer()
 	end;
 	----
 	
+	----
+	--	Table für Overlay Modi
+	----
+	self.Overlays = {};
+	self.Overlays.mode = {"MV_Mode1Name", "MV_Mode2Name", "MV_Mode3Name", "MV_Mode4Name", "MV_Mode5Name", "MV_Mode6Name", "MV_Mode7Name", "MV_Mode8Name", "MV_Mode9Name", "MV_Mode10Name"};
+	self.Overlays.names = {};
+		-- Erstellen der Namensliste für die Overlays
+		for i=1, table.getn(self.Overlays.mode) do
+			table.insert(self.Overlays.names, g_i18n:getText(self.Overlays.mode[i]));
+		end;
+		--table.insert(self.Overlays.names, g_i18n:getText("MV_Mode10Name"));
+		--
+	self.Overlays.active = {mode10=true, mode1=false, mode2=false, mode3=false, mode4=false, mode5=false, mode6=false, mode7=false, mode8=false, mode9=false};
+	
+	-- Debug Ausgabe
+	print(string.format("|| %s || --- Overlay Übersicht --- ||", g_i18n:getText("mapviewtxt")));
+	for k,v in pairs(self.Overlays.names) do
+		print(string.format("|| %s || Overlay%s=%s / active=%s ||", g_i18n:getText("mapviewtxt"), tostring(k), tostring(v), tostring(self.Overlays.active[string.format("mode%d", k)])));
+	end;
+	print(string.format("|| %s || --- Overlay Übersicht --- ||", g_i18n:getText("mapviewtxt")));
+	----
+	
+	----
+	-- Initialisierung abgeschlossen
+	----
+	print(string.format("|| %s || Initializing Complete ||", g_i18n:getText("mapviewtxt")));
+	----
+
 	self.mvInit = true;
 end;
 ----
@@ -1773,18 +1795,9 @@ function mapviewer:draw()
 		----
 		
         ----
-        -- Anzeigen des aktuell gewählten Modus
+        -- Anzeigen der aktuell aktivierten Overlay Modi
         ----
-        if self.numOverlay > 0 then
-            setTextColor(1, 1, 1, 1);
-            renderText(0.5-0.0273, 1-0.05, 0.020, g_i18n:getText(string.format("MV_Mode%d", self.numOverlay)));
-			if self.showHorseShoes then
-				renderText(0.5-0.0273, 1-0.065, 0.020, string.format("%s (%s/%s)", g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)), tostring(countHorseShoesFound), tostring(table.getn(g_currentMission.collectableHorseshoesObject.horseshoes))));
-			else
-				renderText(0.5-0.0273, 1-0.065, 0.020, g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)));
-			end;
-            setTextColor(1, 1, 1, 0);
-        end;
+		self:showOverlayModiName();
         ----
 		
 		----
@@ -1902,6 +1915,22 @@ function mapviewer:draw()
 		setTextAlignment(RenderText.ALIGN_LEFT);
 	end;
 	----
+end;
+----
+
+----
+--	Anzeigen aller aktiven Overlaymodi
+----
+function mapviewer:showOverlayModiName()
+	return;
+	-- setTextColor(1, 1, 1, 1);
+	-- renderText(0.5-0.0273, 1-0.05, 0.020, g_i18n:getText(string.format("MV_Mode%d", self.numOverlay)));
+	-- if self.showHorseShoes then
+		-- renderText(0.5-0.0273, 1-0.065, 0.020, string.format("%s (%s/%s)", g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)), tostring(countHorseShoesFound), tostring(table.getn(g_currentMission.collectableHorseshoesObject.horseshoes))));
+	-- else
+		-- renderText(0.5-0.0273, 1-0.065, 0.020, g_i18n:getText(string.format("MV_Mode%dName", self.numOverlay)));
+	-- end;
+	-- setTextColor(1, 1, 1, 0);
 end;
 ----
 
@@ -2583,6 +2612,7 @@ function mapviewer:update(dt)
         self.showHorseShoes = false;
 		self.showHotSpots = false;
 		self.showTipTrigger = false;
+		self.showFieldStatus = false;
        ----
 
 		if self.numOverlay == 1 then	--nur Feldnummernhotspots und Besitzstatus

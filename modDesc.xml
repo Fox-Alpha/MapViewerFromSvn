@@ -214,6 +214,7 @@
 		</text>
 		
 		<!-- Feldinformationen im Panel -->
+		<!-- TODO: Übersetzung -->
 		<text name="MV_FieldInfoFieldNumber">
 			<en></en>
 			<de>Feld Nr.:</de>	
@@ -277,6 +278,14 @@
 		</text>
 		
         <!-- Aktiver Overlay Modus -->
+		<text name="MV_Mode10">
+			<en>MapViewer Overlay Mode 0</en>
+			<de>MapViewer Overlay Modus 0</de>	
+		</text>
+		<text name="MV_Mode10Name">
+			<en>Vehicles only (default)</en>
+			<de>Nur Vehicles</de>	
+		</text>
 		<text name="MV_Mode1">
 			<en>MapViewer Overlay Mode 1</en>
 			<de>MapViewer Overlay Modus 1</de>	
@@ -314,16 +323,40 @@
 			<de>MapViewer Overlay Modus 5</de>	
 		</text>
 		<text name="MV_Mode5Name">
-			<en>Show open horseshoes on Map</en>
-			<de>Noch offene Hufeisen anzeigen</de>	
+			<en>Show active Courseplay Tracks</en>
+			<de>Alle aktiven CoursePlay Kurse anzeigen</de>	
 		</text>
 		<text name="MV_Mode6">
 			<en>MapViewer Overlay Mode 6</en>
 			<de>MapViewer Overlay Modus 6</de>	
 		</text>
 		<text name="MV_Mode6Name">
-			<en>Show active Courseplay Tracks</en>
-			<de>Alle aktiven CoursePlay Kurse anzeigen</de>	
+			<en>Show open horseshoes on Map</en>
+			<de>Noch offene Hufeisen anzeigen</de>	
+		</text>
+		<text name="MV_Mode7">
+			<en>MapViewer Overlay Mode 7</en>
+			<de>MapViewer Overlay Modus 7</de>	
+		</text>
+		<text name="MV_Mode7Name">
+			<en>Mode not available</en>
+			<de>Modus nicht verfügbar</de>	
+		</text>
+		<text name="MV_Mode8">
+			<en>MapViewer Overlay Mode 8</en>
+			<de>MapViewer Overlay Modus 8</de>	
+		</text>
+		<text name="MV_Mode8Name">
+			<en>Mode not available</en>
+			<de>Modus nicht verfügbar</de>	
+		</text>
+		<text name="MV_Mode9">
+			<en>MapViewer Overlay Mode 9</en>
+			<de>MapViewer Overlay Modus 9</de>	
+		</text>
+		<text name="MV_Mode9Name">
+			<en>Mode not available</en>
+			<de>Modus nicht verfügbar</de>	
 		</text>
 		
 		<!-- windrow Übersetzung -->
