@@ -2065,10 +2065,10 @@ end;
 function mapviewer:showMapHotspotsOnMap()
 
 	if self.showHotSpots and self.useHotSpots then
-		local hsPosX, hsPosY;
+		local hsPosX, hsPosY, hsWidth, hsHeight;
 		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
-			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
-			self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
+			hsWidth = g_currentMission.missionPDA.hotspots[j].width;
+			hsHeight = g_currentMission.missionPDA.hotspots[j].height;
 			----
 			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
 
@@ -2092,14 +2092,14 @@ function mapviewer:showMapHotspotsOnMap()
 					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
 				end;
 				
-				self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-				self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+				hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(hsWidth/2);
+				hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(hsHeight/2);
 
-				renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
+				renderOverlay(self.hsOverlayId, hsPosX, hsPosY, hsWidth, hsHeight);
 				if g_i18n:hasText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name) then
-					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
+					renderText(hsPosX+hsWidth/2, hsPosY-hsHeight/2, 0.020, tostring(g_i18n:getText("MV_HotSpot" .. g_currentMission.missionPDA.hotspots[j].name)));
 				else
-					renderText(self.hsPosX+self.hsWidth/2, self.hsPosY-self.hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
+					renderText(hsPosX+hsWidth/2, hsPosY-hsHeight/2, 0.020, tostring(g_currentMission.missionPDA.hotspots[j].name));
 				end;
 			end;
 			setTextAlignment(RenderText.ALIGN_LEFT);
@@ -2136,10 +2136,14 @@ end;
 ----
 function mapviewer:showFieldNumbersOnMap()
 	if self.showFieldStatus and self.useFieldStatus then
-		local hsPosX, hsPosY;
+		local hsPosX, hsPosY, hsWidth, hsHeight;
+		hsPosX = 0;
+		hsPosY = 0;
+		hsWidth = 0;
+		hsHeight = 0;
 		for j=1, table.getn(g_currentMission.missionPDA.hotspots) do
-			self.hsWidth = g_currentMission.missionPDA.hotspots[j].width;
-			self.hsHeight = g_currentMission.missionPDA.hotspots[j].height;
+			hsWidth = g_currentMission.missionPDA.hotspots[j].width;
+			hsHeight = g_currentMission.missionPDA.hotspots[j].height;
 			----
 			self.hsOverlayId = g_currentMission.missionPDA.hotspots[j].overlay.overlayId;			
 
@@ -2167,18 +2171,19 @@ function mapviewer:showFieldNumbersOnMap()
 					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos;
 				end;
 				
-				self.hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(self.hsWidth/2);
-				self.hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(self.hsHeight/2);
+				hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(hsWidth/2);
+				hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(hsHeight/2);
 
 				setTextColor(bc[1], bc[2], bc[3], bc[4]);
 				--renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
-				renderText(self.hsPosX, self.hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
-			end;
-			setTextAlignment(RenderText.ALIGN_LEFT);
-			setTextColor(1, 1, 1, 0);
+				renderText(hsPosX, hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 
-			if self.Debug.printHotSpots then
-				print(string.format("Debug Feldnummern: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, hsPosX, hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+				setTextAlignment(RenderText.ALIGN_LEFT);
+				setTextColor(1, 1, 1, 0);
+
+				if self.Debug.printHotSpots then
+					print(string.format("Debug Feldnummern: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, hsPosX, hsPosY, g_currentMission.missionPDA.hotspots[j].name));
+				end;
 			end;
 		end;
 		if self.Debug.printHotSpots then
