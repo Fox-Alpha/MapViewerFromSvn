@@ -268,6 +268,24 @@
 		<text name="MV_CoursePlayNotFound">
 			<en>Courseplay not available</en>
 			<de>CoursePlay nicht vorhanden</de>	
+		</text>		
+		
+		<!-- Rent A Field Mod -->
+		<text name="RAFIS_Costs">
+			<en>Costs per day</en>
+			<de>Pachtkosten pro Tag</de>	
+		</text>
+		<text name="RAFIS_True">
+			<en>Active</en>
+			<de>Pacht Aktiv</de>	
+		</text>
+		<text name="RAFIS_False">
+			<en>Not Active</en>
+			<de>Keine Pacht</de>	
+		</text>
+		<text name="RAFIS_Owned">
+			<en>You are owner</en>
+			<de>Eigentum</de>	
 		</text>
 		
         <!-- Aktiver Overlay Modus -->

@@ -143,6 +143,7 @@ function mapviewer:loadMap(name)
 	self.useHotSpots = true;
 	self.useTipTrigger = true;
     self.useCoursePlay = false;
+	self.useRentAField = false;
 	self.useFieldStatus = true;
 	
 	self.setNewPlyPosition = false;
@@ -555,17 +556,31 @@ function mapviewer:initMapViewer()
     ----
 
 	----
-	--Array für CourseplayIcon
+	-- Unterstützte Fremdmods suchen
 	----
 	local mods = g_currentMission.missionDynamicInfo.mods;
 	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForCoursePlay")));
 	
 	local beg, ende = 0, 0;
-	local cpid = 0;
+	local cpid = 0;			-- ID von CoursePlay
+	local rafid = 0;		-- ID von RentaField
 	
+	----
+	--	Suchen ob RendAField vorhanden ist
+	----
+	for i=1, table.getn(mods) do
+		beg, ende = string.find(string.lower(mods[i].modName), "rentafield");
+		if beg ~= nil and ende ~= nil then
+			self.useRentAField = true;
+			rafid = i;
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("Rent A Field Mod Gefunden"), mods[rafid].title, mods[rafid].version)));
+			break;
+		end;
+	end;
 	----
 	--	Suchen ob CoursePlay vorhanden ist
 	----
+	cpid = 0;
 	for i=1, table.getn(mods) do
 		beg, ende = string.find(string.lower(mods[i].modName), "courseplay");
 		if beg ~= nil and ende ~= nil then
@@ -574,7 +589,11 @@ function mapviewer:initMapViewer()
 			break;
 		end;
 	end;
+	----
 	
+	----
+	--Array für CourseplayIcon
+	----
 	if self.useCoursePlay then
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_CoursePlayFound"), mods[cpid].title, mods[cpid].version)));
 		self.bigmap.IconCourseplay = {};
@@ -1216,6 +1235,20 @@ function mapviewer:GetFieldInfo(field)
 			table.insert(fieldInfo,string.format("%s %s", g_i18n:getText("MV_FieldInfoHighestBidder"),tostring(field.fieldHighestBidder)));
 			table.insert(fieldInfo,string.format("%s %s", g_i18n:getText("MV_FieldInfoNextBid"),tostring(field.fieldPrice+field.fieldBidStep)));			
 		end;
+		if self.useRentAField then 
+			if field.rentByPlayer then
+				table.insert(fieldInfo,string.format("Rent A Field Mod: %s ", g_i18n:getText("RAFIS_True")));
+			elseif field.ownedByPlayer then
+				table.insert(fieldInfo,string.format("Rent A Field Mod: %s ", g_i18n:getText("RAFIS_Owned")));
+			else
+				table.insert(fieldInfo,string.format("Rent A Field Mod: %s ", g_i18n:getText("RAFIS_False")));
+			end;
+			if not field.ownedByPlayer or field.rentByPlayer then
+				table.insert(fieldInfo,string.format("- %s: %s ", g_i18n:getText("RAFIS_Costs"), g_i18n:formatMoney(field.fieldPrice / 25)));
+			end;
+		end;
+		
+		-- print(string.format("Rent A Field Mod: %s ", tostring(field.rentByPlayer)) .. string.format("||    %s: %s ", g_i18n:getText("RAFIS_Costs"), g_i18n:formatMoney(field.fieldPrice / 25)));
 	end;
 	
 	return fieldInfo;
@@ -2204,7 +2237,13 @@ function mapviewer:showFieldNumbersOnMap()
 				hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(hsWidth/2);
 				hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(hsHeight/2);
 
-				setTextColor(bc[1], bc[2], bc[3], bc[4]);
+				if self.useRentAField and self.showFieldStatus then
+					if g_currentMission.fieldDefinitionBase.fieldDefsByFieldNumber[tonumber(g_currentMission.missionPDA.hotspots[j].name)].rentByPlayer ~= nil then
+						setTextColor(0, 0, 1, 1);
+					else
+						setTextColor(bc[1], bc[2], bc[3], bc[4]);
+					end;
+				end;
 				--renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
 				renderText(hsPosX, hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 
