@@ -327,6 +327,10 @@
 			<en>open horseshoes</en>
 			<de>offene Hufeisen</de>	
 		</text>
+		<text name="MV_Mode6Title">
+			<en>You have %s horseshows found and %s left</en>
+			<de>Du hast bereits %s von %s Hufeisen eingesammelt</de>	
+		</text>
 		<text name="MV_Mode7">
 			<en>MapViewer Overlay Mode 7</en>
 			<de>MapViewer Overlay Modus 7</de>	
