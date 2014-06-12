@@ -1038,10 +1038,30 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 			self.bigmap.InfoPanel.isField = nil;
 			
 			if not self.useTeleport then
+				----
+				--	Klickbare Objekte
+				----
+				-- Fahrzeuge und Geräte immer Klickbar
+				---
 				self.bigmap.InfoPanel.vehicleIndex, self.bigmap.InfoPanel.isVehicle, self.bigmap.InfoPanel.lastVehicle = self:vehicleInMouseRange();
-				self.bigmap.InfoPanel.triggerIndex, self.bigmap.InfoPanel.isTrigger, self.bigmap.InfoPanel.lastTrigger = self:triggerInMouseRange();
-				self.bigmap.InfoPanel.fieldIndex, self.bigmap.InfoPanel.isField, self.bigmap.InfoPanel.lastField = self:fieldInMouseRange();
+				----
+				-- Trigger nur Klickbar, wenn sie angezeigt werden
+				----
+				if self.showTipTrigger then
+					self.bigmap.InfoPanel.triggerIndex, self.bigmap.InfoPanel.isTrigger, self.bigmap.InfoPanel.lastTrigger = self:triggerInMouseRange();
+				end;
+				----
+				-- Feldtrigger nur Klickbar, wenn sie angezeigt werden
+				----
+				if self.showFieldStatus then
+					self.bigmap.InfoPanel.fieldIndex, self.bigmap.InfoPanel.isField, self.bigmap.InfoPanel.lastField = self:fieldInMouseRange();
+				end;
+				----
 				
+				----
+				--	Informationen zum angeklickten Objekt abrufen
+				--	Fahrzeuge und Geräte haben immer vorrang
+				----
 				if self.bigmap.InfoPanel.lastVehicle ~= nil and type(self.bigmap.InfoPanel.lastVehicle) == "table" and self.bigmap.InfoPanel.vehicleIndex > 0 then
 					self.showInfoPanel = true;
 					self.bigmap.InfoPanel.Info = self:GetVehicleInfo(self.bigmap.InfoPanel.lastVehicle);
@@ -1054,6 +1074,7 @@ function mapviewer:mouseEvent(posX, posY, isDown, isUp, button)
 				else
 					self.showInfoPanel = false;
 				end;
+				----
 			else
 				----
 				-- Teleportieren
