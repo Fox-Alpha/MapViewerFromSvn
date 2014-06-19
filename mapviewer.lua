@@ -145,6 +145,7 @@ function mapviewer:loadMap(name)
     self.useCoursePlay = false;
 	self.useRentAField = false;
 	self.useFieldStatus = true;
+	self.useAddonMap = false;
 	
 	self.setNewPlyPosition = false;
     
@@ -267,14 +268,25 @@ function mapviewer:initMapViewer()
 		self.mapPath = "";
 	end;
 	----
-	
-	-- TODO: Prüfen was mit der DediServerInfo gemacht werden kann
-	-- g_dedicatedServerInfo
 
     ----
     -- Prüfen ob es sich um die Standard Karte handelt
     ----
 	self.mapName = g_currentMission.missionInfo.map.title;
+	
+	local _mods = g_currentMission.missionInfo.map.id;
+
+	--for i=1, table.getn(_mods) do
+		beg, ende = string.find(string.lower(_mods), "pdlc_titaniumAddon");
+		if beg ~= nil and ende ~= nil then
+			print(string.format("|| %s || Westbridge Karte wird verwendet / TitaniumAddon ||", g_i18n:getText("mapviewtxt")));
+		else
+			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), _mods));
+		end;
+	--end;
+	_mods = nil;
+			self.useAddonMap = true;
+	----
 	
 	-- Table, um auch alternative Pfade nach der pda_map zu durchsuchen
 	local pdaPath = {};
@@ -292,9 +304,11 @@ function mapviewer:initMapViewer()
 		----
 		-- am häufigsten verwendeten Pfade
 		----
-		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});					--[hauptverzeichnis]/
-		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map01/"});		--[hauptverzeichnis]/map01/ 
-		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map/map01/"});	--[hauptverzeichnis]/map/map01/
+		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath});						--[hauptverzeichnis]/
+		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map01/"});			--[hauptverzeichnis]/map01/ 
+		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map/"});				--[hauptverzeichnis]/map/
+		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map/map01/"});		--[hauptverzeichnis]/map/map01/
+		table.insert(pdaPath, {file="pda_map.dds", path=self.mapPath.."map/americanMap/"});	--[hauptverzeichnis]/map/americanMap/ --Titanium Addon Karte ?
 		
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_InfoTryLocatePDAFile")));
 		local pdaI = 1;
@@ -559,7 +573,6 @@ function mapviewer:initMapViewer()
 	-- Unterstützte Fremdmods suchen
 	----
 	local mods = g_currentMission.missionDynamicInfo.mods;
-	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForCoursePlay")));
 	
 	local beg, ende = 0, 0;
 	local cpid = 0;			-- ID von CoursePlay
@@ -567,19 +580,28 @@ function mapviewer:initMapViewer()
 	
 	----
 	--	Suchen ob RendAField vorhanden ist
+	--print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForCoursePlay")));
 	----
+	print(string.format("|| %s || Suche nach rent A Field Mod ||", g_i18n:getText("mapviewtxt")));
 	for i=1, table.getn(mods) do
 		beg, ende = string.find(string.lower(mods[i].modName), "rentafield");
 		if beg ~= nil and ende ~= nil then
 			self.useRentAField = true;
 			rafid = i;
-			print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("Rent A Field Mod Gefunden"), mods[rafid].title, mods[rafid].version)));
+			--print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("Rent A Field Mod Gefunden"), mods[rafid].title, mods[rafid].version)));
+			print(string.format("|| %s || %s | %s | %s ||", 
+					g_i18n:getText("mapviewtxt"), 
+					"Rent A Field Mod Gefunden", 
+					tostring(mods[rafid].title), 
+					tostring(mods[rafid].version)
+					));
 			break;
 		end;
 	end;
 	----
 	--	Suchen ob CoursePlay vorhanden ist
 	----
+	print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForCoursePlay")));
 	cpid = 0;
 	for i=1, table.getn(mods) do
 		beg, ende = string.find(string.lower(mods[i].modName), "courseplay");
@@ -2144,7 +2166,7 @@ function mapviewer:showMapHotspotsOnMap()
 			-- Integrierte Map Hotspots
 			----
 			if not g_currentMission.missionPDA.hotspots[j].showName then
-				if self.useDefaultMap then 
+				if self.useDefaultMap or self.useAddonMap then 
 					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
 					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
 				elseif g_currentMission.terrainSize ~= 2050 then	
@@ -2223,7 +2245,7 @@ function mapviewer:showFieldNumbersOnMap()
 			--	BUG: Feldnummerindex um 1 versetzt
 			----
 			if g_currentMission.missionPDA.hotspots[j].showName then
-				if self.useDefaultMap then 		-- Standard Karte
+				if self.useDefaultMap or self.useAddonMap then 		-- Standard Karte
 					hsPosX = g_currentMission.missionPDA.hotspots[j].xMapPos+1024;
 					hsPosY = g_currentMission.missionPDA.hotspots[j].yMapPos+1024;
 				elseif g_currentMission.terrainSize ~= 2050 then		-- Größe anders als Standard Karte	
