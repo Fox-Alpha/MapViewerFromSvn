@@ -46,5 +46,6 @@ icons/warning.dds -text
 /modDesc.xml -text svn_keywords
 /mv_fnum_hagenstedt.dds -text
 /mv_pda_hagenstedt.dds -text
+/mv_pda_westbridge_hills.dds -text
 /mv_poi_hagenstedt.dds -text
 /xmllog.bat svneol=CRLF#text/plain eol=crlf
