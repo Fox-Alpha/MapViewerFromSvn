@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="9">
+<modDesc descVersion="14">
 <!-- Revision der letzten Änderung :     $Rev$ -->
+<!--<modDesc descVersion="9">-->
 <!-- Author der letzten Änderung   :     $Author$ -->
 <!-- Date der letzten Änderung     :     $Date$ -->
 <!-- $URL$ -->
     <author>Fox-Alpha</author>
-    <version>V0.7 LS2013</version>
+    <version>V0.8 LS2013</version>
 	<iconFilename>gfx/mapviewer.dds</iconFilename>
 	<xmlFilename>mapviewer.xml</xmlFilename>
 	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
@@ -24,17 +25,18 @@
 		<de>
 		<![CDATA[Zeigt die PDA Map als Vollbild an. 
 			Zeigt die Karte auf dem gesamten Bildschirm an. Mit aktuellen Positionen aller Fahrzeuge und Anbaugeräte.
-			Neu: - Infopanel. Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.
-					Das Panel zeigt die Ladung und den Ladestand und weitere Informationen an.
-				 - Automatisches ermitteln der Kartengroesse.]]>		
+			Fix für den LS Patch 2.0
+			Neu: - Weitere Infopanel. Felder, Hofsilos, Verkaufsstationen. Eigenes Overlay zum Hufeisen sammeln.
+			Wieder drinne: Courseplay Anzeige
+			Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.]]>		
 		</de>
 	</description>
     <multiplayer supported="true"/>
 	<l10n>
         <!-- Copyright Meldung -->
         <text name="mapviewtxt">
-            <en>Mapviewer V0.7 $Rev$ Copyright (C) Fox-Alpha</en>
-            <de>Mapviewer V0.7 $Rev$ Copyright (C) Fox-Alpha</de>
+            <en>Mapviewer V0.8 $Rev$ Copyright (C) Fox-Alpha 2010-2014</en>
+            <de>Mapviewer V0.8 $Rev$ Copyright (C) Fox-Alpha 2010-2014</de>
         </text>
         <!-- Tastenbeschreibungen -->
 		<text name="BIGMAP_Legende">
@@ -57,20 +59,74 @@
 			<en>Mapviewer decrease Transparence</en>
 			<de>Mapviewer Transparenz verringern</de>	
 		</text>
-		<text name="BIGMAP_TPKey1">
-			<en>Right CTRL</en>
-			<de>Rechte STRG</de>	
+		<text name="BIGMAP_Teleport">
+			<en>Mapvewer Teleporten</en>
+			<de>Mapvewer Teleporten</de>	
 		</text>
-		<text name="BIGMAP_TPKey2">
-			<en>Right SHIFT</en>
-			<de>Rechte SHIFT</de>	
+		<text name="BIGMAP_KeyHelp">
+			<en>Mapviewer Keys</en>
+			<de>Mapvewer Tastenbelegung</de>	
 		</text>
-		<text name="BIGMAP_TPMouse">
-			<en>Mouse 1</en>
-			<de>Maus 1</de>	
+
+		<text name="BIGMAP_Overlay_1">
+			<en>Show Overlay 1</en>
+			<de>Overlay 1 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_ShowOverlay">
+			<en>Overlays de-/activate</en>
+			<de>Overlays ein-/ausblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_2">
+			<en>Mapviewer Show Overlay 2</en>
+			<de>Mapviewer Overlay 2 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_3">
+			<en>Mapviewer Show Overlay 3</en>
+			<de>Mapviewer Overlay 3 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_4">
+			<en>Mapviewer Show Overlay 4</en>
+			<de>Mapviewer Overlay 4 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_5">
+			<en>Mapviewer Show Overlay 5</en>
+			<de>Mapviewer Overlay 5 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_6">
+			<en>Mapviewer Show Overlay 6</en>
+			<de>Mapviewer Overlay 6 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_7">
+			<en>Mapviewer Show Overlay 7</en>
+			<de>Mapviewer Overlay 7 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_8">
+			<en>Mapviewer Show Overlay 8</en>
+			<de>Mapviewer Overlay 8 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_9">
+			<en>Mapviewer Show Overlay 9</en>
+			<de>Mapviewer Overlay 9 einblenden</de>	
 		</text>
 
         <!-- Log Meldungen -->
+		<text name="MV_InfoTryLocatePDAFile">
+			<en>Try to locate PDA Map File</en>
+			<de>Versuche PDA_map.dds zu finden</de>	
+		</text>
+		<text name="MV_InfoPDAFileLocated">
+			<en>PDA Map File is located</en>
+			<de>PDA_map.dds in Zip der Map gefunden</de>	
+		</text>
 		<text name="MV_InfoMapsize">
 			<en>Current Mapsize is : %d x %d</en>
 			<de>Aktuelle Map Größe ist : %d x %d</de>	
@@ -95,67 +151,227 @@
 			<en>Checking for locale FNum and PoI overlay files</en>
 			<de>Prüfen auf lokale FNum und PoI Overlay Dateien</de>	
 		</text>
+		
+		<!-- Meldung für PDA_Map Datei -->
+		<text name="MV_LocalePDAFileSuccess">
+			<en>Use locale PDA_Map file</en>
+			<de>Lokale PDA vorhanden</de>	
+		</text>
+		<text name="MV_LocalePDAFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		
+		<!-- Meldung für PoI Datei -->
+		<text name="MV_LocalePoIFileSuccess">
+			<en>Use locale PoI overlay file</en>
+			<de>Lokale PoI vorhanden</de>	
+		</text>
+		<text name="MV_LocalePoIFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		<text name="MV_PoIInMap">
+			<en>PoI Overlay in Map present</en>
+			<de>PoI Overlay in Map vorhanden</de>	
+		</text>
+		<text name="MV_PoIFromMV">
+			<en>Use internal PoI for default Map</en>
+			<de>Nutze MapViewer PoI Overlay</de>	
+		</text>
+		<text name="MV_PoIFromLocaleFile">
+			<en>Use local PoI file for Map</en>
+			<de>Nutze lokale PoI Datei als Overlay</de>	
+		</text>
+		
+		<!-- Meldung für FNum Datei -->
+		<text name="MV_LocaleFNumFileSuccess">
+			<en>Use locale PoI overlay file</en>
+			<de>Lokale Feldnummern vorhanden</de>	
+		</text>
+		<text name="MV_LocaleFNumFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		<text name="MV_FNumInMap">
+			<en>Feldnummern Overlay in Map present</en>
+			<de>Feldnummern Overlay in Map vorhanden</de>	
+		</text>
+		<text name="MV_FNumFromMV">
+			<en>Use internal FNum for default Map</en>
+			<de>Nutze MapViewer Feldnummern Overlay</de>	
+		</text>
+		<text name="MV_FNumFromLocaleFile">
+			<en>Use local FNum file for Map</en>
+			<de>Nutze lokale Feldnummern Datei als Overlay</de>	
+		</text>
+		
+		<!-- Feldinformationen im Panel -->
+		<!-- TODO: Übersetzung -->
+		<text name="MV_FieldInfoFieldNumber">
+			<en></en>
+			<de>Feld Nr.:</de>	
+		</text>
+		<text name="MV_FieldInfoFieldSize">
+			<en></en>
+			<de>Feldgröße:</de>	
+		</text>
+		<text name="MV_FieldInfoFieldPrice">
+			<en></en>
+			<de>Kaufpreis:</de>	
+		</text>
+		<text name="MV_FieldInfoCurrentBid">
+			<en></en>
+			<de>Aktuelles Gebot:</de>	
+		</text>
+		<text name="MV_FieldInfoHighestBidder">
+			<en></en>
+			<de>Höchster Bieter:</de>	
+		</text>
+		<text name="MV_FieldInfoNextBid">
+			<en></en>
+			<de>Nächstes Gebot:</de>	
+		</text>
+		
+		
+		<!-- TODO: Prüfen wo dieser Text verwendet wird
 		<text name="MV_LocaleFileSuccess">
 			<en>Checking for locale FNum and PoI overlay files</en>
 			<de>%s Datei erfolgreich geladen</de>	
-		</text>
+		</text> -->
 		<text name="MV_InitHorseShoesSuccess">
 			<en>Preparing horseshoes successfull</en>
 			<de>Vorbereiten der Hufeisen erfolgreich</de>	
 		</text>
+		<text name="MV_InitTipTriggerSuccess">
+			<en>Preparing TipTrigger successfull</en>
+			<de>TipTrigger vorbereiten erfolgreich</de>	
+		</text>
+		<text name="MV_InitHorseShoesFailed">
+			<en>Preparing TipTrigger failed</en>
+			<de>Vorbereiten der TipTrigger fehlgeschlagen</de>	
+		</text>
 		<text name="MV_LocaleFileSuccess">
 			<en>Checking for locale FNum and PoI overlay files</en>
 			<de>%s Datei erfolgreich geladen</de>	
 		</text>
+		<text name="MV_CheckForCoursePlay">
+			<en>Checking if courseplay is loaded</en>
+			<de>Prüfen ob CoursePlay verfügbar ist</de>	
+		</text>
+		
+		<!-- Courseplay Meldungen -->
+		<text name="MV_CoursePlayFound">
+			<en>CoursePlay found: %s %s</en>
+			<de>CoursePlay gefunden: %s %s</de>	
+		</text>
+		<text name="MV_CoursePlayNotFound">
+			<en>Courseplay not available</en>
+			<de>CoursePlay nicht vorhanden</de>	
+		</text>		
+		
+		<!-- Rent A Field Mod -->
+		<text name="RAFIS_Costs">
+			<en>Costs per day</en>
+			<de>Pachtkosten pro Tag</de>	
+		</text>
+		<text name="RAFIS_True">
+			<en>Active</en>
+			<de>Pacht Aktiv</de>	
+		</text>
+		<text name="RAFIS_False">
+			<en>Not Active</en>
+			<de>Keine Pacht</de>	
+		</text>
+		<text name="RAFIS_Owned">
+			<en>You are owner</en>
+			<de>Eigentum</de>	
+		</text>
 		
         <!-- Aktiver Overlay Modus -->
+		<text name="MV_Mode10">
+			<en>MapViewer Overlay Mode 0</en>
+			<de>MapViewer Overlay Modus 0</de>	
+		</text>
+		<text name="MV_Mode10Name">
+			<en>Vehicles only (default)</en>
+			<de>Vehicles</de>	
+		</text>
 		<text name="MV_Mode1">
 			<en>MapViewer Overlay Mode 1</en>
 			<de>MapViewer Overlay Modus 1</de>	
 		</text>
 		<text name="MV_Mode1Name">
-			<en>HotSpots and Fieldstatus</en>
-			<de>HotSpots und Felderbesitzstatus</de>	
+			<en>TipTrigger</en>
+			<de>Entladestationen</de>	
 		</text>
 		<text name="MV_Mode2">
 			<en>MapViewer Overlay Mode 2</en>
 			<de>MapViewer Overlay Modus 2</de>	
 		</text>
 		<text name="MV_Mode2Name">
-			<en>Show Filednumber Overlay</en>
-			<de>Feldnummern Overlay anzeigen</de>	
+			<en>Custom overlay 1</en>
+			<de>Benutzerdef. Overlay 1</de>	
 		</text>
 		<text name="MV_Mode3">
 			<en>MapViewer Overlay Mode 3</en>
 			<de>MapViewer Overlay Modus 3</de>	
 		</text>
 		<text name="MV_Mode3Name">
-			<en>Show Points of interests</en>
-			<de>PoI Overlay anzeigen</de>	
+			<en>Custom overlay 2</en>
+			<de>Benutzerdef. Overlay 2</de>	
 		</text>
 		<text name="MV_Mode4">
 			<en>MapViewer Overlay Mode 4</en>
 			<de>MapViewer Overlay Modus 4</de>	
 		</text>
 		<text name="MV_Mode4Name">
-			<en>Fieldnumber and PoI Overlay</en>
-			<de>Feldnummern und PoI anzeigen</de>	
+			<en>Map Hotspots</en>
+			<de>Karten Hotspots</de>	
 		</text>
 		<text name="MV_Mode5">
 			<en>MapViewer Overlay Mode 5</en>
 			<de>MapViewer Overlay Modus 5</de>	
 		</text>
 		<text name="MV_Mode5Name">
-			<en>Show open horseshoes on Map</en>
-			<de>Noch offene Hufeisen anzeigen</de>	
+			<en>Courseplay Tracks</en>
+			<de>CoursePlay Kurse</de>	
 		</text>
 		<text name="MV_Mode6">
 			<en>MapViewer Overlay Mode 6</en>
 			<de>MapViewer Overlay Modus 6</de>	
 		</text>
 		<text name="MV_Mode6Name">
-			<en>Show active Courseplay Tracks</en>
-			<de>Alle aktiven CoursePlay Kurse anzeigen</de>	
+			<en>open horseshoes</en>
+			<de>offene Hufeisen</de>	
+		</text>
+		<text name="MV_Mode6Title">
+			<en>You have %s horseshows found and %s left</en>
+			<de>Du hast bereits %s von %s Hufeisen eingesammelt</de>	
+		</text>
+		<text name="MV_Mode7">
+			<en>MapViewer Overlay Mode 7</en>
+			<de>MapViewer Overlay Modus 7</de>	
+		</text>
+		<text name="MV_Mode7Name">
+			<en>Fieldstatus and No.</en>
+			<de>Felderbesitzstatus</de>	
+		</text>
+		<text name="MV_Mode8">
+			<en>MapViewer Overlay Mode 8</en>
+			<de>MapViewer Overlay Modus 8</de>	
+		</text>
+		<text name="MV_Mode8Name">
+			<en>Mode not available</en>
+			<de>Modus nicht verfügbar</de>	
+		</text>
+		<text name="MV_Mode9">
+			<en>MapViewer Overlay Mode 9</en>
+			<de>MapViewer Overlay Modus 9</de>	
+		</text>
+		<text name="MV_Mode9Name">
+			<en>Mode not available</en>
+			<de>Modus nicht verfügbar</de>	
 		</text>
 		
 		<!-- windrow Übersetzung -->
@@ -298,8 +514,12 @@
 			<de>-- Helfer --</de>	
 		</text>
 		<text name="MV_ActiveCPCourse">
-			<en>Active CP Course</en>
-			<de>Aktiver CP Kurs</de>	
+			<en>Courseplay </en>
+			<de>Courseplay </de>	
+		</text>
+		<text name="MV_Farmsilo">
+			<en>Crop Storage</en>
+			<de>Hofsilo</de>	
 		</text>
 		
 		<!-- HotSpot Übersetungen -->
@@ -442,13 +662,22 @@
         <sourceFile filename="mapviewer.lua" />
     </extraSourceFiles>
 	<inputBindings>
-       <input name="BIGMAP_Activate" category="ONFOOT VEHICLE" key1="KEY_KP_minus" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Legende" category="ONFOOT VEHICLE" key1="KEY_delete" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_SwitchOverlay" category="ONFOOT VEHICLE" key1="KEY_end" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_TransPlus" category="ONFOOT VEHICLE" key1="KEY_KP_plus" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_TransMinus" category="ONFOOT VEHICLE" key1="KEY_KP_minus" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_TPKey1" category="ONFOOT" key1="KEY_rctrl" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_TPKey2" category="ONFOOT" key1="KEY_rshift" key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_TPMouse" category="ONFOOT" key1="" key2="" button="" device="0" mouse="MOUSE_BUTTON_LEFT" />
+       <input name="BIGMAP_Activate" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_0" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_KeyHelp" 		category="ONFOOT VEHICLE" 	key1="KEY_lctrl KEY_delete" 			key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Legende" 		category="ONFOOT VEHICLE" 	key1="KEY_delete" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_SwitchOverlay" 	category="ONFOOT VEHICLE" 	key1="KEY_end" 							key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_TransPlus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_plus" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_TransMinus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_minus" 					key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Teleport" 		category="ONFOOT" 			key1="KEY_rshift"			 			key2="" button="" device="0" mouse="" />
+		<!-- Manuelles Einblenden der einzelnen Overlay -->
+       <input name="BIGMAP_Overlay_1" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_1"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_2" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_2"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_3" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_3"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_4" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_4"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_5" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_5"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_6" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_6"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_7" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_7"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_8" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_8"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_9" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_9"				key2="" button="" device="0" mouse="" />
     </inputBindings>
 </modDesc>
