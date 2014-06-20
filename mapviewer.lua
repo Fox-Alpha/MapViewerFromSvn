@@ -2587,7 +2587,13 @@ function mapviewer:showMaplegende()
 					if g_i18n:hasText("MV_AttachType" .. VehicleTypeUtil.vehicleTypes[k].name) then
 						renderText(LegTxtPosX, self.l_PosY, 0.016, g_i18n:getText("MV_AttachType" .. VehicleTypeUtil.vehicleTypes[k].name));
 					else
-						renderText(LegTxtPosX, self.l_PosY, 0.016, VehicleTypeUtil.vehicleTypes[k].name);
+						local beg, ende;
+						beg, ende = string.find(VehicleTypeUtil.vehicleTypes[k].name, "pdlc_[a-zA-Z]+.");
+						if beg ~= nil and ende ~= nil then
+							renderText(LegTxtPosX, self.l_PosY, 0.016, string.sub(VehicleTypeUtil.vehicleTypes[k].name, ende+1));
+						else
+							renderText(LegTxtPosX, self.l_PosY, 0.016, tostring(VehicleTypeUtil.vehicleTypes[k].name));
+						end;
 					end;
 				else		-- TODO: Übersetzen
 					renderOverlay(self.bigmap.attachmentsTypes.overlays["other"],
@@ -2595,7 +2601,14 @@ function mapviewer:showMaplegende()
 								self.l_PosY, 
 								self.bigmap.attachmentsTypes.width,
 								self.bigmap.attachmentsTypes.height);
-					renderText(LegTxtPosX, self.l_PosY, 0.016, tostring(VehicleTypeUtil.vehicleTypes[k].name));
+						local beg, ende;
+						beg, ende = string.find(VehicleTypeUtil.vehicleTypes[k].name, "pdlc_[a-zA-Z]+.");
+						if beg ~= nil and ende ~= nil then
+							renderText(LegTxtPosX, self.l_PosY, 0.016, string.sub(VehicleTypeUtil.vehicleTypes[k].name, ende+1));
+						else
+							renderText(LegTxtPosX, self.l_PosY, 0.016, tostring(VehicleTypeUtil.vehicleTypes[k].name));
+						end;
+					--renderText(LegTxtPosX, self.l_PosY, 0.016, tostring(VehicleTypeUtil.vehicleTypes[k].name));
 				end;
 				self.l_PosY = self.l_PosY - 0.020;
 				
