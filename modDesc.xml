@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="14">
+<modDesc descVersion="9">
 <!-- Revision der letzten Änderung :     $Rev$ -->
 <!-- Author der letzten Änderung   :     $Author$ -->
 <!-- Date der letzten Änderung     :     $Date$ -->
@@ -103,6 +103,10 @@
 			<en>Preparing horseshoes successfull</en>
 			<de>Vorbereiten der Hufeisen erfolgreich</de>	
 		</text>
+		<text name="MV_LocaleFileSuccess">
+			<en>Checking for locale FNum and PoI overlay files</en>
+			<de>%s Datei erfolgreich geladen</de>	
+		</text>
 		
         <!-- Aktiver Overlay Modus -->
 		<text name="MV_Mode1">
@@ -110,56 +114,48 @@
 			<de>MapViewer Overlay Modus 1</de>	
 		</text>
 		<text name="MV_Mode1Name">
-			<en>Vehicle and Attachments</en>
-			<de>Fahrzeuge und Attachments</de>	
+			<en>HotSpots and Fieldstatus</en>
+			<de>HotSpots und Felderbesitzstatus</de>	
 		</text>
 		<text name="MV_Mode2">
 			<en>MapViewer Overlay Mode 2</en>
 			<de>MapViewer Overlay Modus 2</de>	
 		</text>
 		<text name="MV_Mode2Name">
-			<en>HotSpots and Fieldnumbers</en>
-			<de>HotSpots und Feldnummern</de>	
+			<en>Show Filednumber Overlay</en>
+			<de>Feldnummern Overlay anzeigen</de>	
 		</text>
 		<text name="MV_Mode3">
 			<en>MapViewer Overlay Mode 3</en>
 			<de>MapViewer Overlay Modus 3</de>	
 		</text>
 		<text name="MV_Mode3Name">
-			<en>tipTrigger and Fields</en>
-			<de>Abladen und Felder</de>	
-		</text>
-		<text name="MV_Mode4">
-			<en>MapViewer Overlay Mode 3</en>
-			<de>MapViewer Overlay Modus 3</de>	
-		</text>
-		<text name="MV_Mode4Name">
 			<en>Show Points of interests</en>
 			<de>PoI Overlay anzeigen</de>	
 		</text>
-		<text name="MV_Mode5">
+		<text name="MV_Mode4">
 			<en>MapViewer Overlay Mode 4</en>
 			<de>MapViewer Overlay Modus 4</de>	
 		</text>
-		<text name="MV_Mode5Name">
-			<en>Show open horseshoes on Map</en>
-			<de>Noch offene Hufeisen</de>	
+		<text name="MV_Mode4Name">
+			<en>Fieldnumber and PoI Overlay</en>
+			<de>Feldnummern und PoI anzeigen</de>	
 		</text>
-		<text name="MV_Mode6">
+		<text name="MV_Mode5">
 			<en>MapViewer Overlay Mode 5</en>
 			<de>MapViewer Overlay Modus 5</de>	
 		</text>
-		<text name="MV_Mode6Name">
-			<en>Show active Courseplay Tracks</en>
-			<de>Aktive CoursePlay Kurse</de>	
+		<text name="MV_Mode5Name">
+			<en>Show open horseshoes on Map</en>
+			<de>Noch offene Hufeisen anzeigen</de>	
 		</text>
-		<text name="MV_Mode7">
+		<text name="MV_Mode6">
 			<en>MapViewer Overlay Mode 6</en>
 			<de>MapViewer Overlay Modus 6</de>	
 		</text>
-		<text name="MV_Mode7Name">
-			<en>Custom Overlay</en>
-			<de>Benutzerdefiniertes Overlay</de>	
+		<text name="MV_Mode6Name">
+			<en>Show active Courseplay Tracks</en>
+			<de>Alle aktiven CoursePlay Kurse anzeigen</de>	
 		</text>
 		
 		<!-- windrow Übersetzung -->
@@ -446,7 +442,7 @@
         <sourceFile filename="mapviewer.lua" />
     </extraSourceFiles>
 	<inputBindings>
-       <input name="BIGMAP_Activate" category="ONFOOT VEHICLE" key1="KEY_KP_0" key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Activate" category="ONFOOT VEHICLE" key1="KEY_KP_minus" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_Legende" category="ONFOOT VEHICLE" key1="KEY_delete" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_SwitchOverlay" category="ONFOOT VEHICLE" key1="KEY_end" key2="" button="" device="0" mouse="" />
        <input name="BIGMAP_TransPlus" category="ONFOOT VEHICLE" key1="KEY_KP_plus" key2="" button="" device="0" mouse="" />
