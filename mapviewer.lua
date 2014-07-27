@@ -620,11 +620,20 @@ function mapviewer:initMapViewer()
 	if self.useCoursePlay then
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("MV_CoursePlayFound"), mods[cpid].title, mods[cpid].version)));
 		self.bigmap.IconCourseplay = {};
+		----
+		-- Symbol für alle aktiven Kurse
+		----
 		self.bigmap.IconCourseplay.Icon = {};
 		self.bigmap.IconCourseplay.Icon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#file"), "icons/courseplay.dds"), self.moddir);
 		self.bigmap.IconCourseplay.Icon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.Icon.file);
 		self.bigmap.IconCourseplay.width = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#width"), 0.0078125);
 		self.bigmap.IconCourseplay.height = Utils.getNoNil(getXMLFloat(self.xmlFile, "mapviewer.map.icons.iconCoursePlay#height"), 0.0078125);
+		----
+		--	Symbol für einzel Kurs
+		----
+		self.bigmap.IconCourseplay.singleIcon = {};
+		self.bigmap.IconCourseplay.singleIcon.file = Utils.getFilename(Utils.getNoNil(getXMLString(self.xmlFile, "mapviewer.map.icons.iconCoursePlaySingle#file"), "icons/courseplay.dds"), self.moddir);
+		self.bigmap.IconCourseplay.singleIcon.OverlayId = createImageOverlay(self.bigmap.IconCourseplay.singleIcon.file);
 	else
 		print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CoursePlayNotFound")));
 	end;
@@ -1916,7 +1925,7 @@ function mapviewer:draw()
 				local Courseplayname = nil;
 				self.currentVehicle = self.bigmap.InfoPanel.lastVehicle;
 				if SpecializationUtil.hasSpecialization(courseplay, self.currentVehicle.specializations) then
-					if self.bigmap.IconCourseplay.Icon.OverlayId ~= nil and self.bigmap.IconCourseplay.Icon.OverlayId ~= 0 then
+					if self.bigmap.IconCourseplay.singleIcon.OverlayId ~= nil and self.bigmap.IconCourseplay.singleIcon.OverlayId ~= 0 then
 						if self.currentVehicle.cp.currentCourseName ~=nil then
 							Courseplayname = self.currentVehicle.cp.currentCourseName;
 						else
@@ -1929,13 +1938,13 @@ function mapviewer:draw()
 							wx = ((((self.bigmap.mapDimensionX/2)+wx)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
 							wz = ((((self.bigmap.mapDimensionY/2)-wz)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
 
-							renderOverlay(self.bigmap.IconCourseplay.Icon.OverlayId,
+							renderOverlay(self.bigmap.IconCourseplay.singleIcon.OverlayId,
 										wx-self.bigmap.IconCourseplay.width/2, 
 										wz-self.bigmap.IconCourseplay.height/2,
 										self.bigmap.IconCourseplay.width,
 										self.bigmap.IconCourseplay.height);
 						end;
-						setOverlayColor(self.bigmap.IconCourseplay.Icon.OverlayId, 1, 1, 1, 1);
+						setOverlayColor(self.bigmap.IconCourseplay.singleIcon.OverlayId, 1, 1, 1, 1);
 						if Courseplayname ~= nil then
 							table.insert(self.bigmap.InfoPanel.Info, 2, string.format("%s: %s",g_i18n:getText("MV_ActiveCPCourse"), Courseplayname));
 						end;

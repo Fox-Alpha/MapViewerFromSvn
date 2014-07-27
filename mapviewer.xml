@@ -58,6 +58,7 @@
             <iconSteerableother  width="0.01" height="0.01" file="icons/tractor.dds" />
 			
             <iconCoursePlay  width="0.01" height="0.01" file="icons/courseplay.dds" />
+            <iconCoursePlaySingle  width="0.01" height="0.01" file="icons/courseplay_single.dds" />
             
             <!-- 
 				"waterTrailer", "cultivator_animated", "selfPropelledPotatoHarvester", "mower_animated", "selfPropelledSprayer", "baleLoader", "milktruck", "trailer_mouseControlled", "baler", "dynamicMountAttacherImplement", "cart", "selfPropelledMixerWagon", "trailer", "plough", "sowingMachine_animated", "trafficVehicle", "implement_animated", "telehandler", "fuelTrailer", "ridingMower", "attachableCombine", "wheelLoader", "dynamicMountAttacherTrailer", "defoliator_animated", "implement", "tractor_cylindered", "windrower", "forageWagon", "sowingMachine", "tractor", "manureBarrel", "mower", "manureSpreader", "sprayer", "shovel_animated", "sprayer_mouseControlled", "cultivator", "sprayer_animated", "cutter_animated", "tractor_articulatedAxis", "cutter", "mixerWagon", "combine_cylindered", "strawBlower", "selfPropelledMower", "combine", "frontloader", "tedder", "shovel"
