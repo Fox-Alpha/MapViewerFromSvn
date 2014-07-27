@@ -282,8 +282,8 @@ function mapviewer:initMapViewer()
 		
 		if beg ~= nil and ende ~= nil then
 			print(string.format("|| %s || Westbridge Karte wird verwendet / TitaniumAddon ||", g_i18n:getText("mapviewtxt")));
-		else
-			print(string.format("|| %s || %s (%s/%s)||", g_i18n:getText("mapviewtxt"), _mods, tostring(beg), tostring(ende)));
+		--else
+			--print(string.format("|| %s || %s (%s/%s)||", g_i18n:getText("mapviewtxt"), _mods, tostring(beg), tostring(ende)));
 		end;
 	--end;
 	_mods = nil;
@@ -1568,13 +1568,14 @@ function mapviewer:GetVehicleInfo(vehicle)
 			----
 			if vehicle.isControlled then
 				local tmp;
-				tmp = g_i18n:getText("MV_Player") .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_EmptyPlayer")), 0, 20);
+				--tmp = g_i18n:getText("MV_Player") .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_EmptyPlayer")), 0, 20);
+				tmp = g_i18n:getText("MV_Player") .. string.sub(vehicle.controllerName, 0, 20);
 				if vehicle.isHired then 
 					tmp = tmp .. " [H]"; 
 				end;
 				table.insert(vehicleInfo, tmp); 
 			elseif not vehicle.isControlled and vehicle.isHired then 
-				tmp = g_i18n:getText("MV_Player") .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_HiredVehicle")), 0, 20);
+				tmp = g_i18n:getText("MV_Player") .. string.sub(g_i18n:getText("MV_HiredVehicle"), 0, 20);
 				table.insert(vehicleInfo, tmp); 
 			end;			
 			----
@@ -1791,7 +1792,7 @@ function mapviewer:draw()
 		----
 		setTextColor(1, 1, 1, 1);
 		setTextAlignment(RenderText.ALIGN_CENTER);
-		renderText(0.5-0.0273, 1-0.03, 0.020, string.format("Transparenz\t%d", self.bigmap.mapTransp * 100));
+		renderText(0.5-0.0273, 1-0.03, 0.020, string.format("Transparenz\t%d %%", 100-(self.bigmap.mapTransp * 100)));
 		renderText(0.5-0.035, 0.03, 0.018, g_i18n:getText("mapviewtxt"));
 		setTextAlignment(RenderText.ALIGN_LEFT);
 		setTextColor(1, 1, 1, 0);
@@ -1988,7 +1989,7 @@ function mapviewer:draw()
 		renderText(0.5-0.0273, 1-0.065, 0.020, 
 				string.format(g_i18n:getText("MV_Mode6Title"), tostring(countHorseShoesFound), tostring(table.getn(g_currentMission.collectableHorseshoesObject.horseshoes)))
 				);
-		etTextAlignment(RenderText.ALIGN_LEFT);
+		setTextAlignment(RenderText.ALIGN_LEFT);
 		setTextColor(1, 1, 1, 0);
 	end;
 	----
@@ -2045,7 +2046,7 @@ function mapviewer:showOverlayModiName()
 		tY= tY - 0.017;
 		for i=1, col do
 			setTextAlignment(RenderText.ALIGN_LEFT)
-			renderText(tLeft, tY-i*0.017, 0.015, string.format("%s", tmpTable[i].name));	--InputBinding.BIGMAP_Legende)
+			renderText(tLeft, tY-i*0.017, 0.015, string.format("#%d\t%s", tmpTable[i].index, tmpTable[i].name));	--InputBinding.BIGMAP_Legende)
 		end;
 		setTextColor(1, 1, 1, 0);
 	end;
@@ -3077,6 +3078,20 @@ function mapviewer:update(dt)
 	if InputBinding.hasEvent(InputBinding.BIGMAP_TransPlus) then
 		if self.bigmap.mapTransp < 1 and self.mapvieweractive then
 			self.bigmap.mapTransp = self.bigmap.mapTransp + 0.05;
+		end;
+	end;
+	----
+	--	Maximale Transparenz an/aus
+	----
+	----
+	if InputBinding.hasEvent(InputBinding.BIGMAP_MaxTransPlus) then
+		if self.mapvieweractive then
+			self.bigmap.mapTransp = 1;
+		end;
+	end;
+	if InputBinding.hasEvent(InputBinding.BIGMAP_MaxTransMinus) then
+		if self.mapvieweractive then
+			self.bigmap.mapTransp = 0.1;
 		end;
 	end;
 
