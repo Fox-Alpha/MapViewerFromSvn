@@ -16,22 +16,45 @@
     </title>
     <description>
 		<en>
-		<![CDATA[Shows the PDA Map over the hole Screen. Press insert to activate. Key Delete show legend!
-			Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername
-            New in this version, an Infopanel. Open it with mouseclick on an vehicle.
-			You can see the name, the Filllevel and many more informations. 
-			Automatic detect the mapsize.]]>
+<![CDATA[Shows the PDA Map over the hole Screen. Press insert to activate. 
+Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername
+New in this version, an Infopanel. Open it with mouseclick on an vehicle.
+You can see the name, the Filllevel and many more informations. 
+Automatic detect the mapsize.]]>
 		</en>
 		<de>
-		<![CDATA[Zeigt die PDA Map als Vollbild an. 
-			Zeigt die Karte auf dem gesamten Bildschirm an. Mit aktuellen Positionen aller Fahrzeuge und Anbaugeräte.
-			Fix für den LS Patch 2.0
-			Neu: - Weitere Infopanel. Felder, Hofsilos, Verkaufsstationen. Eigenes Overlay zum Hufeisen sammeln.
-			Wieder drinne: Courseplay Anzeige
-			Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.]]>		
+<![CDATA[Vollbild Übersichtskarte zeigt die Positionen der Fahrzeuge und Anbaugeräte An.
+Kompatible zum LS Patch 2.0 und höher sowie das Titanium Addon. 
+Neu: - Weitere Infopanel. Felder, Hofsilos, Verkaufsstationen. Wieder dabei: Courseplay Anzeige
+Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.
+Passt sich automatisch der Kartengröße an]]>		
 		</de>
 	</description>
     <multiplayer supported="true"/>
+    <extraSourceFiles>
+        <sourceFile filename="mapviewer.lua" />
+    </extraSourceFiles>
+	<inputBindings>
+       <input name="BIGMAP_Activate" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_0" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_KeyHelp" 		category="ONFOOT VEHICLE" 	key1="KEY_lctrl KEY_delete" 			key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Legende" 		category="ONFOOT VEHICLE" 	key1="KEY_delete" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_SwitchOverlay" 	category="ONFOOT VEHICLE" 	key1="KEY_end" 							key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_TransPlus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_plus" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_TransMinus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_minus" 					key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_MaxTransPlus" 	category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_plus" 			key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_MaxTransMinus" 	category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_minus" 			key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Teleport" 		category="ONFOOT" 			key1="KEY_rshift"			 			key2="" button="" device="0" mouse="" />
+		<!-- Manuelles Einblenden der einzelnen Overlay -->
+       <input name="BIGMAP_Overlay_1" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_1"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_2" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_2"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_3" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_3"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_4" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_4"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_5" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_5"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_6" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_6"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_7" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_7"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_8" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_8"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_9" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_9"				key2="" button="" device="0" mouse="" />
+    </inputBindings>
 	<l10n>
         <!-- Copyright Meldung -->
         <text name="mapviewtxt">
@@ -44,12 +67,20 @@
 			<de>Mapviewer Legende einblenden</de>	
 		</text>
 		<text name="BIGMAP_SwitchOverlay">
-			<en>Mapviewer Switch the Overlay</en>
-			<de>Mapviewer Overlay wechseln</de>	
+			<en>Mapviewer reset Overlayview</en>
+			<de>Mapviewer Overlay zurücksetzen</de>	
 		</text>
 		<text name="BIGMAP_Activate">
 			<en>Mapviewer View Map</en>
 			<de>Mapviewer Große Kartenansicht</de>	
+		</text>
+		<text name="BIGMAP_MaxTransPlus">
+			<en>Mapviewer sets max Transparence</en>
+			<de>Mapviewer maximale Transparenz</de>	
+		</text>
+		<text name="BIGMAP_MaxTransMinus">
+			<en>Mapviewer sets no Transparence</en>
+			<de>Mapviewer keine Transparenz</de>
 		</text>
 		<text name="BIGMAP_TransPlus">
 			<en>Mapviewer Increase Transparence</en>
@@ -68,9 +99,10 @@
 			<de>Mapvewer Tastenbelegung</de>	
 		</text>
 
+		<!-- Overlay Bezeichnungen -->
 		<text name="BIGMAP_Overlay_1">
-			<en>Show Overlay 1</en>
-			<de>Overlay 1 einblenden</de>	
+			<en>Mapviewer Show Overlay 1</en>
+			<de>Mapviewer Overlay 1 einblenden</de>	
 		</text>
 
 		<text name="BIGMAP_ShowOverlay">
@@ -295,7 +327,7 @@
 		</text>
 		<text name="MV_Mode10Name">
 			<en>Vehicles only (default)</en>
-			<de>Vehicles</de>	
+			<de>Vehicles (Immer an)</de>	
 		</text>
 		<text name="MV_Mode1">
 			<en>MapViewer Overlay Mode 1</en>
@@ -362,16 +394,16 @@
 			<de>MapViewer Overlay Modus 8</de>	
 		</text>
 		<text name="MV_Mode8Name">
-			<en>Mode not available</en>
-			<de>Modus nicht verfügbar</de>	
+			<en>Mode not used</en>
+			<de>Modus nicht belegt</de>	
 		</text>
 		<text name="MV_Mode9">
 			<en>MapViewer Overlay Mode 9</en>
 			<de>MapViewer Overlay Modus 9</de>	
 		</text>
 		<text name="MV_Mode9Name">
-			<en>Mode not available</en>
-			<de>Modus nicht verfügbar</de>	
+			<en>Mode not used</en>
+			<de>Modus nicht belegt</de>	
 		</text>
 		
 		<!-- windrow Übersetzung -->
@@ -658,26 +690,4 @@
 			<de>Fehler: Fehler in Update() - Panel Position an Fahrzeug anpassen, weitere Informationen in der Log.txt</de>	
 		</text>
     </l10n>
-    <extraSourceFiles>
-        <sourceFile filename="mapviewer.lua" />
-    </extraSourceFiles>
-	<inputBindings>
-       <input name="BIGMAP_Activate" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_0" 						key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_KeyHelp" 		category="ONFOOT VEHICLE" 	key1="KEY_lctrl KEY_delete" 			key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Legende" 		category="ONFOOT VEHICLE" 	key1="KEY_delete" 						key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_SwitchOverlay" 	category="ONFOOT VEHICLE" 	key1="KEY_end" 							key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_TransPlus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_plus" 						key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_TransMinus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_minus" 					key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Teleport" 		category="ONFOOT" 			key1="KEY_rshift"			 			key2="" button="" device="0" mouse="" />
-		<!-- Manuelles Einblenden der einzelnen Overlay -->
-       <input name="BIGMAP_Overlay_1" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_1"				key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Overlay_2" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_2"				key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Overlay_3" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_3"				key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Overlay_4" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_4"				key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Overlay_5" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_5"				key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Overlay_6" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_6"				key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Overlay_7" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_7"				key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Overlay_8" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_8"				key2="" button="" device="0" mouse="" />
-       <input name="BIGMAP_Overlay_9" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_9"				key2="" button="" device="0" mouse="" />
-    </inputBindings>
 </modDesc>
