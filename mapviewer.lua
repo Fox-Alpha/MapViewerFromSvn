@@ -1961,6 +1961,25 @@ function mapviewer:draw()
 			end;
 		end;
 		----
+		
+		----
+		-- Horseshoes und Anzahl anzeigen
+		----
+		if self.showHorseShoes and self.useHorseShoes then
+			local countHorseShoesFound = 0;		--	Anzahl der bereits gefundenen Hufeisen
+			
+			countHorseShoesFound = self:showHorseShoesOnMap();
+			
+			setTextColor(1, 1, 1, 1);
+			setTextAlignment(RenderText.ALIGN_CENTER);
+			renderText(0.5-0.0273, 1-0.065, 0.020, 
+					string.format(g_i18n:getText("MV_Mode6Title"), tostring(countHorseShoesFound), tostring(table.getn(g_currentMission.collectableHorseshoesObject.horseshoes)))
+					);
+			setTextAlignment(RenderText.ALIGN_LEFT);
+			setTextColor(1, 1, 1, 0);
+		end;
+		----
+		----
 		-- Test Feld STatus
 		----
 		-- if self.mapvieweractive and self.mv_FoliageStateOverlays ~= nil and self.mv_FoliageStateOverlays ~= 0 then
@@ -1975,24 +1994,6 @@ function mapviewer:draw()
 	else
 		g_currentMission:addHelpButtonText(g_i18n:getText("BIGMAP_Activate"), InputBinding.BIGMAP_Activate);
 	end;
-	
-	----
-	-- Horseshoes und Anzahl anzeigen
-	----
-	if self.showHorseShoes and self.useHorseShoes then
-		local countHorseShoesFound = 0;		--	Anzahl der bereits gefundenen Hufeisen
-		
-		countHorseShoesFound = self:showHorseShoesOnMap();
-		
-		setTextColor(1, 1, 1, 1);
-		setTextAlignment(RenderText.ALIGN_CENTER);
-		renderText(0.5-0.0273, 1-0.065, 0.020, 
-				string.format(g_i18n:getText("MV_Mode6Title"), tostring(countHorseShoesFound), tostring(table.getn(g_currentMission.collectableHorseshoesObject.horseshoes)))
-				);
-		setTextAlignment(RenderText.ALIGN_LEFT);
-		setTextColor(1, 1, 1, 0);
-	end;
-	----
 
 	----
 	-- Eigenen Namen auf PDA anzeigen
