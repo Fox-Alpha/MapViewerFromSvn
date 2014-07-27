@@ -277,15 +277,11 @@ function mapviewer:initMapViewer()
 	
 	local _mods = g_currentMission.missionInfo.map.id;
 
-	--for i=1, table.getn(_mods) do
-		beg, ende = string.find(string.lower(_mods), "pdlc_titaniumaddon");
-		
-		if beg ~= nil and ende ~= nil then
-			print(string.format("|| %s || Westbridge Karte wird verwendet / TitaniumAddon ||", g_i18n:getText("mapviewtxt")));
-		--else
-			--print(string.format("|| %s || %s (%s/%s)||", g_i18n:getText("mapviewtxt"), _mods, tostring(beg), tostring(ende)));
-		end;
-	--end;
+	beg, ende = string.find(string.lower(_mods), "pdlc_titaniumaddon");
+	
+	if beg ~= nil and ende ~= nil then
+		print(string.format("|| %s || Westbridge Karte wird verwendet / TitaniumAddon ||", g_i18n:getText("mapviewtxt")));
+	end;
 	_mods = nil;
 			self.useAddonMap = true;
 	----
@@ -390,9 +386,6 @@ function mapviewer:initMapViewer()
 		print(string.format("self.modBaseDirectory: %s", tostring(self.modBaseDirectory)));
 		print(string.format("Overlay  : %s", tostring(self.bigmap.OverlayId.ovid)));
 		print(string.format("----"));
-		--print(string.format("--Tip Triggers--"));
-		--self:listTipTriggers();
-		--print(string.format("--Tip Triggers--"));
 	end;
 	----
 
@@ -590,7 +583,6 @@ function mapviewer:initMapViewer()
 	
 	----
 	--	Suchen ob RendAField vorhanden ist
-	--print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_CheckForCoursePlay")));
 	----
 	print(string.format("|| %s || Suche nach rent A Field Mod ||", g_i18n:getText("mapviewtxt")));
 	for i=1, table.getn(mods) do
@@ -598,7 +590,6 @@ function mapviewer:initMapViewer()
 		if beg ~= nil and ende ~= nil then
 			self.useRentAField = true;
 			rafid = i;
-			--print(string.format("|| %s || %s ||", g_i18n:getText("mapviewtxt"), string.format(g_i18n:getText("Rent A Field Mod Gefunden"), mods[rafid].title, mods[rafid].version)));
 			print(string.format("|| %s || %s | %s | %s ||", 
 					g_i18n:getText("mapviewtxt"), 
 					"Rent A Field Mod Gefunden", 
@@ -671,7 +662,6 @@ function mapviewer:initMapViewer()
 	----
 	-- Array für TipTrigger anzeige
 	----
-    --self.useTipTrigger = true;
 	self.bigmap.iconTipTrigger = {};
 	self.bigmap.iconTipTrigger.Icon = {};
     self.bigmap.iconTipTrigger.Icon.OverlayId = nil;
@@ -1023,7 +1013,6 @@ function mapviewer:checkLocalFnumFile()
 		print(string.format("|| DEBUG checkLocalFnumFile() - temp|| %s ||", temp))
 		print(string.format("|| DEBUG checkLocalFnumFile()|| %s ||", g_currentMission.missionInfo.map.title))
 		print("----");
-		--print(string.format("|| DEBUG checkLocalFnumFile()|| %s ||"))
 	end;
 
 	return isLocal, fileName;
@@ -1058,7 +1047,6 @@ function mapviewer:checkLocalPoIFile()
 		print(string.format("|| DEBUG checkLocalPoIFile() - temp|| %s ||", temp))
 		print(string.format("|| DEBUG checkLocalPoIFile()|| %s ||", g_currentMission.missionInfo.map.title))
 		print("----");
-		--print(string.format("|| DEBUG checkLocalPoIFile()|| %s ||"))
 	end;
 
 	return isLocal, fileName;
@@ -1084,9 +1072,8 @@ function mapviewer:keyEvent(unicode, sym, modifier, isDown)
     ----
 	if isDown and sym == Input.KEY_d and bitAND(modifier, Input.MOD_ALT) > 0  then
 		print("---- MapViwer Debug aktiviert ----");
-		--self.Debug.active = not self.Debug.active;
-		 g_currentMission:addWarning("Ausgabe von g_currentMission in Log. Dies kann einen moment dauern", 0.018, 0.033);
-		print(table.show(g_currentMission, "g_currentMission"));
+		-- g_currentMission:addWarning("Ausgabe von g_currentMission in Log. Dies kann einen moment dauern", 0.018, 0.033);
+		-- print(table.show(g_currentMission, "g_currentMission"));
 		print("------");
 	end;
 	----
@@ -1310,8 +1297,6 @@ function mapviewer:GetFieldInfo(field)
 				table.insert(fieldInfo,string.format("- %s: %s ", g_i18n:getText("RAFIS_Costs"), g_i18n:formatMoney(field.fieldPrice / 25)));
 			end;
 		end;
-		
-		-- print(string.format("Rent A Field Mod: %s ", tostring(field.rentByPlayer)) .. string.format("||    %s: %s ", g_i18n:getText("RAFIS_Costs"), g_i18n:formatMoney(field.fieldPrice / 25)));
 	end;
 	
 	return fieldInfo;
@@ -1568,7 +1553,6 @@ function mapviewer:GetVehicleInfo(vehicle)
 			----
 			if vehicle.isControlled then
 				local tmp;
-				--tmp = g_i18n:getText("MV_Player") .. string.sub(Utils.getNoNil(vehicle.controllerName, g_i18n:getText("MV_EmptyPlayer")), 0, 20);
 				tmp = g_i18n:getText("MV_Player") .. string.sub(vehicle.controllerName, 0, 20);
 				if vehicle.isHired then 
 					tmp = tmp .. " [H]"; 
@@ -1692,15 +1676,15 @@ function mapviewer:showMapViewerKeys()
 	
 	tX = 0.01;	-- Abstand zum Linken Bildrand
 	tY = 0.92;	-- Abstand zum oberen Bildrand
-	tHeight = 6*0.018;	-- Höhe des Text Hintergrunds
+	tHeight = 8*0.018;	-- Höhe des Text Hintergrunds
 	tTop = 0.92 - tHeight;	-- Obere linke Ecke des Hintergrunds
 	tLeft = 0.018;	-- Begin des Textes links
-	tRight = (self.bigmap.InfoPanel.background.width)*1.75 ;	-- Begin des Textes links
+	tRight = (self.bigmap.InfoPanel.background.width)*2 ;	-- Begin des Textes links
 	tyBottom = tY - self.bigmap.InfoPanel.top.closebar.height - tHeight;
 	
-	renderOverlay(self.bigmap.InfoPanel.top.closebar.OverlayId, tX, tY, self.bigmap.InfoPanel.top.closebar.width*1.75, self.bigmap.InfoPanel.top.closebar.height);
-	renderOverlay(self.bigmap.InfoPanel.background.OverlayId, tX, tTop, self.bigmap.InfoPanel.background.width*1.75, tHeight);
-	renderOverlay(self.bigmap.InfoPanel.bottom.closebar.OverlayId, tX, tyBottom, self.bigmap.InfoPanel.bottom.closebar.width*1.75, self.bigmap.InfoPanel.bottom.closebar.height);
+	renderOverlay(self.bigmap.InfoPanel.top.closebar.OverlayId, tX, tY, self.bigmap.InfoPanel.top.closebar.width*2, self.bigmap.InfoPanel.top.closebar.height);
+	renderOverlay(self.bigmap.InfoPanel.background.OverlayId, tX, tTop, self.bigmap.InfoPanel.background.width*2, tHeight);
+	renderOverlay(self.bigmap.InfoPanel.bottom.closebar.OverlayId, tX, tyBottom, self.bigmap.InfoPanel.bottom.closebar.width*2, self.bigmap.InfoPanel.bottom.closebar.height);
 
 	setTextColor(0, 0, 0, 1);
 
@@ -1709,19 +1693,23 @@ function mapviewer:showMapViewerKeys()
 	--	Overlay Tasten
 	----
 	setTextAlignment(RenderText.ALIGN_LEFT)
-	renderText(tLeft, tY-0.016, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_Legende")));	--InputBinding.BIGMAP_Legende)
-	renderText(tLeft, tY-0.033, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_TransPlus")));	--InputBinding.BIGMAP_Legende)
-	renderText(tLeft, tY-0.049, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_TransMinus")));	--InputBinding.BIGMAP_Legende)
-	renderText(tLeft, tY-0.066, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_SwitchOverlay")));	--InputBinding.BIGMAP_Legende)
-	renderText(tLeft, tY-0.083, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_Teleport")));	--InputBinding.BIGMAP_Legende)
-	renderText(tLeft, tY-0.100, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_ShowOverlay")));
+	renderText(tLeft, tY-0.016, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_Legende")));
+	renderText(tLeft, tY-0.033, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_TransPlus")));
+	renderText(tLeft, tY-0.049, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_TransMinus")));
+	renderText(tLeft, tY-0.066, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_MaxTransPlus")));
+	renderText(tLeft, tY-0.083, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_MaxTransMinus")));
+	renderText(tLeft, tY-0.100, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_SwitchOverlay")));
+	renderText(tLeft, tY-0.117, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_Teleport")));
+	renderText(tLeft, tY-0.134, 0.015, string.format("%s ->", g_i18n:getText("BIGMAP_ShowOverlay")));
 	setTextAlignment(RenderText.ALIGN_RIGHT)
-	renderText(tRight, tY-0.016, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_Legende].keys1))));
-	renderText(tRight, tY-0.033, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_TransPlus].keys1))));
-	renderText(tRight, tY-0.049, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_TransMinus].keys1))));
-	renderText(tRight, tY-0.066, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_SwitchOverlay].keys1))));
-	renderText(tRight, tY-0.083, 0.015, string.format("%s", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_Teleport].keys1))));
-	renderText(tRight, tY-0.100, 0.015, string.format("NumPad 1-9"));
+	renderText(tRight, tY-0.016, 0.015, string.format("%s  ", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_Legende].keys1))));
+	renderText(tRight, tY-0.033, 0.015, string.format("%s  ", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_TransPlus].keys1))));
+	renderText(tRight, tY-0.049, 0.015, string.format("%s  ", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_TransMinus].keys1))));
+	renderText(tRight, tY-0.066, 0.015, string.format("%s  ", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_MaxTransPlus].keys1))));
+	renderText(tRight, tY-0.083, 0.015, string.format("%s  ", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_MaxTransMinus].keys1))));
+	renderText(tRight, tY-0.100, 0.015, string.format("%s  ", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_SwitchOverlay].keys1))));
+	renderText(tRight, tY-0.117, 0.015, string.format("%s  ", tostring(KeyboardHelper.getKeyNames(InputBinding.actions[InputBinding.BIGMAP_Teleport].keys1))));
+	renderText(tRight, tY-0.134, 0.015, string.format("Strg Rechts NumPad 1-9  "));
 	setTextAlignment(RenderText.ALIGN_LEFT)
 	setTextColor(1, 1, 1, 0);
 end;
@@ -2031,16 +2019,16 @@ function mapviewer:showOverlayModiName()
 	local tY, tX, tLeft, tTop, tHeight, yHelp;
 	if col > 0 then
 		tX = 0.01;	-- Abstand zum Linken Bildrand
-		tY = 0.8;	-- Abstand zum oberen Bildrand
+		tY = 0.75;	-- Abstand zum oberen Bildrand
 		tHeight = col*0.018+0.016;	-- Höhe des Text Hintergrunds
-		tTop = 0.8 - tHeight;	-- Obere linke Ecke des Hintergrunds
+		tTop = 0.75 - tHeight;	-- Obere linke Ecke des Hintergrunds
 		tLeft = 0.018;	-- Begin des Textes links
-		tRight = (self.bigmap.InfoPanel.background.width)*1.75 ;	-- Begin des Textes links
+		tRight = (self.bigmap.InfoPanel.background.width)*1.25 ;	-- Begin des Textes links
 		tyBottom = tY - self.bigmap.InfoPanel.top.closebar.height - tHeight;
 
-		renderOverlay(self.bigmap.InfoPanel.top.closebar.OverlayId, tX, tY, self.bigmap.InfoPanel.top.closebar.width*1.75, self.bigmap.InfoPanel.top.closebar.height);
-		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, tX, tTop, self.bigmap.InfoPanel.background.width*1.75, tHeight);
-		renderOverlay(self.bigmap.InfoPanel.bottom.closebar.OverlayId, tX, tyBottom, self.bigmap.InfoPanel.bottom.closebar.width*1.75, self.bigmap.InfoPanel.bottom.closebar.height);
+		renderOverlay(self.bigmap.InfoPanel.top.closebar.OverlayId, tX, tY, self.bigmap.InfoPanel.top.closebar.width*1.25, self.bigmap.InfoPanel.top.closebar.height);
+		renderOverlay(self.bigmap.InfoPanel.background.OverlayId, tX, tTop, self.bigmap.InfoPanel.background.width*1.25, tHeight);
+		renderOverlay(self.bigmap.InfoPanel.bottom.closebar.OverlayId, tX, tyBottom, self.bigmap.InfoPanel.bottom.closebar.width*1.25, self.bigmap.InfoPanel.bottom.closebar.height);
 		
 		setTextColor(0, 0, 0, 1);
 		renderText(tLeft, tY-1*0.017, 0.015, "Aktive Overlays");
@@ -2232,15 +2220,7 @@ function mapviewer:showMapHotspotsOnMap()
 			end;
 			setTextAlignment(RenderText.ALIGN_LEFT);
 			setTextColor(1, 1, 1, 0);
-
-			-- Ausgabe der Hotspot Positionen und weiterer Infos
-			-- if self.Debug.printHotSpots then
-				-- print(string.format("Debug MapHotspots: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, self.hsPosX, self.hsPosY, g_currentMission.missionPDA.hotspots[j].name));
-			-- end;
 		end;
-		-- if self.Debug.printHotSpots then
-			-- self.Debug.printHotSpots = false;
-		-- end;
 	end;
 end;
 ----
@@ -2278,14 +2258,9 @@ function mapviewer:showFieldNumbersOnMap()
 			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
 			
 			setTextColor(1, 1, 1, 1);
-			--setTextAlignment(RenderText.ALIGN_CENTER);
 
 			----
 			-- Feldnummern Positionen
-			----
-			--	TODO: Position der angezeigten Feldnummern
-			----
-			--	BUG: Feldnummerindex um 1 versetzt
 			----
 			if g_currentMission.missionPDA.hotspots[j].showName then
 				if self.useDefaultMap or self.useAddonMap then 		-- Standard Karte
@@ -2309,7 +2284,6 @@ function mapviewer:showFieldNumbersOnMap()
 						setTextColor(bc[1], bc[2], bc[3], bc[4]);
 					end;
 				end;
-				--renderOverlay(self.hsOverlayId, self.hsPosX, self.hsPosY, self.hsWidth, self.hsHeight);
 				renderText(hsPosX, hsPosY, 0.032, tostring(g_currentMission.missionPDA.hotspots[j].name));
 
 				setTextAlignment(RenderText.ALIGN_LEFT);
@@ -2317,7 +2291,6 @@ function mapviewer:showFieldNumbersOnMap()
 
 				if self.Debug.active and self.Debug.printFieldNumbers then
 					print(table.show(g_currentMission.fieldDefinitionBase.fieldDefsByFieldNumber[tonumber(g_currentMission.missionPDA.hotspots[j].name)], "fieldDef"));
-					--print(string.format("Debug Feldnummern: HS X1 %.2f | HS Y1 %.2f | mapHS X1 %.2f | mapHS Y1 %.2f | name: %s", g_currentMission.missionPDA.hotspots[j].xMapPos, g_currentMission.missionPDA.hotspots[j].yMapPos, hsPosX, hsPosY, g_currentMission.missionPDA.hotspots[j].name));
 				end;
 			end;
 		end;
@@ -2603,14 +2576,13 @@ function mapviewer:showMaplegende()
 								self.l_PosY, 
 								self.bigmap.attachmentsTypes.width,
 								self.bigmap.attachmentsTypes.height);
-						local beg, ende;
-						beg, ende = string.find(VehicleTypeUtil.vehicleTypes[k].name, "pdlc_[a-zA-Z]+.");
-						if beg ~= nil and ende ~= nil then
-							renderText(LegTxtPosX, self.l_PosY, 0.016, string.sub(VehicleTypeUtil.vehicleTypes[k].name, ende+1));
-						else
-							renderText(LegTxtPosX, self.l_PosY, 0.016, tostring(VehicleTypeUtil.vehicleTypes[k].name));
-						end;
-					--renderText(LegTxtPosX, self.l_PosY, 0.016, tostring(VehicleTypeUtil.vehicleTypes[k].name));
+					local beg, ende;
+					beg, ende = string.find(VehicleTypeUtil.vehicleTypes[k].name, "pdlc_[a-zA-Z]+.");
+					if beg ~= nil and ende ~= nil then
+						renderText(LegTxtPosX, self.l_PosY, 0.016, string.sub(VehicleTypeUtil.vehicleTypes[k].name, ende+1));
+					else
+						renderText(LegTxtPosX, self.l_PosY, 0.016, tostring(VehicleTypeUtil.vehicleTypes[k].name));
+					end;
 				end;
 				self.l_PosY = self.l_PosY - 0.020;
 				
@@ -2743,8 +2715,6 @@ function mapviewer:update(dt)
 	-- Auf Taste zum Overlay wechseln reagieren
 	----
 	if self.mapvieweractive and InputBinding.hasEvent(InputBinding.BIGMAP_SwitchOverlay) then
-		--self.numOverlay = self.numOverlay+1;
-
 		----
 		-- Alle Overlays deaktivieren
 		----
@@ -2761,54 +2731,6 @@ function mapviewer:update(dt)
 		end;
 		self.Overlays.active["mode10"] = true;
 		----
-
-		-- if self.numOverlay == 1 then	--nur Feldnummernhotspots und Besitzstatus
-			-- self.showHotSpots = true;
-			-- self.showTipTrigger = true;
-		-- end;
-		
-		-- if self.numOverlay == 2 then	--nur Feldnummern
-			-- self.showFNum = true;
-			-- self.showHotSpots = false;
-		-- end;
-		
-		-- if self.numOverlay == 3 then	--nur PoI
-            -- self.showPoi = true;
-			-- self.showHotSpots = false;
-		-- end;
-		
-		-- if self.numOverlay == 4 then	--Poi und Nummern
-			-- self.showHotSpots = false;
-			-- self.showPoi = true;
-			-- self.showFNum = true;
-		-- end;
-		
-		-- if self.numOverlay == 5 and self.useHorseShoes then	--HorseShoes anzeigen
-            -- self.showHorseShoes = true;
-		-- elseif self.numOverlay == 5 and not self.useHorseShoes then
-			-- self.numOverlay = self.numOverlay +1;
-		-- end;
-		
-		-- if self.numOverlay == 6 and self.useCoursePlay then	--Courseplay vorhanden, dann anzeigen
-            -- self.showCP = true;
-		-- elseif self.numOverlay == 6 and not self.useCoursePlay then
-			-- self.numOverlay = self.numOverlay +1;
-		-- end;
-		
-		-- if self.numOverlay > 6 then
-			-- self.numOverlay = 0;		--Alles aus
-			-- self.showTipTrigger = false;
-			-- self.showPoi = false;
-			-- self.showFNum = false;
-            -- self.showCP = false;
-            -- self.showHorseShoes = false;
-			-- self.showHotSpots = false;
-		-- end;
-
-		-- if self.Debug.active and self.numOverlay > 0 then
-			-- print("Debug Key BIGMAP_SwitchOverlay: ");
-            -- print(string.format("|| %s || %s : %s ||", g_i18n:getText("mapviewtxt"), g_i18n:getText("MV_Mode" .. self.numOverlay), g_i18n:getText("MV_Mode".. self.numOverlay .."Name")));
-		-- end;
 	end;
 	
 	----
@@ -2981,9 +2903,6 @@ function mapviewer:update(dt)
 	if self.mapvieweractive and self.useTipTrigger then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_1) then
 			self.showTipTrigger = not self.showTipTrigger;
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_1")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			-- print(string.format("Overlay TipTrigger Aktiv? %s", tostring(self.showTipTrigger)));
 			self.Overlays.active["mode1"] = self.showTipTrigger;
 		end;
 	end;
@@ -2991,9 +2910,6 @@ function mapviewer:update(dt)
 	if self.mapvieweractive and self.useFNum then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_2) then
 			self.showFNum = not self.showFNum;
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_2")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			-- print(string.format("Overlay Feldnummern Aktiv? %s", tostring(self.showFNum)));
 			self.Overlays.active["mode2"] = self.showFNum;
 		end;
 	end;
@@ -3001,9 +2917,6 @@ function mapviewer:update(dt)
 	if self.mapvieweractive and self.usePoi then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_3) then
 			self.showPoi = not self.showPoi;
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_3")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			-- print(string.format("Overlay POI Aktiv? %s", tostring(self.showPoi)));
 			self.Overlays.active["mode3"] = self.showPoi;
 		end;
 	end;
@@ -3011,9 +2924,6 @@ function mapviewer:update(dt)
 	if self.mapvieweractive and self.useHotSpots then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_4) then
 			self.showHotSpots = not self.showHotSpots;
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_4")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			-- print(string.format("Overlay HotSpots Aktiv? %s", tostring(self.showHotSpots)));
 			self.Overlays.active["mode4"] = self.showHotSpots;
 		end;
 	end;
@@ -3021,9 +2931,6 @@ function mapviewer:update(dt)
 	if self.mapvieweractive and self.useCoursePlay then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_5) then
             self.showCP = not self.showCP;
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_5")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			-- print(string.format("Overlay CoursePlay Aktiv? %s", tostring(self.showCP)));
 			self.Overlays.active["mode5"] = self.showCP;
 		end;
 	end;
@@ -3031,9 +2938,6 @@ function mapviewer:update(dt)
 	if self.mapvieweractive and self.useHorseShoes then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_6) then
             self.showHorseShoes = not self.showHorseShoes;
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_6")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			-- print(string.format("Overlay Hufeisen Aktiv? %s", tostring(self.showHorseShoes)));
 			self.Overlays.active["mode6"] = self.showHorseShoes;
 		end;
 	end;
@@ -3041,28 +2945,20 @@ function mapviewer:update(dt)
 	if self.mapvieweractive and self.useFieldStatus then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_7) then
 			self.showFieldStatus = not self.showFieldStatus;
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_7")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			-- print(string.format("Overlay Aktiv? %s", tostring(self.showFieldStatus)));
 			self.Overlays.active["mode7"] = self.showFieldStatus;
 		end;
 	end;
 
+	----
+	--	Overlay 8 + 9 zur Zeit nicht verwendet
+	----
 	if self.mapvieweractive then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_8) then
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_8")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			--print(string.format("Overlay Aktiv? %s", tostring(self.)));
-			--self.Overlays.active["mode8"] = self.;
 		end;
 	end;
 
 	if self.mapvieweractive then
 		if InputBinding.hasEvent(InputBinding.BIGMAP_Overlay_9) then
-			-- print(string.format("%s ->", g_i18n:getText("BIGMAP_Overlay_9")));
-			-- print(string.format("MapViewer Aktiv? %s", tostring(self.mapvieweractive)));
-			--print(string.format("Overlay Aktiv? %s", tostring(self.)));
-			--self.Overlays.active["mode9"] = self.;
 		end;
 	end;
 	----
