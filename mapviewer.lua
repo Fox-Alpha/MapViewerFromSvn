@@ -2111,15 +2111,20 @@ function mapviewer:showHorseShoesOnMap()
 			for i=1, table.getn(HShoes) do
 				local bottleFound=string.byte(g_currentMission.missionStats.foundHorseshoes, i);
 				if bottleFound==48 then
+					--[[Im Multiplayer scheint es hier zu einem Fehler in der Positionsbestimmung zu kommen]]
 					self.posX, self.posY, self.posZ=getWorldTranslation(HShoes[i].horseshoeTriggerId);
-					self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
-					self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
-					
-					renderOverlay(self.bigmap.iconHorseShoes.Icon.OverlayId,
-								self.buttonX-self.bigmap.iconHorseShoes.width/2, 
-								self.buttonZ-self.bigmap.iconHorseShoes.height/2, 
-								self.bigmap.iconHorseShoes.width, 
-								self.bigmap.iconHorseShoes.height);
+					if self.posX ~= nil and self.posZ ~= nil then
+						self.buttonX = ((((self.bigmap.mapDimensionX/2)+self.posX)/self.bigmap.mapDimensionX)*self.bigmap.mapWidth);
+						self.buttonZ = ((((self.bigmap.mapDimensionY/2)-self.posZ)/self.bigmap.mapDimensionY)*self.bigmap.mapHeight);
+						
+						renderOverlay(self.bigmap.iconHorseShoes.Icon.OverlayId,
+									self.buttonX-self.bigmap.iconHorseShoes.width/2, 
+									self.buttonZ-self.bigmap.iconHorseShoes.height/2, 
+									self.bigmap.iconHorseShoes.width, 
+									self.bigmap.iconHorseShoes.height);
+					else	--Ausgabe des Index undder fehlerhaften Position
+						print("Die Position des Hufeisen #%s kommt nicht bestimmt werden. (posX: %s / posZ: %s)", tostring(i), tostring(posX), tostring(posZ));
+					end;
 				else
 					countHorseShoesFound = countHorseShoesFound+1;
 				end;
@@ -2267,6 +2272,7 @@ function mapviewer:showFieldNumbersOnMap()
 			local bc = g_currentMission.missionPDA.hotspots[j].baseColor;
 			
 			setTextColor(1, 1, 1, 1);
+			setTextBold(false)
 
 			----
 			-- Feldnummern Positionen
@@ -2286,8 +2292,8 @@ function mapviewer:showFieldNumbersOnMap()
 				hsPosX = (hsPosX/self.bigmap.mapDimensionX)-(hsWidth/2);
 				hsPosY = 1-(hsPosY/self.bigmap.mapDimensionY)-(hsHeight/2);
 
-				if self.useRentAField and self.showFieldStatus then
-					if g_currentMission.fieldDefinitionBase.fieldDefsByFieldNumber[tonumber(g_currentMission.missionPDA.hotspots[j].name)].rentByPlayer then --~= nil then
+				if self.showFieldStatus then
+					if self.useRentAField and g_currentMission.fieldDefinitionBase.fieldDefsByFieldNumber[tonumber(g_currentMission.missionPDA.hotspots[j].name)].rentByPlayer then --~= nil then
 						setTextColor(0, 0, 1, 1);
 					else
 						setTextColor(bc[1], bc[2], bc[3], bc[4]);
@@ -2297,6 +2303,7 @@ function mapviewer:showFieldNumbersOnMap()
 
 				setTextAlignment(RenderText.ALIGN_LEFT);
 				setTextColor(1, 1, 1, 0);
+				setTextBold(false)
 
 				if self.Debug.active and self.Debug.printFieldNumbers then
 					print(table.show(g_currentMission.fieldDefinitionBase.fieldDefsByFieldNumber[tonumber(g_currentMission.missionPDA.hotspots[j].name)], "fieldDef"));
