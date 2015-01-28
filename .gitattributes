@@ -1,0 +1,54 @@
+* text=auto !eol
+/ svnc_tsvn_003aprojectlanguage=0x401
+/Panel svnc_tsvn_003aprojectlanguage=1025
+Panel/Info_Panel_bg.dds -text
+Panel/Info_Panel_bubble_bottomleft.dds -text
+Panel/Info_Panel_bubble_bottommid.dds -text
+Panel/Info_Panel_bubble_bottomright.dds -text
+Panel/Info_Panel_bubble_topleft.dds -text
+Panel/Info_Panel_bubble_topmid.dds -text
+Panel/Info_Panel_bubble_topright.dds -text
+Panel/Info_Panel_closebar_bottom.dds -text
+Panel/Info_Panel_closebar_top.dds -text
+/gfx svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
+gfx/background.dds -text
+gfx/maplegende.dds -text
+gfx/mapviewer.dds -text
+/icons svnc_tsvn_003aprojectlanguage=1025 svnc_bugtraq_003anumber=true
+icons/1.dds -text
+icons/10.dds -text
+icons/11.dds -text
+icons/2.dds -text
+icons/3.dds -text
+icons/4.dds -text
+icons/5.dds -text
+icons/6.dds -text
+icons/7.dds -text
+icons/8.dds -text
+icons/9.dds -text
+icons/bottle.dds -text
+icons/combine.dds -text
+icons/courseplay.dds -text
+icons/courseplay_single.dds -text
+icons/critical.dds -text
+icons/eigenerspieler.dds -text
+icons/feldgeraet.dds -text
+icons/hufeisen.dds -text
+icons/isBroken.dds -text
+icons/milktruck.dds -text
+icons/mpspieler.dds -text
+icons/other.dds -text
+icons/tractor.dds -text
+icons/tractorctrl.dds -text
+icons/warning.dds -text
+/mapviewer.lua -text svn_keywords
+/mapviewer.xml -text svn_keywords
+/mapviewer_overlay_config.xml -text svn_keywords=Author+Date+Id+Rev+URL
+/modDesc.xml -text svn_keywords
+/mv_fnum_hagenstedt.dds -text
+/mv_fnum_westbridge_hills.dds -text
+/mv_pda_hagenstedt.dds -text
+/mv_pda_westbridge_hills.dds -text
+/mv_poi_hagenstedt.dds -text
+/mv_poi_westbridge_hills.dds -text
+/xmllog.bat svneol=CRLF#text/plain eol=crlf

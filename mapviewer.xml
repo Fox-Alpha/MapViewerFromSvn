@@ -1,0 +1,82 @@
+﻿<!--
+-- Revision der letzten Änderung :     $Rev$
+-- Author der letzten Änderung   :     $Author$
+-- Date der letzten Änderung     :     $Date$
+-- $URL$
+-->
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<mapviewer ver="v0.80">
+	<map mapWidth="1" mapHeight="1" mapDimensionX="2048" mapDimensionY="2048">
+		<Legende file="gfx/background.dds" width="0.185" height="0.125" posX="0.0244" posY="0.15" >
+			<LegendeTop file="Panel/Info_Panel_closebar_top.dds" width="0.15" height="0.0078125" />
+			<LegendeBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.15" />
+			<LegendeBottom file="Panel/Info_Panel_closebar_bottom.dds" width="0.15" height="0.0078125" />
+		</Legende>
+		
+		<!-- Grafik definitionen für das Panel -->
+		<Infopanel >
+			<!-- Geschlossener Balken -->
+			<InfoPanelTop>
+				<CloseBarTop file="Panel/Info_Panel_closebar_top.dds" width="0.15" height="0.0078125" />
+				<BubbleTopLeft file="Panel/Info_Panel_bubble_topleft.dds" width="0.15" height="0.03125"/>
+				<BubbleTopMid file="Panel/Info_Panel_bubble_topmid.dds" width="0.15" height="0.03125"/>
+				<BubbleTopRight file="Panel/Info_Panel_bubble_topright.dds" width="0.15" height="0.03125"/>
+			</InfoPanelTop>
+			<!-- Hintergrund für Text -->
+			<InfoPanelBackground file="Panel/Info_Panel_bg.dds" width="0.15" height="0.125" />
+			<!-- Abschluss mit sprechblase -->
+			<InfoPanelBottom>
+				<CloseBarBottom file="Panel/Info_Panel_closebar_bottom.dds" width="0.15" height="0.0078125" />
+				<BubbleBottomLeft file="Panel/Info_Panel_bubble_bottomleft.dds" width="0.15" height="0.03125"/>
+				<BubbleBottomMid file="Panel/Info_Panel_bubble_bottommid.dds" width="0.15" height="0.03125"/>
+				<BubbleBottomRight file="Panel/Info_Panel_bubble_bottomright.dds" width="0.15" height="0.03125"/>
+			</InfoPanelBottom>
+			
+			<!-- Symbole für Hinweise im Paneltext -->
+			<InfoPanelHintIcons>
+				<HintWarning file="icons/warning.dds" width="0.125" height="0.125" />
+				<HintCritical file="icons/critical.dds" width="0.125" height="0.125" />
+			</InfoPanelHintIcons>
+			
+		</Infopanel>
+		<!--  -->
+
+		<!-- Symbole für Spieler, Fahrzeuge und Geräte -->
+		<icons>
+            <iconPlayer  width="0.01" height="0.01" file="icons/eigenerspieler.dds" />
+			<iconMPPlayer  width="0.01" height="001" file="icons/mpspieler.dds" />
+			<iconSteerable  width="0.01" height="0.01" file="icons/tractor.dds" />
+			<iconSteerableCtrl  width="0.01" height="0.01" file="icons/tractorctrl.dds" />
+            <iconMilktruck  width="0.01" height="0.01" file="icons/milktruck.dds" />
+			<iconAttachmentFront  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
+			<iconAttachmentRear  width="0.01" height="0.01" file="icons/feldgeraet.dds" />
+			<iconIsBroken  width="0.01" height="0.01" file="icons/isBroken.dds" />
+			<iconHorseShoe  width="0.018" height="0.015" file="icons/hufeisen.dds" /> 
+            
+            <iconSteerabletractor  width="0.01" height="0.01" file="icons/tractor.dds" />
+            <iconSteerablecombine  width="0.01" height="0.01" file="icons/combine.dds" />
+            <iconSteerableother  width="0.01" height="0.01" file="icons/tractor.dds" />
+			
+            <iconCoursePlay  width="0.01" height="0.01" file="icons/courseplay.dds" />
+            <iconCoursePlaySingle  width="0.01" height="0.01" file="icons/courseplay_single.dds" />
+            
+            <!-- 
+				"waterTrailer", "cultivator_animated", "selfPropelledPotatoHarvester", "mower_animated", "selfPropelledSprayer", "baleLoader", "milktruck", "trailer_mouseControlled", "baler", "dynamicMountAttacherImplement", "cart", "selfPropelledMixerWagon", "trailer", "plough", "sowingMachine_animated", "trafficVehicle", "implement_animated", "telehandler", "fuelTrailer", "ridingMower", "attachableCombine", "wheelLoader", "dynamicMountAttacherTrailer", "defoliator_animated", "implement", "tractor_cylindered", "windrower", "forageWagon", "sowingMachine", "tractor", "manureBarrel", "mower", "manureSpreader", "sprayer", "shovel_animated", "sprayer_mouseControlled", "cultivator", "sprayer_animated", "cutter_animated", "tractor_articulatedAxis", "cutter", "mixerWagon", "combine_cylindered", "strawBlower", "selfPropelledMower", "combine", "frontloader", "tedder", "shovel"
+			-->
+            <iconAttachmentcutter  width="0.01" height="0.01" file="icons/1.dds" />
+            <iconAttachmenttrailer  width="0.01" height="0.01" file="icons/2.dds" />
+            <iconAttachmentsowingMachine  width="0.01" height="0.01" file="icons/3.dds" />
+            <iconAttachmentplough  width="0.01" height="0.01" file="icons/4.dds" />
+            <iconAttachmentsprayer  width="0.01" height="0.01" file="icons/5.dds" />
+            <iconAttachmentbaler  width="0.01" height="0.01" file="icons/6.dds" />
+            <iconAttachmentbaleloader  width="0.01" height="0.01" file="icons/6.dds" />
+            <iconAttachmentcultivator  width="0.01" height="0.01" file="icons/7.dds" />
+            <iconAttachmenttedder  width="0.01" height="0.01" file="icons/8.dds" />
+            <iconAttachmentwindrower  width="0.01" height="0.01" file="icons/9.dds" />
+            <iconAttachmentshovel  width="0.01" height="0.01" file="icons/10.dds" />
+            <iconAttachmentmover  width="0.01" height="0.01" file="icons/11.dds" />
+            <iconAttachmentother  width="0.01" height="0.01" file="icons/other.dds" />
+		</icons>
+		<!--  -->
+	</map>
+</mapviewer>

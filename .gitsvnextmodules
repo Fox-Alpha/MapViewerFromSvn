@@ -1,0 +1,8 @@
+[submodule "Docs"]
+	path = Docs
+	owner = /
+	url = ^/Docs/v0.8.0
+	branch = /
+	fetch = :refs/remotes/git-svn
+	remote = svn
+	type = dir

@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="14">
+<!-- Revision der letzten Änderung :     $Rev$ -->
+<!--<modDesc descVersion="9">-->
+<!-- Author der letzten Änderung   :     $Author$ -->
+<!-- Date der letzten Änderung     :     $Date$ -->
+<!-- $URL$ -->
+    <author>Fox-Alpha</author>
+    <version>V0.8 LS2013</version>
+	<iconFilename>gfx/mapviewer.dds</iconFilename>
+	<xmlFilename>mapviewer.xml</xmlFilename>
+	<annotation>Copyright (C) Fox-Alpha - Modding, All Rights Reserved.</annotation>	
+	<title>
+        <en>MapViewer for LS2013</en>
+        <de>MapViewer für LS2013</de>
+    </title>
+    <description>
+		<en>
+<![CDATA[Shows the PDA Map over the hole Screen. Press insert to activate. 
+Inclusive : HotSpots, Playerposition, Vehicleposition, Attachablesposition, Playername
+New in this version, an Infopanel. Open it with mouseclick on an vehicle.
+You can see the name, the Filllevel and many more informations. 
+Automatic detect the mapsize.]]>
+		</en>
+		<de>
+<![CDATA[Vollbild Übersichtskarte zeigt die Positionen der Fahrzeuge und Anbaugeräte An.
+Kompatible zum LS Patch 2.0 und höher sowie das Titanium Addon. 
+Neu: - Weitere Infopanel. Felder, Hofsilos, Verkaufsstationen. Wieder dabei: Courseplay Anzeige
+Einfach mit der Maus ein Fahrzeug anklicken. Die Daten werden automatisch aktualisiert.
+Passt sich automatisch der Kartengröße an]]>		
+		</de>
+	</description>
+    <multiplayer supported="true"/>
+    <extraSourceFiles>
+        <sourceFile filename="mapviewer.lua" />
+    </extraSourceFiles>
+	<inputBindings>
+       <input name="BIGMAP_Activate" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_0" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_KeyHelp" 		category="ONFOOT VEHICLE" 	key1="KEY_lctrl KEY_delete" 			key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Legende" 		category="ONFOOT VEHICLE" 	key1="KEY_delete" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_SwitchOverlay" 	category="ONFOOT VEHICLE" 	key1="KEY_end" 							key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_TransPlus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_plus" 						key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_TransMinus" 		category="ONFOOT VEHICLE" 	key1="KEY_KP_minus" 					key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_MaxTransPlus" 	category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_plus" 			key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_MaxTransMinus" 	category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_minus" 			key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Teleport" 		category="ONFOOT" 			key1="KEY_rshift"			 			key2="" button="" device="0" mouse="" />
+		<!-- Manuelles Einblenden der einzelnen Overlay -->
+       <input name="BIGMAP_Overlay_1" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_1"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_2" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_2"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_3" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_3"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_4" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_4"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_5" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_5"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_6" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_6"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_7" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_7"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_8" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_8"				key2="" button="" device="0" mouse="" />
+       <input name="BIGMAP_Overlay_9" 		category="ONFOOT VEHICLE" 	key1="KEY_rctrl KEY_KP_9"				key2="" button="" device="0" mouse="" />
+    </inputBindings>
+	<l10n>
+        <!-- Copyright Meldung -->
+        <text name="mapviewtxt">
+            <en>Mapviewer V0.8 $Rev$ Copyright (C) Fox-Alpha 2010-2014</en>
+            <de>Mapviewer V0.8 $Rev$ Copyright (C) Fox-Alpha 2010-2014</de>
+        </text>
+        <!-- Tastenbeschreibungen -->
+		<text name="BIGMAP_Legende">
+			<en>Mapviewer Display Maplegend</en>
+			<de>Mapviewer Legende einblenden</de>	
+		</text>
+		<text name="BIGMAP_SwitchOverlay">
+			<en>Mapviewer reset Overlayview</en>
+			<de>Mapviewer Overlay zurücksetzen</de>	
+		</text>
+		<text name="BIGMAP_Activate">
+			<en>Mapviewer View Map</en>
+			<de>Mapviewer Große Kartenansicht</de>	
+		</text>
+		<text name="BIGMAP_MaxTransPlus">
+			<en>Mapviewer sets max Transparence</en>
+			<de>Mapviewer maximale Transparenz</de>	
+		</text>
+		<text name="BIGMAP_MaxTransMinus">
+			<en>Mapviewer sets no Transparence</en>
+			<de>Mapviewer keine Transparenz</de>
+		</text>
+		<text name="BIGMAP_TransPlus">
+			<en>Mapviewer Increase Transparence</en>
+			<de>Mapviewer Transparenz erhöhen</de>	
+		</text>
+		<text name="BIGMAP_TransMinus">
+			<en>Mapviewer decrease Transparence</en>
+			<de>Mapviewer Transparenz verringern</de>	
+		</text>
+		<text name="BIGMAP_Teleport">
+			<en>Mapvewer Teleporten</en>
+			<de>Mapvewer Teleporten</de>	
+		</text>
+		<text name="BIGMAP_KeyHelp">
+			<en>Mapviewer Keys</en>
+			<de>Mapvewer Tastenbelegung</de>	
+		</text>
+
+		<!-- Overlay Bezeichnungen -->
+		<text name="BIGMAP_Overlay_1">
+			<en>Mapviewer Show Overlay 1</en>
+			<de>Mapviewer Overlay 1 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_ShowOverlay">
+			<en>Overlays de-/activate</en>
+			<de>Overlays ein-/ausblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_2">
+			<en>Mapviewer Show Overlay 2</en>
+			<de>Mapviewer Overlay 2 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_3">
+			<en>Mapviewer Show Overlay 3</en>
+			<de>Mapviewer Overlay 3 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_4">
+			<en>Mapviewer Show Overlay 4</en>
+			<de>Mapviewer Overlay 4 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_5">
+			<en>Mapviewer Show Overlay 5</en>
+			<de>Mapviewer Overlay 5 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_6">
+			<en>Mapviewer Show Overlay 6</en>
+			<de>Mapviewer Overlay 6 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_7">
+			<en>Mapviewer Show Overlay 7</en>
+			<de>Mapviewer Overlay 7 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_8">
+			<en>Mapviewer Show Overlay 8</en>
+			<de>Mapviewer Overlay 8 einblenden</de>	
+		</text>
+
+		<text name="BIGMAP_Overlay_9">
+			<en>Mapviewer Show Overlay 9</en>
+			<de>Mapviewer Overlay 9 einblenden</de>	
+		</text>
+
+        <!-- Log Meldungen -->
+		<text name="MV_InfoTryLocatePDAFile">
+			<en>Try to locate PDA Map File</en>
+			<de>Versuche PDA_map.dds zu finden</de>	
+		</text>
+		<text name="MV_InfoPDAFileLocated">
+			<en>PDA Map File is located</en>
+			<de>PDA_map.dds in Zip der Map gefunden</de>	
+		</text>
+		<text name="MV_InfoMapsize">
+			<en>Current Mapsize is : %d x %d</en>
+			<de>Aktuelle Map Größe ist : %d x %d</de>	
+		</text>
+		<text name="MV_MapName">
+			<en>Name of loaded Map : %s</en>
+			<de>Name der geladenen Karte ist : %s</de>	
+		</text>
+		<text name="MV_MapPoISuccess">
+			<en>PoI Overlay successful loaded</en>
+			<de>PoI Overlay erfolgreich geladen</de>	
+		</text>
+		<text name="MV_MapFNumSuccess">
+			<en>Fieldnumber Overlay successful loaded</en>
+			<de>Feldnummern Overlay erfolgreich geladen</de>	
+		</text>
+		<text name="MV_LoadOptions">
+			<en>Loading Options from XML File</en>
+			<de>Einstellungen aus XML laden</de>	
+		</text>
+		<text name="MV_CheckForLocaleOverlay">
+			<en>Checking for locale FNum and PoI overlay files</en>
+			<de>Prüfen auf lokale FNum und PoI Overlay Dateien</de>	
+		</text>
+		
+		<!-- Meldung für PDA_Map Datei -->
+		<text name="MV_LocalePDAFileSuccess">
+			<en>Use locale PDA_Map file</en>
+			<de>Lokale PDA vorhanden</de>	
+		</text>
+		<text name="MV_LocalePDAFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		
+		<!-- Meldung für PoI Datei -->
+		<text name="MV_LocalePoIFileSuccess">
+			<en>Use locale PoI overlay file</en>
+			<de>Lokale PoI vorhanden</de>	
+		</text>
+		<text name="MV_LocalePoIFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		<text name="MV_PoIInMap">
+			<en>PoI Overlay in Map present</en>
+			<de>PoI Overlay in Map vorhanden</de>	
+		</text>
+		<text name="MV_PoIFromMV">
+			<en>Use internal PoI for default Map</en>
+			<de>Nutze MapViewer PoI Overlay</de>	
+		</text>
+		<text name="MV_PoIFromLocaleFile">
+			<en>Use local PoI file for Map</en>
+			<de>Nutze lokale PoI Datei als Overlay</de>	
+		</text>
+		
+		<!-- Meldung für FNum Datei -->
+		<text name="MV_LocaleFNumFileSuccess">
+			<en>Use locale PoI overlay file</en>
+			<de>Lokale Feldnummern vorhanden</de>	
+		</text>
+		<text name="MV_LocaleFNumFileFailed">
+			<en>NOT TRANSLATED</en>
+			<de>TODO: KEIN TEXT</de>	
+		</text>
+		<text name="MV_FNumInMap">
+			<en>Feldnummern Overlay in Map present</en>
+			<de>Feldnummern Overlay in Map vorhanden</de>	
+		</text>
+		<text name="MV_FNumFromMV">
+			<en>Use internal FNum for default Map</en>
+			<de>Nutze MapViewer Feldnummern Overlay</de>	
+		</text>
+		<text name="MV_FNumFromLocaleFile">
+			<en>Use local FNum file for Map</en>
+			<de>Nutze lokale Feldnummern Datei als Overlay</de>	
+		</text>
+		
+		<!-- Feldinformationen im Panel -->
+		<!-- TODO: Übersetzung -->
+		<text name="MV_FieldInfoFieldNumber">
+			<en></en>
+			<de>Feld Nr.:</de>	
+		</text>
+		<text name="MV_FieldInfoFieldSize">
+			<en></en>
+			<de>Feldgröße:</de>	
+		</text>
+		<text name="MV_FieldInfoFieldPrice">
+			<en></en>
+			<de>Kaufpreis:</de>	
+		</text>
+		<text name="MV_FieldInfoCurrentBid">
+			<en></en>
+			<de>Aktuelles Gebot:</de>	
+		</text>
+		<text name="MV_FieldInfoHighestBidder">
+			<en></en>
+			<de>Höchster Bieter:</de>	
+		</text>
+		<text name="MV_FieldInfoNextBid">
+			<en></en>
+			<de>Nächstes Gebot:</de>	
+		</text>
+		
+		
+		<!-- TODO: Prüfen wo dieser Text verwendet wird
+		<text name="MV_LocaleFileSuccess">
+			<en>Checking for locale FNum and PoI overlay files</en>
+			<de>%s Datei erfolgreich geladen</de>	
+		</text> -->
+		<text name="MV_InitHorseShoesSuccess">
+			<en>Preparing horseshoes successfull</en>
+			<de>Vorbereiten der Hufeisen erfolgreich</de>	
+		</text>
+		<text name="MV_InitTipTriggerSuccess">
+			<en>Preparing TipTrigger successfull</en>
+			<de>TipTrigger vorbereiten erfolgreich</de>	
+		</text>
+		<text name="MV_InitHorseShoesFailed">
+			<en>Preparing TipTrigger failed</en>
+			<de>Vorbereiten der TipTrigger fehlgeschlagen</de>	
+		</text>
+		<text name="MV_LocaleFileSuccess">
+			<en>Checking for locale FNum and PoI overlay files</en>
+			<de>%s Datei erfolgreich geladen</de>	
+		</text>
+		<text name="MV_CheckForCoursePlay">
+			<en>Checking if courseplay is loaded</en>
+			<de>Prüfen ob CoursePlay verfügbar ist</de>	
+		</text>
+		
+		<!-- Courseplay Meldungen -->
+		<text name="MV_CoursePlayFound">
+			<en>CoursePlay found: %s %s</en>
+			<de>CoursePlay gefunden: %s %s</de>	
+		</text>
+		<text name="MV_CoursePlayNotFound">
+			<en>Courseplay not available</en>
+			<de>CoursePlay nicht vorhanden</de>	
+		</text>		
+		
+		<!-- Rent A Field Mod -->
+		<text name="RAFIS_Costs">
+			<en>Costs per day</en>
+			<de>Pachtkosten pro Tag</de>	
+		</text>
+		<text name="RAFIS_True">
+			<en>Active</en>
+			<de>Pacht Aktiv</de>	
+		</text>
+		<text name="RAFIS_False">
+			<en>Not Active</en>
+			<de>Keine Pacht</de>	
+		</text>
+		<text name="RAFIS_Owned">
+			<en>You are owner</en>
+			<de>Eigentum</de>	
+		</text>
+		
+        <!-- Aktiver Overlay Modus -->
+		<text name="MV_Mode10">
+			<en>MapViewer Overlay Mode 0</en>
+			<de>MapViewer Overlay Modus 0</de>	
+		</text>
+		<text name="MV_Mode10Name">
+			<en>Vehicles only (default)</en>
+			<de>Vehicles (Immer an)</de>	
+		</text>
+		<text name="MV_Mode1">
+			<en>MapViewer Overlay Mode 1</en>
+			<de>MapViewer Overlay Modus 1</de>	
+		</text>
+		<text name="MV_Mode1Name">
+			<en>TipTrigger</en>
+			<de>Entladestationen</de>	
+		</text>
+		<text name="MV_Mode2">
+			<en>MapViewer Overlay Mode 2</en>
+			<de>MapViewer Overlay Modus 2</de>	
+		</text>
+		<text name="MV_Mode2Name">
+			<en>Custom overlay 1</en>
+			<de>Benutzerdef. Overlay 1</de>	
+		</text>
+		<text name="MV_Mode3">
+			<en>MapViewer Overlay Mode 3</en>
+			<de>MapViewer Overlay Modus 3</de>	
+		</text>
+		<text name="MV_Mode3Name">
+			<en>Custom overlay 2</en>
+			<de>Benutzerdef. Overlay 2</de>	
+		</text>
+		<text name="MV_Mode4">
+			<en>MapViewer Overlay Mode 4</en>
+			<de>MapViewer Overlay Modus 4</de>	
+		</text>
+		<text name="MV_Mode4Name">
+			<en>Map Hotspots</en>
+			<de>Karten Hotspots</de>	
+		</text>
+		<text name="MV_Mode5">
+			<en>MapViewer Overlay Mode 5</en>
+			<de>MapViewer Overlay Modus 5</de>	
+		</text>
+		<text name="MV_Mode5Name">
+			<en>Courseplay Tracks</en>
+			<de>CoursePlay Kurse</de>	
+		</text>
+		<text name="MV_Mode6">
+			<en>MapViewer Overlay Mode 6</en>
+			<de>MapViewer Overlay Modus 6</de>	
+		</text>
+		<text name="MV_Mode6Name">
+			<en>open horseshoes</en>
+			<de>offene Hufeisen</de>	
+		</text>
+		<text name="MV_Mode6Title">
+			<en>You have %s horseshows found and %s left</en>
+			<de>Du hast bereits %s von %s Hufeisen eingesammelt</de>	
+		</text>
+		<text name="MV_Mode7">
+			<en>MapViewer Overlay Mode 7</en>
+			<de>MapViewer Overlay Modus 7</de>	
+		</text>
+		<text name="MV_Mode7Name">
+			<en>Fieldstatus and No.</en>
+			<de>Felderbesitzstatus</de>	
+		</text>
+		<text name="MV_Mode8">
+			<en>MapViewer Overlay Mode 8</en>
+			<de>MapViewer Overlay Modus 8</de>	
+		</text>
+		<text name="MV_Mode8Name">
+			<en>Mode not used</en>
+			<de>Modus nicht belegt</de>	
+		</text>
+		<text name="MV_Mode9">
+			<en>MapViewer Overlay Mode 9</en>
+			<de>MapViewer Overlay Modus 9</de>	
+		</text>
+		<text name="MV_Mode9Name">
+			<en>Mode not used</en>
+			<de>Modus nicht belegt</de>	
+		</text>
+		
+		<!-- windrow Übersetzung -->
+		<text name="MV_Windrow">
+			<en> windrow</en>
+			<de> Schwad</de>	
+		</text>
+		
+        <!-- Maplegende Bezeichnung -->
+		<text name="MV_LegendeLocalPlayer">
+			<en>Local Player Position</en>
+			<de>Eigener Spieler auf Karte</de>	
+		</text>
+		<text name="MV_LegendeOtherPlayer">
+			<en>Other Player Positions</en>
+			<de>Andere Spieler auf Karte</de>	
+		</text>
+		<text name="MV_LegendeControledVehicle">
+			<en>Other Player in Vehicle</en>
+			<de>Andere Spieler im Fahrzeug</de>	
+		</text>
+		<text name="MV_LegendeEmptyVehicle">
+			<en>EmptyVehicle Position</en>
+			<de>Leere Fahrzeuge auf Karte</de>	
+		</text>
+		<text name="MV_LegendeAttachments">
+			<en>Attachments and Trailer</en>
+			<de>Anbaugeräte und Anhänger</de>	
+		</text>
+		
+        <!-- Attachment Typen -->
+		<text name="MV_AttachTypecutter">
+			<en>Cutter</en>
+			<de>Schneidwerke</de>	
+		</text>
+		<text name="MV_AttachTypecutter_animated">
+			<en>Cutter</en>
+			<de>Schneidwerke</de>	
+		</text>
+		<text name="MV_AttachTypetrailer">
+			<en>Trailer</en>
+			<de>Anhänger</de>	
+		</text>
+		<text name="MV_AttachTypesowingMachine">
+			<en>Sowingmachine</en>
+			<de>Saatmaschine</de>	
+		</text>
+		<text name="MV_AttachTypeplough">
+			<en>Plough</en>
+			<de>Pflug</de>	
+		</text>
+		<text name="MV_AttachTypesprayer">
+			<en>Sprayer</en>
+			<de>Feldspritze</de>	
+		</text>
+		<text name="MV_AttachTypesprayer_animated">
+			<en>Sprayer</en>
+			<de>Feldspritze</de>	
+		</text>
+		<text name="MV_AttachTypemanureSpreader">
+			<en>manure spreader</en>
+			<de>Miststreuer</de>	
+		</text>
+		<text name="MV_AttachTypeforageWagon">
+			<en>forage wagon</en>
+			<de>Grassammel Anhänger</de>	
+		</text>
+		<text name="MV_AttachTypebaler">
+			<en>Baler</en>
+			<de>Presse</de>	
+		</text>
+		<text name="MV_AttachTypebaleLoader">
+			<en>Baleloader</en>
+			<de>Ballensammler</de>	
+		</text>
+		<text name="MV_AttachTypecultivator">
+			<en>Cultivator</en>
+			<de>Grubber</de>	
+		</text>
+		<text name="MV_AttachTypecultivator_animated">
+			<en>Cultivator</en>
+			<de>Grubber</de>	
+		</text>
+		<text name="MV_AttachTypeselfPropelledSprayer">
+			<en>self Propelled Sprayer</en>
+			<de>Selbstfahrspritze</de>	
+		</text>
+		<text name="MV_AttachTypetedder">
+			<en>Tedder</en>
+			<de>Zettkreisel</de>	
+		</text>
+		<text name="MV_AttachTypewindrower">
+			<en>Windrower</en>
+			<de>Schwader</de>	
+		</text>
+		<text name="MV_AttachTypeshovel">
+			<en>Shovel</en>
+			<de>Schaufel</de>	
+		</text>
+		<text name="MV_AttachTypemower">
+			<en>Mover</en>
+			<de>Mäher</de>	
+		</text>
+		<text name="MV_AttachTypeother">
+			<en>other</en>
+			<de>andere</de>	
+		</text>
+		
+		<!-- InfoPanel Texte -->
+		<text name="MV_Unknown">
+			<en>Unknown</en>
+			<de>Unbekannt</de>	
+		</text>
+		<text name="MV_VehicleFuel">
+			<en>Fuel : </en>
+			<de>Diesel : </de>	
+		</text>
+		<text name="MV_FillLevel">
+			<en>Capacity : </en>
+			<de>Kapazität : </de>	
+		</text>
+		<text name="MV_Attachments">
+			<en>Attachments : </en>
+			<de>Anbaugeräte : </de>	
+		</text>
+		<text name="MV_Player">
+			<en>Player : </en>
+			<de>Spieler : </de>	
+		</text>
+		<text name="MV_EmptyTank">
+			<en>-- Empty --</en>
+			<de>-- Leer --</de>	
+		</text>
+		<text name="MV_EmptyPlayer">
+			<en>-- No Player --</en>
+			<de>-- Kein Spieler --</de>	
+		</text>
+		<text name="MV_HiredVehicle">
+			<en>-- Hired --</en>
+			<de>-- Helfer --</de>	
+		</text>
+		<text name="MV_ActiveCPCourse">
+			<en>Courseplay </en>
+			<de>Courseplay </de>	
+		</text>
+		<text name="MV_Farmsilo">
+			<en>Crop Storage</en>
+			<de>Hofsilo</de>	
+		</text>
+		
+		<!-- HotSpot Übersetungen -->
+							  
+		<text name="MV_HotSpotwoolDeliveryHotspot">
+			<en>Wool Delivery</en>
+			<de>Weberei(Wolle)</de>	
+		</text>
+		<text name="MV_HotSpotEggs">
+			<en>Egg Shop</en>
+			<de>Eierhändler</de>	
+		</text>
+		<text name="MV_HotSpotFuelStation">
+			<en>Fuelstation</en>
+			<de>Tankstelle</de>	
+		</text>
+		<text name="MV_HotSpotTipPlace">
+			<en>Tip place</en>
+			<de>Abladestelle</de>	
+		</text>
+		<text name="MV_HotSpotPhone">
+			<en>Phone</en>
+			<de>Telefonzelle</de>	
+		</text>
+		<text name="MV_HotSpotBank">
+			<en>Bank</en>
+			<de>Bank</de>	
+		</text>
+		<text name="MV_HotSpotSheep">
+			<en>Sheepfarm</en>
+			<de>Schaaffarm</de>	
+		</text>
+		<text name="MV_HotSpotCows">
+			<en>Cowfarm</en>
+			<de>Kuhfarm</de>	
+		</text>
+		<text name="MV_HotSpotShop">
+			<en>Shop</en>
+			<de>Shop</de>	
+		</text>
+		<text name="MV_HotSpotChickens">
+			<en>Chicken</en>
+			<de>Hühner</de>	
+		</text>
+		
+		
+        <!-- Fehlermdeldungen -->
+		<text name="MV_ErrorCreateMV">
+			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
+		</text>
+		<text name="MV_ErrorCreateMVFileNotFound">
+			<en>Critical Error: Creation of MapViewer failed. File for fullscreen PDA not found</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen. Datei für Vollbildkarte nicht gefunden</de>	
+		</text>
+		<text name="MV_ErrorCreateMVFromLocalPDA">
+			<en>Hint: Local PDA file does not exists in mod folder</en>
+			<de>Hinweis: Erzeugen des Mapviewers fehlgeschlagen, keine lokale PDA Datei im  Modordner vorhanden</de>	
+		</text>
+		
+		<!-- Fehlermeldungen für PoI -->
+		<text name="MV_ErrorInitPoI">
+			<en>Warning: Could not load 'PoI Overlay' file. PoI are disabled. This Map doesn't support MapViewer PoI</en>
+			<de>Warnung: Kann 'PoI Overlay' Datei nicht finden, PoI wird deaktiviert. Diese Karte unterstützt keine MapViewer PoI</de>
+		</text>
+		<text name="MV_ErrorPoICreateOverlay">
+			<!-- Meldung im Dialog -->
+			<en>Error: Could not create 'PoI Overlay'. PoI is disabled. </en>
+			<de>Fehler: Kann 'PoI Overlay' nicht erzeugen. PoI ist deaktiviert.</de>
+		</text>
+		<text name="MV_ErrorCreatePoIFileNotFound">
+			<en>Warning: File for PoI Overlay not found</en>
+			<de>Warnung: Datei für PoI Overlay nicht gefunden</de>	
+		</text>
+		<text name="MV_ErrorCreateMVFromLocalPoI">
+			<en>Hint: Local PoI file does not exists in mod folder</en>
+			<de>Hinweis: Keine lokale PoI Datei im  Modordner vorhanden</de>	
+		</text>
+
+		<!-- Fehlermeldungen für Feldnummern -->
+		<text name="MV_ErrorInitFNum">
+			<en>Warning: Could not load 'Fieldnumber Overlay' file. Fieldnumbers are disabled. This Map doesn't support MapViewer Fieldnumbers</en>
+			<de>Warnung: Kann 'Feldnummern Overlay' Datei nicht finden, Feldnummern wird deaktiviert. Diese Karte unterstützt keine MapViewer Feldnummern</de>	
+		</text>
+		<text name="MV_ErrorFNumCreateOverlay">
+			<en>Error: Could not create 'Fieldnumber Overlay'. Fieldnumber Overlay are disabled. </en>
+			<de>Fehler: Kann 'Feldnummern Overlay' nicht erzeugen. Feldnummern Overlay wird deaktiviert.</de>
+		</text>
+		<text name="MV_ErrorCreateFNumFileNotFound">
+			<en>Warning: File for FNum Overlay not found</en>
+			<de>Warnung: Datei für Feldnummern Overlay nicht gefunden</de>	
+		</text>
+		<text name="MV_ErrorCreateMVFromLocalFNum">
+			<en>Hint: Creation of MapViewer failed, local FNum file does not exists in mod folder</en>
+			<de>Hinweis: Keine lokale FNum Datei im  Modordner vorhanden</de>	
+		</text>
+		
+		<!-- Fehlermeldungen für Hufeisen -->
+		<text name="MV_ErrorInitHorseShoes">
+			<en>Hint: Horseshoefinder are disabled. This Map doesn't support horseshoes</en>
+			<de>Hinweis: Hufeisenanzeige wird deaktiviert. Diese Karte unterstützt kein Hufeisen sammeln</de>	
+		</text>
+		<text name="MV_ErrorHorseShoesCreateOverlay">
+			<en>Error: Could not create 'Horseshoefinder Overlay'. Horseshoefinder Overlay are disabled. </en>
+			<de>Fehler: Kann 'Hufeisen Overlay' nicht erzeugen. Hufeisen Overlay wird deaktiviert.</de>
+		</text>
+		
+		<!-- Fehlermeldungen für Legende -->
+		<text name="MV_ErrorInitLegend">
+			<en>Could not load 'Legend Overlay' file. Legend are disabled. This Map doesn't support Bottles</en>
+			<de>Kann 'Legenden Overlay' Datei nicht finden, Legendenanzeige wird deaktiviert.</de>	
+		</text>
+		<text name="MV_ErrorLegendCreateOverlay">
+			<en>Warning: Could not create 'Legend Overlay'. Legend Overlay are disabled. </en>
+			<de>Warnung: Kann 'Legenden Overlay' nicht erzeugen. Legenden Overlay wird deaktiviert.</de>
+		</text>
+		
+		
+		<!-- Fehlermeldungen für Optionen -->
+		<text name="MV_ErrorLoadOptions">
+			<en>Error: Cant load Options from file</en>
+			<de>Fehler: Kann die Einstellungen nicht aus der Datei laden</de>	
+		</text>
+		<text name="MV_ErrorLoadOptionsOldXML">
+			<en>Warning: Config file of old MapViewer Version found, will be overwritten to update</en>
+			<de>Warnung: Alte MapViewer XML Datei gefunden, diese wird aktualisiert</de>	
+		</text>
+		<text name="MV_ErrorSaveOptions">
+			<en>Critical Error: Creation of MapViewer failed, please see in log.txt for more information</en>
+			<de>Kritischer Fehler: Erzeugen des Mapviewers fehlgeschlagen, weitere Informationen in der Log.txt</de>	
+		</text>
+		
+		<!-- Fehlermeldungen für InfoPanel -->
+		<text name="MV_ErrorCreateInfoPanel">
+			<en>Error: Error in function Update() - Set Panel position to Vehicle, please see in log.txt for more information</en>
+			<de>Fehler: Fehler in Update() - Panel Position an Fahrzeug anpassen, weitere Informationen in der Log.txt</de>	
+		</text>
+    </l10n>
+</modDesc>
